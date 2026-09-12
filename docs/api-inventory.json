@@ -360,6 +360,190 @@
     "line": 99
   },
   {
+    "name": "brainfc.raw.pipeline.PreprocessConfig",
+    "signature": "(t_r: 'float | None' = None, slice_timing: 'str' = 'auto', slice_axis: 'int | None' = None, reference: 'float' = 0.5, discard: 'int' = 0, smoothing_fwhm: 'float' = 0.0, seed: 'int' = 42) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 31
+  },
+  {
+    "name": "brainfc.raw.pipeline.PreprocessedRun",
+    "signature": "(directory: 'Path', run: 'dict', qc: 'dict', provenance: 'dict') -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 78
+  },
+  {
+    "name": "brainfc.raw.pipeline.PreprocessedRun.extract",
+    "signature": "(self, atlas='schaefer100', *, config=None, qc_reviewed=False, progress=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 91
+  },
+  {
+    "name": "brainfc.raw.pipeline._json",
+    "signature": "(path, value)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 130
+  },
+  {
+    "name": "brainfc.raw.pipeline.load_preprocessed",
+    "signature": "(directory)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 134
+  },
+  {
+    "name": "brainfc.raw.pipeline._check_image",
+    "signature": "(path, dimensions)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 163
+  },
+  {
+    "name": "brainfc.raw.pipeline.discover_raw",
+    "signature": "(bids_dir)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 185
+  },
+  {
+    "name": "brainfc.raw.pipeline.inspect_raw",
+    "signature": "(bold, t1w, *, sidecar=None, config=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 218
+  },
+  {
+    "name": "brainfc.raw.pipeline._ants",
+    "signature": "()",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 282
+  },
+  {
+    "name": "brainfc.raw.pipeline._ants_session",
+    "signature": "(seed)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 290
+  },
+  {
+    "name": "brainfc.raw.pipeline._like",
+    "signature": "(ants, array, reference)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 304
+  },
+  {
+    "name": "brainfc.raw.pipeline._largest",
+    "signature": "(mask)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 309
+  },
+  {
+    "name": "brainfc.raw.pipeline._motion_table",
+    "signature": "(ants, transforms, fd)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 318
+  },
+  {
+    "name": "brainfc.raw.pipeline.preprocess_fmri",
+    "signature": "(bold, t1w, output, *, sidecar=None, config=None, t1_mask=None, template_dir=None, progress=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/pipeline.py",
+    "line": 335
+  },
+  {
+    "name": "brainfc.raw.temporal.slice_time_correct",
+    "signature": "(data, slice_times, t_r, *, axis=2, reference=0.5)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/temporal.py",
+    "line": 9
+  },
+  {
+    "name": "brainfc.raw.templates.fetch_template",
+    "signature": "(data_dir=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/templates.py",
+    "line": 18
+  },
+  {
+    "name": "brainfc.raw.dicom._headers",
+    "signature": "(source)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 15
+  },
+  {
+    "name": "brainfc.raw.dicom.scan_dicom",
+    "signature": "(source)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 40
+  },
+  {
+    "name": "brainfc.raw.dicom._seconds",
+    "signature": "(value)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 62
+  },
+  {
+    "name": "brainfc.raw.dicom._timings",
+    "signature": "(sequence)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 69
+  },
+  {
+    "name": "brainfc.raw.dicom._uih_mosaic",
+    "signature": "(datasets)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 77
+  },
+  {
+    "name": "brainfc.raw.dicom.convert_dicom_python",
+    "signature": "(source, output, *, series_id=None, kind='bold')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/dicom.py",
+    "line": 135
+  },
+  {
+    "name": "brainfc.raw.quality.write_qc",
+    "signature": "(directory, template_path, affine, bold, mask, confounds, qc)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/raw/quality.py",
+    "line": 10
+  },
+  {
     "name": "brainfc.presets._variant",
     "signature": "(id, name, source, *, tr=None, notes='', upstream='', input_kind='volume')",
     "public": false,
@@ -397,7 +581,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/workflow.py",
-    "line": 47
+    "line": 58
   },
   {
     "name": "brainfc.workflow.check_input",
@@ -405,7 +589,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/workflow.py",
-    "line": 84
+    "line": 95
   },
   {
     "name": "brainfc.workflow.preflight",
@@ -413,7 +597,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/workflow.py",
-    "line": 146
+    "line": 157
   },
   {
     "name": "brainfc.workflow.validate_guidance",
@@ -421,7 +605,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/workflow.py",
-    "line": 214
+    "line": 225
   },
   {
     "name": "brainfc.cli._parser",
@@ -437,7 +621,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/cli.py",
-    "line": 70
+    "line": 84
   },
   {
     "name": "brainfc.web.app.create_app",
@@ -445,7 +629,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/web/app.py",
-    "line": 38
+    "line": 40
   },
   {
     "name": "brainfc.network.types.ValidationError",
@@ -497,7 +681,7 @@
   },
   {
     "name": "brainfc.network.types.AnalysisResult",
-    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.1', layouts: 'dict[str, Any]' = <factory>) -> None",
+    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.0', layouts: 'dict[str, Any]' = <factory>) -> None",
     "public": true,
     "documented": true,
     "source": "src/brainfc/network/types.py",

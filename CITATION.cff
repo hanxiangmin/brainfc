@@ -6,7 +6,7 @@ repository-code: "https://github.com/hanxiangmin/brainfc"
 abstract: "Resting-state fMRI functional connectivity, connectome and brain network / hypergraph analysis with Python and a local graphical interface."
 authors:
   - name: "BrainFC contributors"
-version: 0.4.1
+version: 0.5.0
 date-released: 2026-09-12
 license: Apache-2.0
 keywords:

@@ -41,6 +41,17 @@ def input_suggestions(path, *, overrides=None):
             companions = {k: found[k] for k in ("confounds", "mask") if found.get(k)}
             if found.get("mask"):
                 companions["reference"] = found["mask"]
+            # Native Python derivatives bind the exact nuisance design to their
+            # source path; never silently treat matrix coefficients as motion6.
+            import json
+            record = p.parent / "run.json"
+            provenance = p.parent / "preprocessing.json"
+            if record.is_file() and provenance.is_file():
+                run = json.loads(record.read_text(encoding="utf-8"))
+                if Path(run.get("bold", "")).resolve() == p:
+                    native = json.loads(provenance.read_text(encoding="utf-8"))
+                    settings.setdefault("confound_columns", native["confound_columns"])
+                    settings.setdefault("discard", native["config"]["discard"])
     return {"info": info, "config": settings, "paths": companions, "notes": []}
 
 

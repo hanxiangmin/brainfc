@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 完整接口 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="http-041">HTTP 完整接口 · 0.4.1</h1>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 完整接口 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="python-preprocessing.html">Python 原始 fMRI 全流程</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.5.0.html">本次验证范围</a></aside><main><h1 id="http-050">HTTP 完整接口 · 0.5.0</h1>
 <p>从实际 FastAPI OpenAPI 生成。运行服务后可在 <code>/docs</code>、<code>/redoc</code> 查看交互说明；机器可读定义在 <code>/openapi.json</code>，离线副本为 <a href="openapi.json">openapi.json</a>。</p>
 <p>响应与轮询示例见 <a href="http-api.html">HTTP 使用指南</a>。</p>
 <h2 id="get-apihealth">GET /api/health</h2>
@@ -11,6 +11,225 @@
         &quot;application/json&quot;: {
           &quot;schema&quot;: {
             &quot;$ref&quot;: &quot;#/components/schemas/HealthResponse&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipythondicomscan">POST /api/python/dicom/scan</h2>
+<p>Inventory local MR DICOM series without returning patient identifiers</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PathRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipythondiscover">POST /api/python/discover</h2>
+<p>List raw BIDS BOLD/T1 candidates within subject/session</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PathRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipythondicomrun">POST /api/python/dicom/run</h2>
+<p>Queue Python conversion of selected BOLD and T1 series</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PythonDicomRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipythoninspect">POST /api/python/inspect</h2>
+<p>Validate raw BOLD/T1 geometry, TR and slice-timing readiness</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PythonPreprocessRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipythonpreprocess">POST /api/python/preprocess</h2>
+<p>Queue in-process Python BOLD/T1 preprocessing</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PythonPreprocessRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apijobsjob_idpreprocessingname">GET /api/jobs/{job_id}/preprocessing/{name}</h2>
+<p>View a completed Python preprocessing QC artifact</p>
+<pre><code class="language-json">{
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;name&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Name&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
           }
         }
       }
@@ -1608,7 +1827,9 @@
         &quot;demo&quot;,
         &quot;atlas&quot;,
         &quot;dicom&quot;,
-        &quot;preprocess&quot;
+        &quot;preprocess&quot;,
+        &quot;python-preprocess&quot;,
+        &quot;python-dicom&quot;
       ],
       &quot;title&quot;: &quot;Kind&quot;
     },
@@ -1942,6 +2163,162 @@
     &quot;policy&quot;
   ],
   &quot;title&quot;: &quot;PresetsResponse&quot;
+}
+</code></pre>
+<h3 id="pythonconfig">PythonConfig</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;,
+          &quot;exclusiveMinimum&quot;: 0.0
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T R&quot;,
+      &quot;description&quot;: &quot;TR seconds; infer when null, reject conflicts.&quot;
+    },
+    &quot;slice_timing&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;auto&quot;,
+        &quot;require&quot;,
+        &quot;skip&quot;
+      ],
+      &quot;title&quot;: &quot;Slice Timing&quot;,
+      &quot;default&quot;: &quot;auto&quot;
+    },
+    &quot;slice_axis&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;integer&quot;,
+          &quot;enum&quot;: [
+            0,
+            1,
+            2
+          ]
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Slice Axis&quot;
+    },
+    &quot;reference&quot;: {
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;exclusiveMaximum&quot;: 1.0,
+      &quot;minimum&quot;: 0.0,
+      &quot;title&quot;: &quot;Reference&quot;,
+      &quot;description&quot;: &quot;Slice reference as fraction of TR.&quot;,
+      &quot;default&quot;: 0.5
+    },
+    &quot;discard&quot;: {
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;minimum&quot;: 0.0,
+      &quot;title&quot;: &quot;Discard&quot;,
+      &quot;description&quot;: &quot;Leading frames excluded from reference and later extraction.&quot;,
+      &quot;default&quot;: 0
+    },
+    &quot;smoothing_fwhm&quot;: {
+      &quot;type&quot;: &quot;number&quot;,
+      &quot;minimum&quot;: 0.0,
+      &quot;title&quot;: &quot;Smoothing Fwhm&quot;,
+      &quot;description&quot;: &quot;Spatial Gaussian FWHM mm; 0 disables.&quot;,
+      &quot;default&quot;: 0
+    },
+    &quot;seed&quot;: {
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;minimum&quot;: 0.0,
+      &quot;title&quot;: &quot;Seed&quot;,
+      &quot;default&quot;: 42
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;title&quot;: &quot;PythonConfig&quot;,
+  &quot;description&quot;: &quot;In-process single-echo preprocessing configuration; no external executables.&quot;
+}
+</code></pre>
+<h3 id="pythondicomrequest">PythonDicomRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Source&quot;
+    },
+    &quot;bold_series&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Bold Series&quot;
+    },
+    &quot;t1_series&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;T1 Series&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;source&quot;,
+    &quot;bold_series&quot;,
+    &quot;t1_series&quot;
+  ],
+  &quot;title&quot;: &quot;PythonDicomRequest&quot;,
+  &quot;description&quot;: &quot;Convert selected BOLD and T1 series, using opaque ids returned by scan.&quot;
+}
+</code></pre>
+<h3 id="pythonpreprocessrequest">PythonPreprocessRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;bold&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Bold&quot;
+    },
+    &quot;t1w&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;T1W&quot;
+    },
+    &quot;sidecar&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Sidecar&quot;
+    },
+    &quot;t1_mask&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T1 Mask&quot;
+    },
+    &quot;config&quot;: {
+      &quot;$ref&quot;: &quot;#/components/schemas/PythonConfig&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;bold&quot;,
+    &quot;t1w&quot;
+  ],
+  &quot;title&quot;: &quot;PythonPreprocessRequest&quot;,
+  &quot;description&quot;: &quot;Raw NIfTI BOLD plus matching T1. Outputs go into the job's private workspace.&quot;
 }
 </code></pre>
 <h3 id="runrecord">RunRecord</h3>

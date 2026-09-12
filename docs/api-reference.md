@@ -1,8 +1,8 @@
-# API 完整参考 · 0.4.1
+# API 完整参考 · 0.5.0
 
 由实际 Python 签名和源码 docstring 自动生成。修改接口后运行 `python scripts/generate_reference.py`；CI 检查文档是否同步。
 
-共 **93 个类、函数和方法条目**；包括所有模块公开处理函数及 `_confounds` 的行为契约。HTTP 数据模型另见 [HTTP 完整接口](http-reference.md)。
+共 **105 个类、函数和方法条目**；包括所有模块公开处理函数及 `_confounds` 的行为契约。HTTP 数据模型另见 [HTTP 完整接口](http-reference.md)。
 
 推荐入口见 [Python 使用指南](python-api.md)。底层函数面向高级用户，完整校验仍由 `extract_connectome` 执行。
 
@@ -1110,6 +1110,310 @@ reports before extraction. No DICOM-to-BIDS inference or surface reconstruction.
 
 源码：`src/brainfc/preprocessing.py`，第 99 行。
 
+## brainfc.raw.pipeline
+
+### PreprocessConfig
+
+```python
+PreprocessConfig(t_r: 'float | None' = None, slice_timing: 'str' = 'auto', slice_axis: 'int | None' = None, reference: 'float' = 0.5, discard: 'int' = 0, smoothing_fwhm: 'float' = 0.0, seed: 'int' = 42) -> None
+```
+
+```text
+Settings for one raw single-echo BOLD run and a matching whole-head T1.
+
+t_r is seconds, inferred from JSON/header when None; disagreement is rejected.
+slice_timing='auto' corrects when timing AND axis are known, otherwise stops
+for an explicit 'skip' decision. 'require' always requires valid timing.
+slice_axis optionally supplies 0/1/2 when neither JSON nor header specifies
+the slice dimension; conflicting declarations are rejected. reference is a
+fraction of TR in [0,1), default 0.5. discard removes no spatial input frames:
+it excludes leading frames from the reference and is passed to extraction.
+smoothing_fwhm is optional spatial Gaussian FWHM in mm (default 0, disabled);
+nuisance signals always use unsmoothed data. seed is an ANTs registration seed;
+floating-point results are not guaranteed bitwise identical across platforms.
+
+Adult MNI152NLin6Asym 2 mm is fixed to match the default Schaefer atlas.
+No susceptibility distortion correction, multi-echo combination, surface
+reconstruction or pediatric template is implemented. These are reported as
+unperformed, never inferred from a dataset name. Visual QC remains necessary.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 31 行。
+
+### PreprocessedRun
+
+```python
+PreprocessedRun(directory: 'Path', run: 'dict', qc: 'dict', provenance: 'dict') -> None
+```
+
+```text
+Completed spatial preprocessing with paths, metadata, and a QC report.
+
+directory is the output Path; run is the discoverable BOLD/companions mapping;
+qc and provenance record actual methods. Completion does not certify visual
+alignment or suitability for a study. Original temporal indices are retained.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 78 行。
+
+### PreprocessedRun.extract
+
+```python
+PreprocessedRun.extract(self, atlas='schaefer100', *, config=None, qc_reviewed=False, progress=None)
+```
+
+```text
+Extract a connectome after inspecting qc.html and setting qc_reviewed=True.
+
+atlas is a fetch_atlas name in MNI152NLin6Asym (Schaefer100/200/400).
+config is Config or None. None uses 0.01–0.1 Hz filtering, detrending,
+standardization and recorded motion-matrix/WM/CSF regression; no FD
+threshold is assumed. TR, spaces and the spatial discard count are bound
+to the actual run. Conflicting TR/spaces/columns or discard are rejected.
+Returns Connectome, including the preprocessing provenance and QC. The
+proposed defaults are BrainFC choices, not official dataset parameters.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 91 行。
+
+### load_preprocessed
+
+```python
+load_preprocessed(directory)
+```
+
+```text
+Load a completed preprocessing folder and verify exported artifact hashes.
+
+directory must contain stages.json with status='complete', run.json, QC,
+preprocessing.json and output_hashes.json. Raises InputError for incomplete,
+modified, missing or escaping paths. Returns PreprocessedRun with paths
+rebound to the current directory, so completed folders can be moved. The
+original provenance retains original input/transform paths for traceability.
+Loading does not bypass .extract(qc_reviewed=True).
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 134 行。
+
+### discover_raw
+
+```python
+discover_raw(bids_dir)
+```
+
+```text
+List raw BIDS BOLD/T1 candidate pairs within the same subject/session.
+
+Returns mappings of bold, t1w, same-stem sidecar (or None), and a relative
+label. Excludes derivatives and already-preprocessed filenames. Multiple T1
+candidates remain separate choices; no contrast or subject identity is
+inferred. Session BOLD may use a T1 in the subject-level anat directory when
+its session has none. BIDS JSON inheritance is not resolved here: materialize
+an acquisition sidecar before preprocessing when metadata are inherited.
+Raises InputError if the directory or eligible pairs are absent.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 185 行。
+
+### inspect_raw
+
+```python
+inspect_raw(bold, t1w, *, sidecar=None, config=None)
+```
+
+```text
+Read raw NIfTI geometry and acquisition metadata without running algorithms.
+
+bold is one 4D single-echo NIfTI; t1w is a matching 3D T1. Paths must exist.
+sidecar is optional JSON; otherwise the BOLD's same-stem JSON is read. BIDS
+inherited metadata must first be resolved into a sidecar. config defaults to
+PreprocessConfig. Returns geometry, resolved seconds/axis/times, readiness,
+missing confirmations, and the planned steps. No subject identity is inferred.
+Invalid/conflicting TR, timing or orientation raises InputError. Missing slice
+timing/axis is returned as a blocker unless explicitly skipped.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 218 行。
+
+### preprocess_fmri
+
+```python
+preprocess_fmri(bold, t1w, output, *, sidecar=None, config=None, t1_mask=None, template_dir=None, progress=None)
+```
+
+```text
+Preprocess one single-echo run entirely through installed Python libraries.
+
+Parameters
+----------
+bold, t1w : str or pathlib.Path
+    Raw 4D BOLD and matching whole-head 3D T1 in mm, with valid NIfTI geometry.
+output : str or pathlib.Path
+    New directory; never reuse an existing directory or place inputs inside it.
+sidecar : str or pathlib.Path or None
+    Acquisition JSON. None reads the BOLD's same-stem JSON. See inspect_raw.
+config : PreprocessConfig or None
+    Defaults to PreprocessConfig(); unknown slice timing requires an explicit
+    skip decision. Conflicting metadata stops before image processing.
+t1_mask : str or pathlib.Path or None
+    Optional independently reviewed T1 brain mask on the exact T1 grid.
+    None uses whole-head template registration to propagate the template mask.
+    Atlas-derived masks require visual QC and are not independent validation.
+template_dir : str or pathlib.Path or None
+    Cache for the fixed, checksum-verified adult MNI152NLin6Asym 2 mm template.
+progress : callable(str) or None
+    Optional synchronous progress message callback.
+
+Returns
+-------
+PreprocessedRun
+    Standard-space BOLD, brain/tissue masks, all-frame confounds, saved ANTs
+    transforms, acquisition JSON, provenance, stage record, QC PNG/HTML.
+    Call .extract(qc_reviewed=True) after reviewing the alignment report.
+
+Notes
+-----
+Fourier slice timing → ANTs rigid motion → T1 N4 → atlas-mask propagation
+(unless mask provided) → Atropos 3-class tissue estimation → brain SyN to MNI
+→ rigid BOLD-to-T1 → composed per-frame resampling (linear, once from the
+slice-time-corrected source) → optional Gaussian smoothing. WM/CSF signals
+use unsmoothed data. FD is ANTs generalized FD at fdOffset=50 mm, not Power FD.
+No SDC or slice-to-volume correction. No claim of numerical SPM equivalence.
+Failures preserve a failed stage record and partial outputs for inspection;
+incomplete outputs are never returned as a successful PreprocessedRun.
+```
+
+源码：`src/brainfc/raw/pipeline.py`，第 335 行。
+
+## brainfc.raw.temporal
+
+### slice_time_correct
+
+```python
+slice_time_correct(data, slice_times, t_r, *, axis=2, reference=0.5)
+```
+
+```text
+Interpolate each slice to one acquisition time using a padded Fourier shift.
+
+Parameters
+----------
+data : array-like, shape (X, Y, Z, T)
+    Finite voxel signals in ORIGINAL NIfTI index order, at least four frames.
+slice_times : sequence of float
+    Acquisition offsets in seconds, in increasing voxel-index order along
+    axis. Repeated offsets are supported (multiband). Reverse BIDS negative
+    SliceEncodingDirection timing lists before calling this function.
+t_r : float
+    Constant positive repetition time in seconds. Variable-TR/sparse timing
+    is not supported. Every slice offset must be in [0, t_r).
+axis : int, default 2
+    Spatial slice dimension, 0, 1 or 2; never the time dimension.
+reference : float, default 0.5
+    Target offset as a fraction of TR, in [0, 1). Does not select a slice.
+
+Returns
+-------
+numpy.ndarray
+    New float32 array of the same shape. Reflect-pad by T samples at each
+    endpoint, apply exp(+2*pi*i*f*(reference*TR-offset)/TR), then crop.
+    Positive shift evaluates a later time in the observed slice series.
+
+Notes
+-----
+Endpoint extrapolation is defined by reflection. This implementation is not
+an exact reproduction of SPM's interpolation/boundary rules. No frame is
+discarded. BIDS timing is in seconds, not SPM's millisecond time vector.
+```
+
+源码：`src/brainfc/raw/temporal.py`，第 9 行。
+
+## brainfc.raw.templates
+
+### fetch_template
+
+```python
+fetch_template(data_dir=None)
+```
+
+```text
+Return {'head': Path, 'mask': Path} for the exact MNI152NLin6Asym 2 mm grid.
+
+data_dir defaults to ~/ .cache/brainfc/templates (without the space). Fetches
+approximately 1.5 MB from TemplateFlow HTTPS on first use. Each cached or
+downloaded file is SHA-256 checked; invalid cache entries raise InputError.
+Downloads use a unique temporary file and atomic replacement. This is a
+fixed adult template, not suitable by default for pediatric/lesioned anatomy.
+```
+
+源码：`src/brainfc/raw/templates.py`，第 18 行。
+
+## brainfc.raw.dicom
+
+### scan_dicom
+
+```python
+scan_dicom(source)
+```
+
+```text
+Inventory MR series in a local directory; read headers without pixel decoding.
+
+Returns a list of opaque series_id, file_count, manufacturer, candidate kind
+('bold', 't1w', 'unknown'), TR seconds and dimensions. Hints are not proof of
+contrast/task; caller chooses one BOLD and its corresponding T1. Free-text
+descriptions, patient names, IDs, dates and DICOM UIDs are not returned.
+Series are grouped by Study/Series UID and echo; source files remain untouched.
+DICOM parsing failures propagate except non-DICOM/EOF files, which are skipped.
+```
+
+源码：`src/brainfc/raw/dicom.py`，第 40 行。
+
+### convert_dicom_python
+
+```python
+convert_dicom_python(source, output, *, series_id=None, kind='bold')
+```
+
+```text
+Convert ONE selected DICOM series to image.nii.gz and a minimal acquisition JSON.
+
+source is a local directory, output a new directory outside the source tree.
+series_id comes from scan_dicom; None requires exactly one MR series. kind is
+'bold' (4D >=20 frames) or 't1w' (3D). Uses dicom2nifti for supported standard
+MR layouts; UIH mosaics use explicit private per-slice position/time records.
+Geometry validators remain enabled; unsupported layouts fail, never guess.
+Returns {'image', 'sidecar', 'shape', 'engine'} with absolute file paths.
+
+Standard EchoTime (0018,0081) and RepetitionTime (0018,0080) are read in ms and
+written in seconds; conflicts within a selected series are errors. Generic
+layouts without validated slice times omit SliceTiming, requiring explicit
+skip or a reviewed JSON before preprocessing. No patient/date/free-text fields
+are copied. Images can still identify anatomy: conversion IS NOT defacing or
+a privacy certification. Original DICOM is never modified.
+```
+
+源码：`src/brainfc/raw/dicom.py`，第 135 行。
+
+## brainfc.raw.quality
+
+### write_qc
+
+```python
+write_qc(directory, template_path, affine, bold, mask, confounds, qc)
+```
+
+```text
+Write qc.html, alignment.png and motion.png into an existing output directory.
+
+Internal report helper: image geometry is prevalidated by preprocess_fmri.
+Shows native T1 mask, native BOLD-to-T1 edges, template-to-T1 edges, mean BOLD
+coverage, tissue-mask contours and all-frame FD/raw-unit DVARS. Images have
+fixed anatomical world-coordinate cuts; outputs contain sensitive anatomy.
+```
+
+源码：`src/brainfc/raw/quality.py`，第 10 行。
+
 ## brainfc.presets
 
 ### dataset_presets
@@ -1182,7 +1486,7 @@ Returns {'bold_runs': int, 'scope': str}. Does not validate all JSON acquisition
 fields or BIDS inheritance; fMRIPrep's full BIDS validator is still required.
 ```
 
-源码：`src/brainfc/workflow.py`，第 47 行。
+源码：`src/brainfc/workflow.py`，第 58 行。
 
 ### check_input
 
@@ -1201,7 +1505,7 @@ named-space matching and regression feasibility require further validation.
 Unlike the extraction core, this preflight is conservative about symmetric tables.
 ```
 
-源码：`src/brainfc/workflow.py`，第 84 行。
+源码：`src/brainfc/workflow.py`，第 95 行。
 
 ### preflight
 
@@ -1222,7 +1526,7 @@ Full ROI coverage, CIFTI alignment and cleaned-signal variance are checked only
 by extract_connectome. This function does not download or write files.
 ```
 
-源码：`src/brainfc/workflow.py`，第 146 行。
+源码：`src/brainfc/workflow.py`，第 157 行。
 
 ### validate_guidance
 
@@ -1240,7 +1544,7 @@ confirmation when applicable, then runs preflight. Returns a copy enriched
 with official_preset. It never applies preset hints to Config automatically.
 ```
 
-源码：`src/brainfc/workflow.py`，第 214 行。
+源码：`src/brainfc/workflow.py`，第 225 行。
 
 ## brainfc.cli
 
@@ -1259,7 +1563,7 @@ library/external-process errors propagate; a failed batch exits with 2
 after preserving successful run outputs and batch.json.
 ```
 
-源码：`src/brainfc/cli.py`，第 70 行。
+源码：`src/brainfc/cli.py`，第 84 行。
 
 ## brainfc.web.app
 
@@ -1281,7 +1585,7 @@ The app uses one worker with at most eight active/queued jobs. /docs, /redoc
 and /openapi.json describe HTTP contracts; see docs/http-api.md.
 ```
 
-源码：`src/brainfc/web/app.py`，第 38 行。
+源码：`src/brainfc/web/app.py`，第 40 行。
 
 ## brainfc.network.types
 
@@ -1383,7 +1687,7 @@ Validate keyword fields and construct a configuration; reject unknown keys.
 ### AnalysisResult
 
 ```python
-AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.1', layouts: 'dict[str, Any]' = <factory>) -> None
+AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.0', layouts: 'dict[str, Any]' = <factory>) -> None
 ```
 
 ```text

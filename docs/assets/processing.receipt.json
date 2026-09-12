@@ -3,13 +3,13 @@
   "output": "processing.html",
   "specification": {
     "file": "processing.dataflow.json",
-    "sha256": "6a08a6b86c251b61ad042417d28ad4a77230b38248f90d71459b56fbcdd11147",
-    "bytes": 4802
+    "sha256": "543d03a0a973bbea96ab1d533cf97783238119bbf37204951ad830a6a31692a4",
+    "bytes": 5032
   },
   "artifact": {
     "file": "processing.html",
-    "sha256": "6009b51d1ce4e955cfc159f5b9c9b9fae3c38cc926b785c9f48655bfc2ce44dc",
-    "bytes": 716657
+    "sha256": "edec109b4f34391c2b60cd51f91468cbbdf71c406b9b235e93974c75911c2f80",
+    "bytes": 716572
   },
   "validation": {
     "checksPassed": 9,
@@ -48,9 +48,10 @@
   ],
   "visual_review": "passed",
   "visual_review_notes": "Both themes and the clean exported PNG were inspected; all twelve nodes, semantic labels, and in-diagram archify credit are visible. No page toolbar or footer in exported SVG/PNG.",
-  "correction_rounds": 2,
+  "correction_rounds": 0,
   "exports": {
-    "processing.png": "93413b7d42bffe5ca7de80c591e9722d62928bd1dbba2103b391812b55c82186",
-    "processing.svg": "ea3567865faa254edc4308671837451d88bb41790c9b894a183b0645e5880650"
-  }
+    "processing.png": "e0bc49d4900a534678dcfdf473e7385eba46bc99fc8bb39b3cac94341fb04fb3",
+    "processing.svg": "7a19d0f695e7324effe37bd2585a7587e85220d4396ffb0543f6d1198daafc7d"
+  },
+  "export_normalization": "SVG trailing line whitespace removed; geometry and style values unchanged."
 }

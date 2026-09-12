@@ -20,6 +20,9 @@ from urllib.request import urlopen
 import numpy as np
 import brainfc
 from brainfc import Config, extract_connectome
+from brainfc import PreprocessConfig, preprocess_fmri, load_preprocessed, scan_dicom
+import ants
+import dicom2nifti
 from brainfc.demo import create_demo
 from brainfc.web.app import create_app
 
@@ -27,6 +30,8 @@ prefix = Path(sys.prefix).resolve()
 module = Path(brainfc.__file__).resolve()
 assert module.is_relative_to(prefix), (module, prefix)
 assert brainfc.__version__ == metadata.version('brainfc')
+assert ants.__version__ == '0.6.3'
+assert PreprocessConfig().slice_timing == 'auto'
 spec = create_demo(Path.cwd() / 'input')
 cfg = Config(**spec.pop('config'))
 result = extract_connectome(**spec, config=cfg)
@@ -45,9 +50,11 @@ target = result.save('result', figures=False)
 assert (target / 'report.html').is_file()
 manual = module.parent / 'web/static/reference'
 assert (manual / 'api-reference.html').is_file()
+assert (manual / 'python-preprocessing.html').is_file()
 assert (manual / 'openapi.json').is_file()
 schema = create_app('server').openapi()
 assert schema['info']['version'] == brainfc.__version__
+assert '/api/python/preprocess' in schema['paths']
 with socket.socket() as listener:
     listener.bind(('127.0.0.1', 0))
     port = listener.getsockname()[1]

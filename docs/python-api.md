@@ -7,10 +7,12 @@ from brainfc import (
     Config, Connectome, InputError, extract_connectome,
     inspect_input, discover_bids, fetch_atlas,
     dataset_presets, dataset_preset,
+    PreprocessConfig, PreprocessedRun, preprocess_fmri, inspect_raw,
+    discover_raw, scan_dicom, convert_dicom_python, load_preprocessed,
 )
 ```
 
-以上是顶层导出的 9 个公共对象。其余处理函数按模块导入；所有函数、方法的真实签名和 docstring 见 [完整参考](api-reference.md)。本库采用 Python 包接口，依赖 NumPy/NiBabel/Nilearn 等科学计算库。
+以上为顶层公共入口。原始 fMRI 的最短用法见 [Python 预处理](python-preprocessing.md)。其余处理函数按模块导入；所有函数、方法的真实签名和 docstring 见 [完整参考](api-reference.md)。本库采用 Python 包接口，依赖 NumPy/NiBabel/Nilearn 等科学计算库。
 
 | 模块 | 函数 / 对象 | 用途 |
 |---|---|---|
@@ -20,6 +22,7 @@ from brainfc import (
 | `imaging` | `roi_table`, `make_rois`, `validate_volume`, `label_values` | 标签、ROI 映射、空间图像检查 |
 | `imaging` | `volume_timeseries`, `cifti_timeseries`, `gifti_timeseries`, `brain_geometry` | 底层均值提取与显示表面 |
 | `atlases` | `fetch_atlas` | 显式下载/缓存图谱 |
+| `raw` | `PreprocessConfig`, `preprocess_fmri`, `inspect_raw`, `load_preprocessed`, `scan_dicom`, `convert_dicom_python`, `discover_raw` | Python 原始 fMRI 处理、质控和连接提取 |
 | `preprocessing` | `CommandPlan`, `dicom_plan`, `convert_dicom`, `fmriprep_plan` | 外部原始数据处理计划与执行 |
 | `workflow` | `input_suggestions`, `check_input`, `preflight`, `check_raw_bids`, `validate_guidance` | 输入识别、引导检查与流程记录 |
 | `presets` | `dataset_presets`, `dataset_preset` | 官方方案来源及采集提示 |

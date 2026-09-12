@@ -1,5 +1,13 @@
 # 更新记录
 
+## 0.5.0 — 2026-09-12
+
+- 新增 Python 原始 fMRI 流程：DICOM 转换、层间时间、头动、T1 N4 / 脑提取 / 组织分割、SyN 标准化、混杂、质控与连接提取。
+- 新增 `PreprocessConfig`、`preprocess_fmri()`、`load_preprocessed()`、DICOM 扫描 / 转换接口，以及 `brainfc process` / `convert`。
+- 网页改为 BOLD + T1 或 DICOM 序列选择，自动读取参数和安排输出，按步骤确认质控；无需 MATLAB、Docker 或许可证。
+- 补充完整 API、算法与参数说明、数值测试、原始序列验证及 archify 流程图；支持已有 Python 3.11–3.13 conda 环境。
+- 本路线未实现场图畸变校正，不宣称 SPM / DPABI 数值等价。旧外部工具接口为已有脚本保留。
+
 ## 0.4.1 — 2026-09-12
 
 - 补齐 GitHub 项目简介、Topics 与 PyPI 中英文关键词，涵盖静息态 fMRI、功能连接、脑网络、connectome 和超图分析。

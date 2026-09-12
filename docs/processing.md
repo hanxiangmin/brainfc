@@ -5,7 +5,7 @@
 ## 总流程
 
 ```text
-原始 DICOM → 外部 dcm2niix → 核对序列并组织 BIDS → 外部 fMRIPrep → 检查报告
+原始 DICOM → Python 转换 → BOLD + T1 → Python 预处理 → 检查报告
                                                                ↓
 已预处理体积 / CIFTI / GIFTI → 验证空间与标签 → ROI 均值 ──────────┤
 已分区 ROI 时序 → 核对方向、表头与 ROI 顺序 ───────────────────────┘
@@ -68,8 +68,8 @@ CIFTI dense 要求完全相同 BrainModelAxis，按 16 帧读取并计算各标�
 
 解剖参考的正值掩膜经过闭运算、填孔、0.65 体素 Gaussian 插值及 marching cubes；WebGL 继续平滑显示网格。这些操作只影响显示。没有参考时显示图谱覆盖包络；没有可用影像但有坐标时仅显示节点和边。静态 SVG/PDF 的脑壳是栅格层，线与点保持 Matplotlib 输出形式，不能宣称全部矢量化。
 
-## 原始预处理边界
+## 原始影像预处理
 
-适配器固定一个数字标签 fMRIPrep 镜像，默认 `nipreps/fmriprep:25.2.5`，输出一个命名模板的 res-2 体积，使用 `--fs-no-reconall`。Docker、FreeSurfer license、模板和计算资源由运行环境提供。完整参数与上游行为参见 [fMRIPrep 25.2.5 使用说明](https://fmriprep.org/en/25.2.5/usage.html)。
+`preprocess_fmri()` 完成层间时间、头动、T1 N4 / 脑提取 / Atropos、SyN 标准化、逐帧合成变换和组织混杂。详细步骤、默认值、限制、DICOM 兼容与验证见 [Python 全流程](python-preprocessing.md)。
 
-本库不自动生成 BIDS 采集身份、不代替上游质控、不估计畸变校正参数，也没有在本次本地验证中执行完整 fMRIPrep。能够生成并验证调用计划，与已经验证原始患者数据全链路是不同能力范围。
+`extract_connectome()` 本身仍接收已处理影像，不会根据文件名自动再次预处理。旧 `preprocessing` 模块的外部 dcm2niix/fMRIPrep 适配器为兼容已有脚本保留；网页使用 Python 路线。

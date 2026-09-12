@@ -1,3 +1,4 @@
+import RawPreparation from "./NativePreparation";
 import { useEffect, useRef, useState } from "react";
 
 async function request(path: string, body?: any) {
@@ -49,305 +50,6 @@ const defaultConfig = {
   variable: "",
   confound_columns: "",
 };
-
-function RawPreparation({
-  kind,
-  job,
-  onJob,
-  onError,
-  onReady,
-  busy,
-}: { kind: string; onReady: (run: any) => void } & Props) {
-  const [stage, setStage] = useState(kind === "raw-dicom" ? 0 : 1),
-    [source, setSource] = useState(""),
-    [output, setOutput] = useState(""),
-    [command, setCommand] = useState<any>(null),
-    [active, setActive] = useState(""),
-    [done, setDone] = useState(false),
-    [localBusy, setLocalBusy] = useState(false);
-  const [raw, setRaw] = useState({
-      bids_dir: "",
-      output_dir: "",
-      license_file: "",
-      participant: "",
-      space: "MNI152NLin6Asym",
-    }),
-    [derivatives, setDerivatives] = useState(""),
-    [runs, setRuns] = useState<any[]>([]),
-    [qc, setQc] = useState(false),
-    [external, setExternal] = useState(false);
-  useEffect(() => {
-    request("/api/setup")
-      .then((d) => {
-        setOutput(d.conversion_output);
-        setRaw((r) => ({
-          ...r,
-          output_dir: d.preprocessing_output,
-          license_file: d.license_file,
-        }));
-      })
-      .catch(onError);
-  }, []);
-  const disabled = busy || localBusy;
-  useEffect(() => {
-    if (job?.id === active && job.status === "complete") {
-      setDone(true);
-      if (job.kind === "preprocess") setDerivatives(raw.output_dir);
-    }
-  }, [job?.id, job?.status, active]);
-  const action = async (fn: () => Promise<any>) => {
-    setLocalBusy(true);
-    try {
-      await fn();
-    } catch (e) {
-      onError(e);
-    } finally {
-      setLocalBusy(false);
-    }
-  };
-  const run = async () => {
-    const j = await request(
-      stage === 0 ? "/api/dicom/run" : "/api/preprocess/run",
-      stage === 0 ? { source, output } : raw,
-    );
-    setActive(j.id);
-    setDone(false);
-    onJob(j);
-  };
-  return (
-    <div className="raw-guide">
-      <p className="workflow-route">
-        {kind === "raw-dicom" ? "DICOM 转换 → " : ""}整理 BIDS → fMRIPrep →
-        质控报告 → 选择已配准 BOLD
-      </p>
-      <div className="raw-stages">
-        {(kind === "raw-dicom"
-          ? ["转换", "BIDS 与预处理", "质控与输出"]
-          : ["BIDS 与预处理", "质控与输出"]
-        ).map((name, i) => {
-          const index = i + (kind === "raw-dicom" ? 0 : 1);
-          return (
-            <span key={name} className={stage === index ? "active" : ""}>
-              {index + 1}. {name}
-            </span>
-          );
-        })}
-      </div>
-      {stage === 0 && (
-        <fieldset disabled={disabled}>
-          <p>
-            先转换为 NIfTI + JSON，再核对序列身份并整理成
-            BIDS；转换本身不会生成合规 BIDS。
-          </p>
-          <label>
-            DICOM 文件夹
-            <input
-              value={source}
-              onChange={(e) => {
-                setSource(e.target.value);
-                setCommand(null);
-                setDone(false);
-              }}
-            />
-          </label>
-          <details>
-            <summary>转换输出位置（已自动设置）</summary>
-            <label>
-              转换输出（新文件夹）
-              <input
-                value={output}
-                onChange={(e) => {
-                  setOutput(e.target.value);
-                  setCommand(null);
-                  setDone(false);
-                }}
-              />
-            </label>
-          </details>
-          <button
-            disabled={!source || !output}
-            onClick={() =>
-              action(async () =>
-                setCommand(
-                  await request("/api/dicom/plan", { source, output }),
-                ),
-              )
-            }
-          >
-            检查转换设置
-          </button>
-          {command && (
-            <>
-              <details>
-                <summary>转换命令</summary>
-                <pre>{command.powershell}</pre>
-              </details>
-              <button disabled={done} onClick={() => action(run)}>
-                运行 DICOM 转换
-              </button>
-            </>
-          )}
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={external}
-              onChange={(e) => setExternal(e.target.checked)}
-            />
-            已在外部完成转换，使用现有 NIfTI + JSON
-          </label>
-          <button
-            className="primary"
-            disabled={!done && !external}
-            onClick={() => {
-              setStage(1);
-              setCommand(null);
-              setDone(false);
-              setExternal(false);
-            }}
-          >
-            转换已完成，进入 BIDS 与预处理 →
-          </button>
-        </fieldset>
-      )}
-      {stage === 1 && (
-        <fieldset disabled={disabled}>
-          <p>
-            准备 BIDS
-            文件夹：dataset_description.json、sub-*/anat/*_T1w.nii.gz、func/*_bold.nii.gz
-            及采集 JSON。场图 / 反向相位编码如有应按 BIDS 正确关联。fMRIPrep
-            会进行正式 BIDS 校验。
-          </p>
-          {Object.entries({
-            bids_dir: "原始 BIDS 文件夹",
-            license_file: "FreeSurfer license.txt",
-          }).map(([key, label]) => (
-            <label key={key}>
-              {label}
-              <input
-                value={(raw as any)[key]}
-                onChange={(e) => {
-                  setRaw({ ...raw, [key]: e.target.value });
-                  setCommand(null);
-                  setDone(false);
-                }}
-              />
-            </label>
-          ))}
-          <details>
-            <summary>输出位置、受试者与空间（已设默认值）</summary>
-            {Object.entries({
-              output_dir: "预处理输出文件夹",
-              participant: "受试者编号（可选）",
-              space: "目标模板空间",
-            }).map(([key, label]) => (
-              <label key={key}>
-                {label}
-                <input
-                  value={(raw as any)[key]}
-                  onChange={(e) => {
-                    setRaw({ ...raw, [key]: e.target.value });
-                    setCommand(null);
-                    setDone(false);
-                  }}
-                />
-              </label>
-            ))}
-          </details>
-          <button
-            onClick={() =>
-              action(async () =>
-                setCommand(await request("/api/preprocess/plan", raw)),
-              )
-            }
-          >
-            检查并生成预处理方案
-          </button>
-          {command && (
-            <>
-              <details>
-                <summary>预处理命令</summary>
-                <pre>{command.powershell}</pre>
-              </details>
-              <p className="muted">
-                需要 Docker Linux 容器、模板与 FreeSurfer
-                许可，完整运行可能需要数小时。
-              </p>
-              <button disabled={done} onClick={() => action(run)}>
-                运行 fMRIPrep
-              </button>
-            </>
-          )}
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={external}
-              onChange={(e) => setExternal(e.target.checked)}
-            />
-            已经完成 fMRIPrep，直接检查现有输出
-          </label>
-          <button
-            className="primary"
-            disabled={!done && !external}
-            onClick={() => setStage(2)}
-          >
-            预处理已完成，进入质控 →
-          </button>
-        </fieldset>
-      )}
-      {stage === 2 && (
-        <fieldset disabled={disabled}>
-          <p>
-            打开输出中的 sub-*.html，检查脑提取、BOLD–T1
-            配准、模板配准和头动。确认后才能进入连接提取；程序运行结束不等于质控合格。
-          </p>
-          <label>
-            fMRIPrep derivatives 文件夹
-            <input
-              value={derivatives}
-              onChange={(e) => {
-                setDerivatives(e.target.value);
-                setRuns([]);
-                setQc(false);
-              }}
-            />
-          </label>
-          <button
-            onClick={() =>
-              action(async () =>
-                setRuns(await request("/api/discover", { path: derivatives })),
-              )
-            }
-          >
-            查找预处理后的扫描
-          </button>
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={qc}
-              onChange={(e) => setQc(e.target.checked)}
-            />
-            我已检查本次扫描的预处理报告，确认可继续
-          </label>
-          {runs.map((r) => (
-            <button
-              key={r.bold}
-              disabled={!qc}
-              className="run-item"
-              onClick={() => onReady(r)}
-            >
-              {r.subject} · {r.task} · {r.space} · {r.run || "run 1"}
-            </button>
-          ))}
-          {!runs.length && (
-            <p className="muted">
-              找到 *_desc-preproc_bold.nii[.gz] 后，选择其中一次扫描继续。
-            </p>
-          )}
-        </fieldset>
-      )}
-    </div>
-  );
-}
 
 export default function Workflow({ job, busy, onJob, onError }: Props) {
   const [catalog, setCatalog] = useState<any>(null),
@@ -500,6 +202,10 @@ export default function Workflow({ job, busy, onJob, onError }: Props) {
       setConfig((c) => ({
         ...c,
         ...suggestion.config,
+        confound_columns: Array.isArray(suggestion.config.confound_columns)
+          ? suggestion.config.confound_columns.join(",")
+          : suggestion.config.confound_columns ?? c.confound_columns,
+        discard: String(suggestion.config.discard ?? c.discard),
         data_space: d.space || suggestion.config.data_space || c.data_space,
         atlas_space: suggestion.config.atlas_space || c.atlas_space,
       }));
@@ -838,9 +544,9 @@ export default function Workflow({ job, busy, onJob, onError }: Props) {
             </label>
             {isRaw && <p className="workflow-route">
               {kind === "raw-dicom"
-                ? "转换 → BIDS → 预处理 → 质控 → ROI 提取"
+                ? "Python 转换 → 预处理 → 质控 → ROI 提取"
                 : kind === "raw-bids"
-                  ? "BIDS → 预处理 → 质控 → ROI 提取"
+                  ? "BOLD + T1 → Python 预处理 → 质控 → ROI 提取"
                   : isTable
                     ? "核对时序方向与列顺序 → 去噪复核 → 连接矩阵"
                     : effectiveKind === "cifti"
@@ -873,9 +579,12 @@ export default function Workflow({ job, busy, onJob, onError }: Props) {
                     data_space: r.space || "",
                     t_r: String(r.t_r || c.t_r),
                     preprocessed: true,
+                    confound_columns: r.confound_columns?.join(",") || "",
+                    discard: String(r.discard || 0),
                   }));
                   setRawReady(true);
                   setRawQc(true);
+                  setSourceConfirmed(true);
                   setDenoiseDecision(r.confounds ? "regress" : "");
                 }}
               />

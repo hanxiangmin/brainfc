@@ -3,7 +3,7 @@
 <p align="center">
   <a href="https://pypi.org/project/brainfc/"><img src="https://img.shields.io/pypi/v/brainfc?color=168c91" alt="PyPI version"></a>
   <a href="https://github.com/hanxiangmin/brainfc/actions/workflows/ci.yml"><img src="https://github.com/hanxiangmin/brainfc/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <img src="https://img.shields.io/badge/Python-3.11%2B-3979a5" alt="Python 3.11 or newer">
+  <img src="https://img.shields.io/badge/Python-3.11%E2%80%933.13-3979a5" alt="Python 3.11–3.13">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-c18a49" alt="Apache-2.0"></a>
 </p>
 
@@ -13,7 +13,7 @@
 
 ## 安装
 
-需要 **Python 3.11+**。
+需要 **Python 3.11–3.13**。
 
 ```bash
 pip install -U brainfc
@@ -29,6 +29,19 @@ brainfc serve
 **选择数据 → 确认方案 → 开始处理。**
 
 上传自己的数据，界面会自动读取文件信息，提示需要确认的参数。
+
+### 原始 fMRI：从 BOLD + T1 开始
+
+```python
+from brainfc import preprocess_fmri
+
+run = preprocess_fmri("bold.nii.gz", "t1w.nii.gz", "results/preprocessed")
+# 查看 results/preprocessed/qc.html，确认配准和头动后继续。
+result = run.extract(qc_reviewed=True)
+result.save("results/connectome")
+```
+
+[参数与 DICOM 用法](docs/python-preprocessing.md) · 支持已有 conda 环境，无需 MATLAB 或 Docker。
 
 ### 1. 已有脑区时间序列
 
@@ -114,6 +127,7 @@ export_result(network, "network-result.zip")
 
 | 功能 | 可以做什么 |
 | :--- | :--- |
+| **Python 原始预处理** | DICOM 转换、层间时间、头动、N4、组织分割、SyN 配准、混杂与质控。 |
 | **多格式输入** | 体积影像、CIFTI、配对 GIFTI、ROI 表格与数组；发现 fMRIPrep 单次扫描及配套文件。 |
 | **统一计算** | 脑区均值提取；Nilearn 联合处理混杂、去趋势、滤波和删帧；Pearson、Spearman、Ledoit–Wolf 偏相关。 |
 | **引导操作** | 按数据类别选择处理路径，自动读取可确认的元数据；数据集预设附官方来源。 |
@@ -140,7 +154,7 @@ export_result(network, "network-result.zip")
 
 [查看清晰矢量图](docs/assets/processing.svg) · [下载交互流程图 HTML](docs/assets/processing.html) · [可编辑流程定义](docs/assets/processing.dataflow.json) · [逐步方法说明](docs/processing.md)
 
-ROI 时序可直接导入。原始影像需先用外部 **dcm2niix / fMRIPrep** 完成空间预处理，再交由 BrainFC 提取功能连接。
+原始 BOLD + T1、DICOM、已处理影像或 ROI 时序均可进入对应流程。[Python 原始 fMRI 全流程](docs/python-preprocessing.md)包含预处理、质控和功能连接提取。
 
 | 想进一步了解 | 文档入口 |
 | :--- | :--- |

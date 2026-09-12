@@ -64,6 +64,20 @@ def _parser():
     preproc.add_argument("--participant")
     preproc.add_argument("--space", default="MNI152NLin6Asym")
     preproc.add_argument("--run", action="store_true")
+    raw = sub.add_parser("process", help="Preprocess raw BOLD/T1 in Python; inspect QC before extracting FC")
+    raw.add_argument("bold", help="Raw 4D BOLD NIfTI")
+    raw.add_argument("--t1w", required=True, help="Matching 3D T1 NIfTI")
+    raw.add_argument("--sidecar", help="Acquisition JSON; defaults to same-stem sidecar")
+    raw.add_argument("--t1-mask", help="Optional independent mask on the exact T1 grid")
+    raw.add_argument("--config", type=Path, help="PreprocessConfig JSON")
+    raw.add_argument("--output", type=Path, required=True, help="New preprocessing output directory")
+    raw.add_argument("--inspect", action="store_true", help="Only inspect geometry and acquisition readiness")
+    dc = sub.add_parser("convert", help="Convert one selected MR DICOM series entirely in Python")
+    dc.add_argument("source")
+    dc.add_argument("--output", type=Path)
+    dc.add_argument("--series-id", help="Opaque series ID from --scan")
+    dc.add_argument("--kind", choices=["bold", "t1w"], default="bold")
+    dc.add_argument("--scan", action="store_true", help="Only list available MR series")
     return parser
 
 
@@ -196,6 +210,23 @@ def main(argv=None):
                 )
             if any(r["status"] == "failed" for r in records):
                 raise InputError("Some runs failed. Inspect batch.json; successful results are preserved.")
+        elif args.command == "process":
+            from .raw import PreprocessConfig, inspect_raw, preprocess_fmri
+            settings = PreprocessConfig(**json.loads(args.config.read_text(encoding="utf-8-sig"))) if args.config else PreprocessConfig()
+            if args.inspect:
+                print(json.dumps(inspect_raw(args.bold, args.t1w, sidecar=args.sidecar, config=settings), ensure_ascii=False, indent=2))
+            else:
+                result = preprocess_fmri(args.bold, args.t1w, args.output, sidecar=args.sidecar,
+                                         t1_mask=args.t1_mask, config=settings, progress=print)
+                print(result.directory / "qc.html")
+        elif args.command == "convert":
+            from .raw import scan_dicom, convert_dicom_python
+            if args.scan:
+                print(json.dumps(scan_dicom(args.source), ensure_ascii=False, indent=2))
+            elif not args.output:
+                raise InputError("--output is required unless --scan is used.")
+            else:
+                print(json.dumps(convert_dicom_python(args.source, args.output, series_id=args.series_id, kind=args.kind), indent=2))
         elif args.command == "dicom":
             from .preprocessing import dicom_plan, convert_dicom
 

@@ -7,7 +7,7 @@ name = "brainfc"
 dynamic = ["version"]
 description = "Resting-state fMRI functional connectivity, connectome and brain network / hypergraph analysis with Python and a local GUI"
 readme = "PYPI.md"
-requires-python = ">=3.11"
+requires-python = ">=3.11,<3.14"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "src/brainfc/web/static/THIRD_PARTY_NOTICES.txt", "src/brainfc/network/web/static/THIRD_PARTY_NOTICES.txt"]
 authors = [{name = "BrainFC contributors"}]
@@ -29,7 +29,7 @@ classifiers = [
   "Topic :: Scientific/Engineering :: Information Analysis",
   "Topic :: Scientific/Engineering :: Visualization",
 ]
-dependencies = ["numpy>=1.26", "scipy>=1.12", "pandas>=2.1", "nibabel>=5.2", "nilearn>=0.14,<0.15", "scikit-learn>=1.4", "matplotlib>=3.8", "scikit-image>=0.23", "fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.20", "networkx>=3.2", "xgi>=0.9", "statsmodels>=0.14", "h5py>=3.10", "platformdirs>=4"]
+dependencies = ["numpy>=1.26,<2.4", "scipy>=1.12,<1.16", "pandas>=2.1", "nibabel>=5.2", "nilearn>=0.14,<0.15", "scikit-learn>=1.4", "matplotlib>=3.8", "scikit-image>=0.23", "fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.20", "networkx>=3.2", "xgi>=0.9", "statsmodels>=0.14", "h5py>=3.10", "platformdirs>=4", "antspyx==0.6.3", "dicom2nifti==2.6.2", "pydicom>=3", "requests>=2.31"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "httpx>=0.27", "build>=1.2", "twine>=6", "ruff>=0.9", "hatchling>=1.27", "PyYAML>=6", "Markdown>=3.6", "pydicom>=3"]

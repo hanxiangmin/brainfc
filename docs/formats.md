@@ -12,7 +12,7 @@
 | CSV/TSV/TXT/1D | 默认 T×R | 只包含 ROI 信号，不含时间/索引/受试者列 |
 | NPY | 2D 实数数组 | 不允许 pickle |
 | NPZ/MAT | 指定的 2D 数值变量 | 无歧义时可推断；MAT v7.3/HDF5 不支持 |
-| DICOM、原始 BIDS | 多文件序列/目录 | 先外部预处理，再传入已处理 run |
+| DICOM、原始 BIDS | 多文件序列/目录 | Python 转换 / BOLD + T1 预处理，质控后提取 |
 
 体积与表面影像均要求 `preprocessed=True` 和可确认的 `data_space`。表格时序不强制该声明。概率图谱、静态指标图、T1 单图、CIFTI dconn/pconn 不能作为 fMRI 时序。对称表格疑似 FC 时，GUI/preflight 拒绝；低层数值读取函数不会推断科学来源。
 
@@ -48,12 +48,12 @@ label_value  roi_id  name        x    y    z
 
 `t_r` 以秒计。NIfTI 已知秒/毫秒/微秒单位会换算；未知时间单位不能直接当作秒。CIFTI 主提取要求 SeriesAxis 单位 SECOND。JSON `RepetitionTime`、影像头与手动 TR 如有冲突，主处理拒绝。
 
-`sidecar_path` 对 `.nii[.gz]` / `.dtseries.nii` / `.ptseries.nii` 替换末尾为 `.json`，其他格式追加 `.json`，如 `signals.tsv.json`。本库只读取相邻 JSON，没有完整 BIDS 继承实现。原始 BIDS 的继承由上游 fMRIPrep 处理；单文件提取应带最终生效的 TR 或显式 `Config(t_r=...)`。
+`sidecar_path` 对 `.nii[.gz]` / `.dtseries.nii` / `.ptseries.nii` 替换末尾为 `.json`，其他格式追加 `.json`，如 `signals.tsv.json`。本库只读取相邻 JSON，没有完整 BIDS 继承实现。原始 BIDS 需将继承结果整理为该次扫描的 sidecar；单文件提取应带最终生效的 TR 或显式 `Config(t_r=...)`。
 
 ## 首次真实数据最小集合
 
 - 已预处理体积：一个 run 的 BOLD、实际空间、匹配标签图谱；推荐同 run 混杂和 mask/参考，TR 未知时补 JSON。
 - ROI 时序：信号文件、列含义/图谱顺序；3D 需要全部 ROI 坐标，滤波需要 TR。
-- 原始数据：一个受试者的完整 BOLD、T1、采集 JSON/序列信息，必要的场图/相位编码资料；先整理为 BIDS。
+- 原始数据：一个受试者的完整 BOLD、T1、采集 JSON/序列信息，必要的采集记录；Python 入口可直接接收 BOLD + T1，不强制组织 BIDS。场图畸变校正未实现。
 
 公开数据集的下载层级不同，见 [下载说明](datasets.md)；数据集名字不会自动证明某份文件已经完成去噪。

@@ -142,7 +142,7 @@ class JobState(BaseModel):
     id: str
     status: Literal["queued", "running", "complete", "failed", "interrupted"]
     message: str
-    kind: Literal["extract", "demo", "atlas", "dicom", "preprocess"]
+    kind: Literal["extract", "demo", "atlas", "dicom", "preprocess", "python-preprocess", "python-dicom"]
     example_kind: Literal["rest01", "synthetic"] | None = Field(
         default=None, description="Example identity for demo jobs; old jobs may omit this field."
     )
@@ -150,6 +150,42 @@ class JobState(BaseModel):
     result_dir: str | None = None
     qc: dict[str, Any] | None = None
     atlas: dict[str, Any] | None = None
+
+
+class PythonConfig(RequestModel):
+    """In-process single-echo preprocessing configuration; no external executables."""
+
+    t_r: float | None = Field(default=None, gt=0, description="TR seconds; infer when null, reject conflicts.")
+    slice_timing: Literal["auto", "require", "skip"] = "auto"
+    slice_axis: Literal[0, 1, 2] | None = None
+    reference: float = Field(default=.5, ge=0, lt=1, description="Slice reference as fraction of TR.")
+    discard: int = Field(default=0, ge=0, description="Leading frames excluded from reference and later extraction.")
+    smoothing_fwhm: float = Field(default=0, ge=0, description="Spatial Gaussian FWHM mm; 0 disables.")
+    seed: int = Field(default=42, ge=0)
+
+
+class PythonPreprocessRequest(RequestModel):
+    """Raw NIfTI BOLD plus matching T1. Outputs go into the job's private workspace."""
+
+    bold: str = Field(min_length=1)
+    t1w: str = Field(min_length=1)
+    sidecar: str | None = None
+    t1_mask: str | None = None
+    config: PythonConfig = Field(default_factory=PythonConfig)
+
+
+class PythonDicomRequest(RequestModel):
+    """Convert selected BOLD and T1 series, using opaque ids returned by scan."""
+
+    source: str = Field(min_length=1)
+    bold_series: str = Field(min_length=1)
+    t1_series: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def distinct_series(self):
+        if self.bold_series == self.t1_series:
+            raise ValueError("BOLD and T1 must be distinct DICOM series.")
+        return self
 
 
 class CommandResponse(BaseModel):

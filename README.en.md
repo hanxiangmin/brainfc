@@ -6,7 +6,7 @@
 
 ## Install
 
-Requires **Python 3.11+**.
+Requires **Python 3.11–3.13**.
 
 ```bash
 pip install -U brainfc
@@ -119,7 +119,7 @@ These results use the [de-identified rest01 example](docs/real-example.md): 100 
 
 [Vector SVG](docs/assets/processing.svg) · [Download interactive HTML](docs/assets/processing.html) · [Editable specification](docs/assets/processing.dataflow.json) · [Methods](docs/processing.md)
 
-ROI tables enter at the unified ROI time-series stage. Raw images need external **dcm2niix → BIDS → fMRIPrep**, followed by report inspection and re-import. These external tools are not included in the pip package; the complete external raw-data chain has not been validated in this release. BrainFC does not provide disease diagnosis, task GLM, or cohort-level inference. See [input contracts](docs/formats.md), [validation](docs/validation-v0.3.0.md), and [output schemas](docs/outputs.md).
+Raw BOLD + T1 and supported DICOM series can be processed through the Python pipeline, followed by visual QC and connectivity extraction. See the [raw fMRI guide](docs/python-preprocessing.md). No MATLAB or Docker is required. This pipeline does not perform susceptibility-distortion correction or claim SPM equivalence.
 
 ## License and credits
 

@@ -1,7 +1,43 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 使用指南 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="http-api">本地 HTTP API 使用指南</h1>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 使用指南 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="python-preprocessing.html">Python 原始 fMRI 全流程</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.5.0.html">本次验证范围</a></aside><main><h1 id="http-api">本地 HTTP API 使用指南</h1>
 <p>安装本库后运行 <code>brainfc serve</code>。基址默认 <code>http://127.0.0.1:8766</code>。浏览器访问 <code>/docs</code>（Swagger）、<code>/redoc</code> 或 <code>/reference/</code>；下载 <code>/openapi.json</code> 获取机器可读参数定义。</p>
 <p>路径始终是服务所在电脑的文件路径。POST JSON 使用 <code>Content-Type: application/json</code>；文件上传使用 multipart。无需先操作界面即可使用 API，不要求填写 <code>guidance</code>。</p>
 <p>Swagger/ReDoc 默认使用外部 CDN 资源；完全断网时使用随包的 <code>/reference/</code> 手册及 <code>/openapi.json</code>，它们不依赖外部页面资源。</p>
+<h2 id="python">Python 原始预处理</h2>
+<table>
+<thead>
+<tr>
+<th>方法与路径</th>
+<th>请求与结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>POST <code>/api/python/dicom/scan</code></td>
+<td><code>{"path": "DICOM目录"}</code> → 序列候选，不返回患者姓名或 UID</td>
+</tr>
+<tr>
+<td>POST <code>/api/python/dicom/run</code></td>
+<td><code>source</code>、<code>bold_series</code>、<code>t1_series</code> → 转换任务；完成后 <code>converted</code> 给出影像 / sidecar 路径</td>
+</tr>
+<tr>
+<td>POST <code>/api/python/discover</code></td>
+<td><code>{"path": "BIDS目录"}</code> → 同一 subject/session 的 BOLD/T1 候选对</td>
+</tr>
+<tr>
+<td>POST <code>/api/python/inspect</code></td>
+<td><code>bold</code>、<code>t1w</code>、可选 <code>sidecar</code> / <code>t1_mask</code> / <code>config</code> → <code>ready</code>、<code>missing</code> 与处理步骤</td>
+</tr>
+<tr>
+<td>POST <code>/api/python/preprocess</code></td>
+<td>同上 → <code>python-preprocess</code> 任务；完成后返回 <code>run</code> 和 <code>qc</code></td>
+</tr>
+<tr>
+<td>GET <code>/api/jobs/{id}/preprocessing/qc.html</code></td>
+<td>配准 / 组织叠加、FD / DVARS 和实际处理记录</td>
+</tr>
+</tbody>
+</table>
+<p>这些任务沿用 <code>/api/jobs/{id}</code> 轮询，不需要 MATLAB、Docker 或许可。检查 QC 后，将 <code>run.bold</code>、<code>confounds</code>、<code>mask</code> 和实际 <code>confound_columns</code> / <code>discard</code> 交给提取接口；完整 Python 用法见 <a href="python-preprocessing.html">原始 fMRI 全流程</a>。输出在各任务目录中，不能覆盖原文件。</p>
 <h2 id="_1">用标准库运行一个完整任务</h2>
 <pre><code class="language-python">import json
 import time

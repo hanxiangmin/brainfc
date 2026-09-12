@@ -1,4 +1,4 @@
-# 命令行完整参数 · 0.4.1
+# 命令行完整参数 · 0.5.0
 
 由 argparse 自动生成，与 `brainfc --help` 一致。`python -m brainfc` 与安装后的 `brainfc` 入口等价。
 
@@ -6,13 +6,13 @@
 
 ```text
 usage: brainfc [-h] [--version]
-               {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess}
+               {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess,process,convert}
                ...
 
 fMRI → ROI time series → functional connectivity
 
 positional arguments:
-  {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess}
+  {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess,process,convert}
     serve               Start the local graphical interface
     inspect             Inspect an image or discover BIDS derivatives
     atlas               Explicitly download a supported standard atlas
@@ -24,6 +24,10 @@ positional arguments:
                         recorded
     dicom               Plan or run dcm2niix conversion
     preprocess          Plan or run external fMRIPrep (requires Docker)
+    process             Preprocess raw BOLD/T1 in Python; inspect QC before
+                        extracting FC
+    convert             Convert one selected MR DICOM series entirely in
+                        Python
 
 options:
   -h, --help            show this help message and exit
@@ -183,6 +187,45 @@ options:
   --participant PARTICIPANT
   --space SPACE
   --run
+```
+
+## process
+
+```text
+usage: brainfc process [-h] --t1w T1W [--sidecar SIDECAR] [--t1-mask T1_MASK]
+                       [--config CONFIG] --output OUTPUT [--inspect]
+                       bold
+
+positional arguments:
+  bold               Raw 4D BOLD NIfTI
+
+options:
+  -h, --help         show this help message and exit
+  --t1w T1W          Matching 3D T1 NIfTI
+  --sidecar SIDECAR  Acquisition JSON; defaults to same-stem sidecar
+  --t1-mask T1_MASK  Optional independent mask on the exact T1 grid
+  --config CONFIG    PreprocessConfig JSON
+  --output OUTPUT    New preprocessing output directory
+  --inspect          Only inspect geometry and acquisition readiness
+```
+
+## convert
+
+```text
+usage: brainfc convert [-h] [--output OUTPUT] [--series-id SERIES_ID]
+                       [--kind {bold,t1w}] [--scan]
+                       source
+
+positional arguments:
+  source
+
+options:
+  -h, --help            show this help message and exit
+  --output OUTPUT
+  --series-id SERIES_ID
+                        Opaque series ID from --scan
+  --kind {bold,t1w}
+  --scan                Only list available MR series
 ```
 
 `extract` 中显式的 `--tr` / 空间 / `--preprocessed` 覆盖 JSON 的同名字段；其余处理选项通过 `--config` 提供。`dicom` 与 `preprocess` 默认只显示命令，`--run` 才执行。`batch` 每个 run 单独处理，失败保留在 `batch.json` 中；已有输出目录拒绝覆盖。

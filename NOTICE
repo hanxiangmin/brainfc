@@ -14,6 +14,12 @@ The hicbrain namespace is a compatibility alias to this single implementation.
 React and Three.js are distributed under their MIT licenses. Their complete
 license texts are included with the bundled frontend in THIRD_PARTY_NOTICES.txt.
 Atlas downloads retain their original providers' licenses and citations.
+Raw-image processing uses the separately installed ANTsPy, pydicom and
+dicom2nifti Python packages. TemplateFlow reference images are downloaded into
+the user's cache under their original providers' terms; they are not bundled
+in this distribution. The BrainFC UIH mosaic reader uses explicit DICOM
+per-slice positions and acquisition times; upstream dcm2niix is an independent
+conversion reference, not an invoked executable or copied implementation.
 The reviewed rest01 example includes ROI signals, confounds and a binary brain
 mask; its direct-identifier review and distribution scope are documented in
 docs/privacy-review.md. Raw DICOM and individual T1/BOLD intensity images are excluded.

@@ -6,6 +6,19 @@
 
 Swagger/ReDoc 默认使用外部 CDN 资源；完全断网时使用随包的 `/reference/` 手册及 `/openapi.json`，它们不依赖外部页面资源。
 
+## Python 原始预处理
+
+| 方法与路径 | 请求与结果 |
+|---|---|
+| POST `/api/python/dicom/scan` | `{"path": "DICOM目录"}` → 序列候选，不返回患者姓名或 UID |
+| POST `/api/python/dicom/run` | `source`、`bold_series`、`t1_series` → 转换任务；完成后 `converted` 给出影像 / sidecar 路径 |
+| POST `/api/python/discover` | `{"path": "BIDS目录"}` → 同一 subject/session 的 BOLD/T1 候选对 |
+| POST `/api/python/inspect` | `bold`、`t1w`、可选 `sidecar` / `t1_mask` / `config` → `ready`、`missing` 与处理步骤 |
+| POST `/api/python/preprocess` | 同上 → `python-preprocess` 任务；完成后返回 `run` 和 `qc` |
+| GET `/api/jobs/{id}/preprocessing/qc.html` | 配准 / 组织叠加、FD / DVARS 和实际处理记录 |
+
+这些任务沿用 `/api/jobs/{id}` 轮询，不需要 MATLAB、Docker 或许可。检查 QC 后，将 `run.bold`、`confounds`、`mask` 和实际 `confound_columns` / `discard` 交给提取接口；完整 Python 用法见 [原始 fMRI 全流程](python-preprocessing.md)。输出在各任务目录中，不能覆盖原文件。
+
 ## 用标准库运行一个完整任务
 
 ```python

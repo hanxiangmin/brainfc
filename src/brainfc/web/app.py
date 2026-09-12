@@ -32,6 +32,8 @@ from .schemas import (
     RunRecord,
     SuggestionsResponse,
     PresetsResponse,
+    PythonPreprocessRequest,
+    PythonDicomRequest,
 )
 
 
@@ -134,7 +136,25 @@ def create_app(workspace=None):
                     from ..demo import create_demo
 
                     payload.update(create_demo(dest / "demo-input", kind=state["example_kind"]))
-                if kind == "dicom":
+                if kind == "python-dicom":
+                    from ..raw import convert_dicom_python
+
+                    converted = {}
+                    for key, identity in (("bold", payload["bold_series"]), ("t1w", payload["t1_series"])):
+                        progress(f"Python DICOM 转换：{key}")
+                        converted[key] = convert_dicom_python(payload["source"], dest / "converted" / key,
+                                                               series_id=identity, kind=key)
+                    state.update(status="complete", message="转换完成，继续核对采集参数。", converted=converted)
+                elif kind == "python-preprocess":
+                    from ..raw import PreprocessConfig, preprocess_fmri
+
+                    result = preprocess_fmri(payload["bold"], payload["t1w"], dest / "preprocessed",
+                                             sidecar=payload.get("sidecar"), t1_mask=payload.get("t1_mask"),
+                                             config=PreprocessConfig(**payload.get("config", {})),
+                                             template_dir=root / "templates", progress=progress)
+                    state.update(status="complete", message="预处理完成，请检查配准和头动报告。",
+                                 run=result.run, qc=result.qc)
+                elif kind == "dicom":
                     from ..preprocessing import convert_dicom
 
                     progress("Converting DICOM to NIfTI + JSON")
@@ -171,6 +191,15 @@ def create_app(workspace=None):
                             for k in ("atlas", "rois", "confounds", "mask", "reference")
                         },
                     )
+                    if kind == "extract":
+                        parent = Path(payload["source"]).resolve().parent
+                        if (parent / "output_hashes.json").is_file() and (parent / "preprocessing.json").is_file():
+                            from ..raw import load_preprocessed
+                            native = load_preprocessed(parent)
+                            if Path(native.run["bold"]) == Path(payload["source"]).resolve():
+                                result.provenance["raw_preprocessing"] = native.provenance
+                                result.qc["raw_preprocessing"] = native.qc
+                                result.qc["warnings"].extend(native.qc["limitations"])
                     if kind == "demo":
                         result.provenance["synthetic"] = state["example_kind"] == "synthetic"
                         if state["example_kind"] == "rest01":
@@ -212,6 +241,48 @@ def create_app(workspace=None):
     )
     def health():
         return {"status": "ok", "version": __version__, "workspace": str(root)}
+
+    @app.post("/api/python/dicom/scan", tags=["Python preprocessing"],
+              summary="Inventory local MR DICOM series without returning patient identifiers")
+    def python_dicom_scan(payload: PathRequest):
+        from ..raw import scan_dicom
+        return scan_dicom(payload.path)
+
+    @app.post("/api/python/discover", tags=["Python preprocessing"],
+              summary="List raw BIDS BOLD/T1 candidates within subject/session")
+    def python_discover(payload: PathRequest):
+        from ..raw import discover_raw
+        return discover_raw(payload.path)
+
+    @app.post("/api/python/dicom/run", tags=["Python preprocessing"], response_model=JobState,
+              response_model_exclude_unset=True, summary="Queue Python conversion of selected BOLD and T1 series")
+    def python_dicom_run(payload: PythonDicomRequest):
+        return submit(payload.model_dump(mode="json"), "python-dicom")
+
+    @app.post("/api/python/inspect", tags=["Python preprocessing"],
+              summary="Validate raw BOLD/T1 geometry, TR and slice-timing readiness")
+    def python_inspect(payload: PythonPreprocessRequest):
+        from ..raw import PreprocessConfig, inspect_raw
+        return inspect_raw(payload.bold, payload.t1w, sidecar=payload.sidecar,
+                           config=PreprocessConfig(**payload.config.model_dump()))
+
+    @app.post("/api/python/preprocess", tags=["Python preprocessing"], response_model=JobState,
+              response_model_exclude_unset=True, summary="Queue in-process Python BOLD/T1 preprocessing")
+    def python_preprocess(payload: PythonPreprocessRequest):
+        info = python_inspect(payload)
+        if not info["ready"]:
+            raise InputError(" ".join(info["missing"]))
+        return submit(payload.model_dump(mode="json"), "python-preprocess")
+
+    @app.get("/api/jobs/{job_id}/preprocessing/{name}", tags=["Python preprocessing"],
+             response_class=FileResponse, summary="View a completed Python preprocessing QC artifact")
+    def python_qc(job_id: str, name: str):
+        if name not in {"qc.html", "alignment.png", "motion.png", "qc.json", "preprocessing.json", "stages.json"}:
+            raise HTTPException(404, "Unknown QC artifact")
+        path = folder(job_id) / "preprocessed" / name
+        if not path.is_file():
+            raise HTTPException(404, "QC artifact is not ready")
+        return FileResponse(path)
 
     @app.get(
         "/api/presets",

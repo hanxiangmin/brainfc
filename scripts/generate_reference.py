@@ -29,6 +29,7 @@ MODULES = [
     "export",
     "demo",
     "preprocessing",
+    "raw.pipeline", "raw.temporal", "raw.templates", "raw.dicom", "raw.quality",
     "presets",
     "workflow",
     "cli",
@@ -50,6 +51,7 @@ PAGES = [
     ("network-http-reference", "网络分析 HTTP 接口"),
     ("api-reference", "全部函数与参数"),
     ("processing", "处理顺序与方法"),
+    ("python-preprocessing", "Python 原始 fMRI 全流程"),
     ("formats", "输入格式与空间"),
     ("outputs", "结果文件与质控"),
     ("http-api", "HTTP 使用指南"),
@@ -57,7 +59,7 @@ PAGES = [
     ("cli-reference", "命令行完整参数"),
     ("presets-and-workflow", "数据集预设"),
     ("release", "开源与发布"),
-    ("validation-v0.4.0", "本次验证范围"),
+    ("validation-v0.5.0", "本次验证范围"),
 ]
 
 

@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>本次验证范围 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="python-preprocessing.html">Python 原始 fMRI 全流程</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.5.0.html">本次验证范围</a></aside><main><h1 id="050-python-fmri">0.5.0 Python fMRI 验证</h1>
+<p>2026-09-12。在已有 Windows / Python 3.12 环境验证；跨系统结果以对应提交的 <a href="https://github.com/hanxiangmin/brainfc/actions/workflows/ci.yml">GitHub CI</a> 为准。</p>
+<h2 id="_1">数值与数据入口</h2>
+<ul>
+<li>231 项 Python 测试通过，包含既有连接、网络和超图测试，以及新增原始影像入口测试。</li>
+<li>层间时间校正使用已知连续信号，检查相移方向、三种切片轴、多带重复时间和零位移；相对未校正信号，内部时间点误差降低超过 500 倍。</li>
+<li>ANTs 实际运行旋转 RAS/LPS 几何往返和已知平移的刚体配准；配准后相关性 &gt;0.995。截获实际 ANTs 调用参数，确认种子进入 <code>--random-seed</code>，并验证函数退出或异常后恢复调用者配置。</li>
+<li>拒绝 TR 冲突、qform/sform 冲突、剪切网格、无效切片时间、重复 DICOM 实例、缺失时间点及不一致几何；缺少切片信息须补充或明确跳过。</li>
+<li>联影 UIH 实际 BOLD 和 T1 序列分别由 Python 转换，与先前独立转换结果在统一体素方向后比较：两者最大像素差均为 <strong>0</strong>。BOLD 仿射元素最大差约 <code>4.5e-6 mm</code>；T1 八个图像角点的最大世界坐标差约 <strong>0.0026 mm</strong>。这验证该例转换结果，不代表所有 DICOM 布局。</li>
+</ul>
+<h2 id="_2">一例真实数据的完整运行</h2>
+<p>输入为匹配的 UIH 静息态 BOLD 与 T1，从原始 DICOM 经 Python 转换后处理。BOLD 为 150 帧、TR 2 秒、81 层。参数为种子 42、开头 5 帧不进入连接估计、不做空间平滑、0.01–0.1 Hz 联合滤波与 motion-matrix / WM / CSF 回归；全流程没有启动外部转换或预处理程序。</p>
+<table>
+<thead>
+<tr>
+<th>检查</th>
+<th>实际结果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>空间处理</td>
+<td>8 阶段完成；标准化 BOLD 为 MNI152NLin6Asym 2 mm</td>
+</tr>
+<tr>
+<td>模板脑覆盖</td>
+<td>94.51%；配准叠加、组织与头动图已目视检查</td>
+</tr>
+<tr>
+<td>ANTs generalized FD</td>
+<td>全部帧均值 0.0826 mm，最大 0.4749 mm；首帧不参与统计</td>
+</tr>
+<tr>
+<td>混杂组织</td>
+<td>CSF 1,573 体素；WM 53,814 体素</td>
+</tr>
+<tr>
+<td>ROI / 时间点</td>
+<td>Schaefer 100；保留 145 帧，原始索引 5–149</td>
+</tr>
+<tr>
+<td>连接矩阵</td>
+<td>100 × 100；全部有限、对称，保留正负号</td>
+</tr>
+<tr>
+<td>矩阵范围</td>
+<td>最小 −0.5496，最大 1；上三角 971 条负连接；Fisher-z 对角线为 0</td>
+</tr>
+<tr>
+<td>输出</td>
+<td>完整矩阵、时序、帧号、来源与 QC、三维报告、八视图均成功保存</td>
+</tr>
+</tbody>
+</table>
+<p>这些数值用于记录本次运行，不是应当追求的质量阈值或疾病特征。多线程注册结果可以有浮点差异。</p>
+<h2 id="_3">界面、接口与安装</h2>
+<ul>
+<li>浏览器完整流程通过：原始文件检查、缺少切片时间阻止处理、明确跳过、预处理完成后的质控确认、连接提取、三维与八视图同步、网络分析及离线手册。</li>
+<li>浏览器测试仅模拟耗时预处理任务的完成回执来验证操作限制；真实空间算法另由本地完整扫描运行验证。</li>
+<li>两套前端类型检查与生产构建通过；Ruff、自动生成的 105 项 Python API / 42 条 HTTP 路径检查通过。</li>
+<li>wheel / sdist 构建、Twine 元数据和发行物范围检查通过；在独立环境从 wheel 安装依赖，验证 ANTs、DICOM 接口、连接与网络分析、命令行和本地界面启动。</li>
+<li>archify 流程图 <strong>9/9 检查通过</strong>，四种窗口尺寸、深浅主题检查通过；PNG / SVG 只保留流程本体，图内标注使用的 skill。实际文件 SHA-256 与导出记录见 <a href="assets/processing.receipt.json">流程图回执</a>。</li>
+</ul>
+<h2 id="_4">验证边界</h2>
+<p>这是一例成人静息态扫描和可控数值测试，不是多中心、全厂商或临床有效性验证。没有进行 MATLAB / SPM / DPABI 逐值等价对照；未实现场图 / 反向相位编码畸变校正。组织分割、配准和成人模板适用性仍需目视检查。模板传播脑掩膜的重叠率不是独立分割精度。</p>
+<p>原始 DICOM、个体 T1 / BOLD、配准叠加图、包含输入路径的日志全部留在本地。本次不扩大既有 <code>rest01</code> 样例的公开数据范围。</p></main></html>

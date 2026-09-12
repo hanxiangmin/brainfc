@@ -43,10 +43,10 @@
 - ROI 时序：自动识别与表头解析 → 选择是否提供坐标 → 确认上游去噪 → 最终复核。没有坐标可生成矩阵，不猜测图谱。
 - CIFTI：识别 SeriesAxis；dtseries 必须有匹配 BrainModelAxis 的 dlabel，ptseries 已有 ParcelsAxis，直接使用时序。
 - GIFTI：单半球 func.gii 与 label.gii；必须确认表面、半球和顶点顺序一致。
-- 原始 NIfTI / BIDS：整理 BIDS → BOLD/T1 基础检查 → fMRIPrep 正式校验及预处理 → 用户检查 HTML 报告 → 选择 derivatives 主扫描。
-- DICOM：dcm2niix 转换 → 人工核对序列并整理 BIDS → 上述原始数据流程。允许明确选择已经在外部完成的步骤，但预处理输出和质控确认仍需检查。
+- 原始 NIfTI / BIDS：选择 BOLD/T1 → 核对实际 TR / 切片时间 → Python 预处理 → 检查配准与头动 → 功能连接提取。
+- DICOM：识别序列 → 确认 BOLD / T1 → Python 转换 → 上述预处理流程。
 
-必要的工具仍为外部 dcm2niix / Docker Linux / FreeSurfer 许可。本机没有完成真实 DICOM→fMRIPrep 全链路运行，自动引导不会把“命令生成”标作“预处理完成”。
+Python 路线无需 MATLAB、Docker 或许可证。参数缺失时允许明确跳过可选步骤，完成质控确认后才开放提取；详见 [Python 原始流程](python-preprocessing.md)。
 
 ## Python 接口
 

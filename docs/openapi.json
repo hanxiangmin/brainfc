@@ -846,7 +846,9 @@
               "demo",
               "atlas",
               "dicom",
-              "preprocess"
+              "preprocess",
+              "python-preprocess",
+              "python-dicom"
             ],
             "title": "Kind",
             "type": "string"
@@ -1146,6 +1148,156 @@
         "title": "PresetsResponse",
         "type": "object"
       },
+      "PythonConfig": {
+        "additionalProperties": false,
+        "description": "In-process single-echo preprocessing configuration; no external executables.",
+        "properties": {
+          "discard": {
+            "default": 0,
+            "description": "Leading frames excluded from reference and later extraction.",
+            "minimum": 0.0,
+            "title": "Discard",
+            "type": "integer"
+          },
+          "reference": {
+            "default": 0.5,
+            "description": "Slice reference as fraction of TR.",
+            "exclusiveMaximum": 1.0,
+            "minimum": 0.0,
+            "title": "Reference",
+            "type": "number"
+          },
+          "seed": {
+            "default": 42,
+            "minimum": 0.0,
+            "title": "Seed",
+            "type": "integer"
+          },
+          "slice_axis": {
+            "anyOf": [
+              {
+                "enum": [
+                  0,
+                  1,
+                  2
+                ],
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slice Axis"
+          },
+          "slice_timing": {
+            "default": "auto",
+            "enum": [
+              "auto",
+              "require",
+              "skip"
+            ],
+            "title": "Slice Timing",
+            "type": "string"
+          },
+          "smoothing_fwhm": {
+            "default": 0,
+            "description": "Spatial Gaussian FWHM mm; 0 disables.",
+            "minimum": 0.0,
+            "title": "Smoothing Fwhm",
+            "type": "number"
+          },
+          "t_r": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "TR seconds; infer when null, reject conflicts.",
+            "title": "T R"
+          }
+        },
+        "title": "PythonConfig",
+        "type": "object"
+      },
+      "PythonDicomRequest": {
+        "additionalProperties": false,
+        "description": "Convert selected BOLD and T1 series, using opaque ids returned by scan.",
+        "properties": {
+          "bold_series": {
+            "minLength": 1,
+            "title": "Bold Series",
+            "type": "string"
+          },
+          "source": {
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "t1_series": {
+            "minLength": 1,
+            "title": "T1 Series",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "bold_series",
+          "t1_series"
+        ],
+        "title": "PythonDicomRequest",
+        "type": "object"
+      },
+      "PythonPreprocessRequest": {
+        "additionalProperties": false,
+        "description": "Raw NIfTI BOLD plus matching T1. Outputs go into the job's private workspace.",
+        "properties": {
+          "bold": {
+            "minLength": 1,
+            "title": "Bold",
+            "type": "string"
+          },
+          "config": {
+            "$ref": "#/components/schemas/PythonConfig"
+          },
+          "sidecar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sidecar"
+          },
+          "t1_mask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T1 Mask"
+          },
+          "t1w": {
+            "minLength": 1,
+            "title": "T1W",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bold",
+          "t1w"
+        ],
+        "title": "PythonPreprocessRequest",
+        "type": "object"
+      },
       "RunRecord": {
         "properties": {
           "bold": {
@@ -1418,7 +1570,7 @@
   "info": {
     "description": "Local single-run fMRI connectivity API. Paths refer to this server's filesystem. Use /api/preflight before /api/jobs, then poll the returned id. Extraction shares the Python core. Bind to loopback and use one server per workspace. Responses and exports include local paths.",
     "title": "BrainFC",
-    "version": "0.4.1"
+    "version": "0.5.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -1932,6 +2084,50 @@
         ]
       }
     },
+    "/api/jobs/{job_id}/preprocessing/{name}": {
+      "get": {
+        "operationId": "python_qc_api_jobs__job_id__preprocessing__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "View a completed Python preprocessing QC artifact",
+        "tags": [
+          "Python preprocessing"
+        ]
+      }
+    },
     "/api/jobs/{job_id}/views": {
       "get": {
         "operationId": "view_export_api_jobs__job_id__views_get",
@@ -2200,6 +2396,205 @@
         "summary": "Read source-attributed dataset/protocol hints",
         "tags": [
           "Inputs"
+        ]
+      }
+    },
+    "/api/python/dicom/run": {
+      "post": {
+        "operationId": "python_dicom_run_api_python_dicom_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PythonDicomRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue Python conversion of selected BOLD and T1 series",
+        "tags": [
+          "Python preprocessing"
+        ]
+      }
+    },
+    "/api/python/dicom/scan": {
+      "post": {
+        "operationId": "python_dicom_scan_api_python_dicom_scan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inventory local MR DICOM series without returning patient identifiers",
+        "tags": [
+          "Python preprocessing"
+        ]
+      }
+    },
+    "/api/python/discover": {
+      "post": {
+        "operationId": "python_discover_api_python_discover_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "List raw BIDS BOLD/T1 candidates within subject/session",
+        "tags": [
+          "Python preprocessing"
+        ]
+      }
+    },
+    "/api/python/inspect": {
+      "post": {
+        "operationId": "python_inspect_api_python_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PythonPreprocessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate raw BOLD/T1 geometry, TR and slice-timing readiness",
+        "tags": [
+          "Python preprocessing"
+        ]
+      }
+    },
+    "/api/python/preprocess": {
+      "post": {
+        "operationId": "python_preprocess_api_python_preprocess_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PythonPreprocessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue in-process Python BOLD/T1 preprocessing",
+        "tags": [
+          "Python preprocessing"
         ]
       }
     },

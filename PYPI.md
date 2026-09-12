@@ -4,7 +4,7 @@
 
 **Resting-state fMRI (rs-fMRI) → functional connectivity → brain networks and hypergraphs.**
 
-Neuroimaging, connectome visualization and network analysis in one Python package, with a local GUI and complete API. Requires Python 3.11+.
+Neuroimaging, connectome visualization and network analysis in one Python package, with a local GUI and complete API. Requires Python 3.11–3.13.
 
 ## Install and launch
 
@@ -39,7 +39,7 @@ The destination must be new. For volume images, supply an integer-label atlas in
 - Export arrays, tables, quality records, input fingerprints, figures and an offline interactive report.
 - Synchronize selected connections and display thresholds between the 3D viewer and eight anatomical views. Display filtering does not modify the complete signed matrix.
 
-Raw DICOM/BIDS spatial preprocessing requires external dcm2niix/fMRIPrep. BrainFC provides command adapters; it does not implement that preprocessing itself. The complete external raw-data chain has not been validated in this release. This package does not provide disease diagnosis or cohort-level inference.
+Raw BOLD + T1 and supported DICOM series have an in-process Python preprocessing route with ANTsPy, followed by visual QC and connectivity extraction. No MATLAB or Docker is required. Susceptibility-distortion correction is not implemented. This package does not provide disease diagnosis or cohort-level inference.
 
 ## Documentation and source
 

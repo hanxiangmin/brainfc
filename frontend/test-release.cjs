@@ -42,6 +42,36 @@ async function main() {
   assert.equal(await page.locator(".primary").first().evaluate(el => getComputedStyle(el).backgroundColor), "rgb(0, 125, 163)");
   await page.screenshot({ path: path.join(output, "extraction-home.png"), fullPage: true });
   assert.ok(await page.getByRole("navigation", { name: "处理步骤" }).getByRole("button").nth(1).isDisabled());
+  // UI-only native workflow fixture: numerical algorithms are tested separately.
+  const rawDir = path.join(output, "raw-fixture");
+  const prepared = spawnSync(python, ["-c", `from pathlib import Path; import nibabel as n, numpy as np; p=Path(${JSON.stringify(rawDir)}); p.mkdir(); a=np.diag([2.,2.,2.,1.])\nfor name,shape in [('bold',(12,14,16,30)),('t1w',(12,14,16))]:\n im=n.Nifti1Image(np.random.default_rng(7).random(shape).astype('float32'),a); im.header.set_xyzt_units('mm','sec'); n.save(im,p/(name+'.nii.gz'))`], { cwd: root, encoding: "utf8", windowsHide: true });
+  assert.equal(prepared.status, 0, prepared.stderr);
+  await page.getByLabel("本次输入类别", { exact: true }).selectOption("raw-bids");
+  await page.getByLabel("静息态 BOLD", { exact: true }).fill(path.join(rawDir, "bold.nii.gz"));
+  await page.getByLabel("T1 结构像", { exact: true }).fill(path.join(rawDir, "t1w.nii.gz"));
+  await page.getByRole("button", { name: "检查并生成方案" }).click();
+  await page.getByText(/缺少切片采集时间/).waitFor();
+  assert.ok(await page.getByRole("button", { name: "确认方案，开始 Python 处理" }).isDisabled());
+  assert.equal(await page.getByLabel("FreeSurfer license.txt").count(), 0);
+  await page.getByRole("checkbox", { name: /明确跳过层间时间校正/ }).check();
+  await page.getByRole("button", { name: "检查并生成方案" }).click();
+  await page.waitForFunction(() => [...document.querySelectorAll('button')].some(b => b.textContent.includes('确认方案，开始 Python 处理') && !b.disabled));
+  const fakeId = "f".repeat(32);
+  const fake = { id: fakeId, kind: "python-preprocess", status: "complete", message: "UI fixture", run: {
+    bold: path.join(rawDir, "bold.nii.gz"), mask: "", confounds: "", t_r: 1,
+    space: "MNI152NLin6Asym", discard: 0, confound_columns: ["motion_matrix_00", "csf"],
+  }};
+  await page.route("**/api/python/preprocess", r => r.fulfill({ json: fake }));
+  await page.getByRole("button", { name: "确认方案，开始 Python 处理" }).click();
+  await page.getByRole("link", { name: /打开完整质控报告/ }).waitFor();
+  assert.ok(await page.getByRole("button", { name: "继续提取功能连接 →" }).isDisabled());
+  await page.getByRole("checkbox", { name: /我已检查配准、脑覆盖/ }).check();
+  assert.ok(await page.getByRole("button", { name: "继续提取功能连接 →" }).isEnabled());
+  await page.locator(".raw-guide").screenshot({ path: path.join(output, "native-qc-gate.png") });
+  await page.getByRole("button", { name: "继续提取功能连接 →" }).click();
+  await page.getByText("已选择预处理输出：bold.nii.gz", { exact: true }).waitFor();
+  await page.unroute("**/api/python/preprocess");
+  await page.goto(base);
   await page.getByRole("button", { name: "打开真实样例" }).click();
   await page.getByTestId("brain-scene").waitFor({ timeout: 120000 });
   await page.waitForFunction(() => document.querySelector('[data-testid="brain-scene"]')?.dataset.renderMs);

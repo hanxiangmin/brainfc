@@ -13,16 +13,21 @@ brainfc serve
 
 ## 从源码或本地安装包安装
 
-需要 Python 3.11 或更高版本，Windows / Linux × Python 3.11 / 3.12 已通过 CI 验证。
+支持 Python 3.11–3.13。已有兼容 conda 环境直接使用，不需要重装 Python。Windows / Linux × Python 3.11 / 3.12 纳入 CI。
+
+如果只有 Python 3.14 的 conda 环境，可为 BrainFC 单独创建 3.12 环境，保留原来的 `base`：
+
+```shell
+conda create -n brainfc python=3.12 -y
+conda activate brainfc
+python -m pip install -U brainfc
+```
 
 在解压后的源码根目录执行：
 
 ```shell
-python -m venv .venv
-# Windows
-.venv\Scripts\python -m pip install .
-.venv\Scripts\brainfc serve
-# macOS / Linux：改用 .venv/bin/python 和 .venv/bin/brainfc
+python -m pip install .
+brainfc serve
 ```
 
 已激活自己的虚拟环境时，只需 `python -m pip install .` 和 `brainfc serve`。默认安装已包含全部 Python API 和本地网页依赖，不需要另外选择 extras。
@@ -30,7 +35,7 @@ python -m venv .venv
 本地 wheel 安装：
 
 ```shell
-python -m pip install "brainfc-0.4.0-py3-none-any.whl"
+python -m pip install "brainfc-0.5.0-py3-none-any.whl"
 brainfc --version
 brainfc serve
 ```
@@ -65,14 +70,13 @@ Python 可执行例子在源码的 `examples/quickstart.py` 和 `examples/roi_ti
 
 ## 原始扫描入口
 
+界面选择“原始 NIfTI / BIDS”或“原始 DICOM”，按提示选择 BOLD 和 T1。
+
 ```shell
-brainfc dicom ./dicom --output ./converted
-# 加 --run 才执行；需预先安装 dcm2niix。
-brainfc preprocess ./bids --output ./derivatives --license ./license.txt --participant 01
-# 核对命令后加 --run；需 Docker Linux 容器。
+brainfc process ./bold.nii.gz --t1w ./t1w.nii.gz --output ./preprocessed
 ```
 
-转换完成后需要按采集信息组织 BIDS。fMRIPrep 完成并检查报告后，将 `desc-preproc_bold` 输入本库。具体输入责任见 [格式说明](formats.md)，处理边界见 [方法说明](processing.md)。
+Python 内完成预处理，检查 `qc.html` 后提取连接。详见 [完整用法与算法](python-preprocessing.md)。
 
 ## 常见错误
 

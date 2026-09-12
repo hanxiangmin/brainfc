@@ -32,9 +32,9 @@
       "id": "raw",
       "stage": 0,
       "row": 0,
-      "type": "external",
-      "label": "原始影像外部预处理",
-      "sublabel": "dcm2niix → BIDS → fMRIPrep",
+      "type": "backend",
+      "label": "Python 原始影像处理",
+      "sublabel": "层时间 · 头动 · N4 · SyN",
       "width": 136,
       "height": 58
     },
@@ -153,8 +153,8 @@
     {
       "from": "raw",
       "to": "images",
-      "label": "报告质控后导入",
-      "variant": "dashed",
+      "label": "配准质控后继续",
+      "variant": "default",
       "labelDy": 24
     },
     {
