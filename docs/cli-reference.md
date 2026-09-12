@@ -1,4 +1,4 @@
-# 命令行完整参数 · 0.4.0
+# 命令行完整参数 · 0.4.1
 
 由 argparse 自动生成，与 `brainfc --help` 一致。`python -m brainfc` 与安装后的 `brainfc` 入口等价。
 

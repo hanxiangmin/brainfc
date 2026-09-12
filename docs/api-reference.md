@@ -1,4 +1,4 @@
-# API 完整参考 · 0.4.0
+# API 完整参考 · 0.4.1
 
 由实际 Python 签名和源码 docstring 自动生成。修改接口后运行 `python scripts/generate_reference.py`；CI 检查文档是否同步。
 
@@ -1383,7 +1383,7 @@ Validate keyword fields and construct a configuration; reject unknown keys.
 ### AnalysisResult
 
 ```python
-AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.0', layouts: 'dict[str, Any]' = <factory>) -> None
+AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.1', layouts: 'dict[str, Any]' = <factory>) -> None
 ```
 
 ```text

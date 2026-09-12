@@ -3,14 +3,17 @@ message: "If you use this software, cite this software version and the original 
 type: software
 title: "BrainFC"
 repository-code: "https://github.com/hanxiangmin/brainfc"
-abstract: "Local single-run fMRI to ROI time series and signed functional connectivity, with a Python API, command line, and local graphical interface."
+abstract: "Resting-state fMRI functional connectivity, connectome and brain network / hypergraph analysis with Python and a local graphical interface."
 authors:
   - name: "BrainFC contributors"
-version: 0.4.0
+version: 0.4.1
 date-released: 2026-09-12
 license: Apache-2.0
 keywords:
   - fMRI
+  - resting-state fMRI
   - functional connectivity
   - neuroimaging
   - connectome
+  - brain network
+  - hypergraph analysis

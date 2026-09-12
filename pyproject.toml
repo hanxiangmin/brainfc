@@ -5,13 +5,18 @@ build-backend = "hatchling.build"
 [project]
 name = "brainfc"
 dynamic = ["version"]
-description = "Local fMRI connectivity, brain graphs and native hypergraphs with a Python API and offline GUI"
+description = "Resting-state fMRI functional connectivity, connectome and brain network / hypergraph analysis with Python and a local GUI"
 readme = "PYPI.md"
 requires-python = ">=3.11"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE", "src/brainfc/web/static/THIRD_PARTY_NOTICES.txt", "src/brainfc/network/web/static/THIRD_PARTY_NOTICES.txt"]
 authors = [{name = "BrainFC contributors"}]
-keywords = ["fmri", "functional-connectivity", "neuroimaging", "connectome", "bids"]
+keywords = [
+  "fmri", "resting-state-fmri", "rs-fmri", "functional-connectivity", "connectivity-matrix",
+  "brain-network", "brain-connectivity", "connectome", "connectomics", "neuroimaging",
+  "neuroscience", "hypergraph", "hypergraph-analysis", "network-analysis", "brain-visualization",
+  "roi-timeseries", "nifti", "cifti", "bids", "静息态fMRI", "功能连接", "功能连接矩阵", "脑网络", "超图分析",
+]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Science/Research",
@@ -21,6 +26,8 @@ classifiers = [
   "Programming Language :: Python :: 3.12",
   "Operating System :: OS Independent",
   "Topic :: Scientific/Engineering :: Medical Science Apps.",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Topic :: Scientific/Engineering :: Visualization",
 ]
 dependencies = ["numpy>=1.26", "scipy>=1.12", "pandas>=2.1", "nibabel>=5.2", "nilearn>=0.14,<0.15", "scikit-learn>=1.4", "matplotlib>=3.8", "scikit-image>=0.23", "fastapi>=0.115", "uvicorn>=0.30", "python-multipart>=0.0.20", "networkx>=3.2", "xgi>=0.9", "statsmodels>=0.14", "h5py>=3.10", "platformdirs>=4"]
 

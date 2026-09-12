@@ -1,6 +1,6 @@
 ![BrainFC — functional connectivity, made visible](docs/assets/brainfc-hero.png)
 
-<p align="center"><b>From fMRI and ROI signals to signed connectivity and interactive brain networks.</b><br>One Python package. A local GUI, command-line tools, and a documented scientific API.</p>
+<p align="center"><b>Resting-state fMRI (rs-fMRI), functional connectivity and brain network analysis.</b><br>Connectome visualization, graphs and native hypergraphs. Python API + local GUI.</p>
 
 <p align="center"><a href="README.md">中文</a> · <b>English</b> · <a href="docs/index.md">Documentation</a> · <a href="docs/api-reference.md">API reference</a> · <a href="https://pypi.org/project/brainfc/">PyPI</a></p>
 

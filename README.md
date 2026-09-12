@@ -7,7 +7,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-c18a49" alt="Apache-2.0"></a>
 </p>
 
-<p align="center"><b>把脑影像变成可计算、可检查、可交互的功能连接。</b><br>一个 Python 库，贯通功能连接、普通图、原生超图与网络统计；提供本地图形界面、命令行与完整 API。</p>
+<p align="center"><b>静息态 fMRI 功能连接矩阵、脑网络与超图分析。</b><br>Resting-state fMRI · Functional connectivity · Connectome · Hypergraph · Python API + GUI</p>
 
 <p align="center"><b>中文</b> · <a href="README.en.md">English</a> · <a href="docs/index.md">使用文档</a> · <a href="docs/api-reference.md">全部 API</a> · <a href="docs/datasets.md">数据下载指南</a></p>
 

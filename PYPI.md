@@ -2,9 +2,9 @@
 
 # BrainFC
 
-**fMRI → ROI time series → functional connectivity → matrix, eight-view and interactive 3D reports.**
+**Resting-state fMRI (rs-fMRI) → functional connectivity → brain networks and hypergraphs.**
 
-Functional connectivity, brain graphs and native hypergraphs in one Python package, with a local GUI and complete API. Requires Python 3.11+.
+Neuroimaging, connectome visualization and network analysis in one Python package, with a local GUI and complete API. Requires Python 3.11+.
 
 ## Install and launch
 

@@ -497,7 +497,7 @@
   },
   {
     "name": "brainfc.network.types.AnalysisResult",
-    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.0', layouts: 'dict[str, Any]' = <factory>) -> None",
+    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.1', layouts: 'dict[str, Any]' = <factory>) -> None",
     "public": true,
     "documented": true,
     "source": "src/brainfc/network/types.py",
