@@ -1,4 +1,4 @@
-# 命令行完整参数 · 0.3.0
+# 命令行完整参数 · 0.4.0
 
 由 argparse 自动生成，与 `brainfc --help` 一致。`python -m brainfc` 与安装后的 `brainfc` 入口等价。
 
@@ -6,18 +6,20 @@
 
 ```text
 usage: brainfc [-h] [--version]
-               {serve,inspect,atlas,demo,extract,batch,dicom,preprocess} ...
+               {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess}
+               ...
 
 fMRI → ROI time series → functional connectivity
 
 positional arguments:
-  {serve,inspect,atlas,demo,extract,batch,dicom,preprocess}
+  {serve,inspect,atlas,demo,extract,network,batch,dicom,preprocess}
     serve               Start the local graphical interface
     inspect             Inspect an image or discover BIDS derivatives
     atlas               Explicitly download a supported standard atlas
     demo                Extract a bundled synthetic or de-identified resting-
                         state example
     extract             Extract one run
+    network             Analyze a saved connectome, matrix or ROI time series
     batch               Extract each fMRIPrep run separately; failed runs are
                         recorded
     dicom               Plan or run dcm2niix conversion
@@ -106,6 +108,30 @@ options:
   --tr TR
   --no-report
   --no-figures
+```
+
+## network
+
+```text
+usage: brainfc network [-h] [--kind {auto,timeseries,connectivity}]
+                       [--matrix-kind {auto,correlation,fisher_z,covariance}]
+                       [--variable VARIABLE] [--roi-columns ROI_COLUMNS]
+                       [--config CONFIG] [--metadata METADATA] --output OUTPUT
+                       source
+
+positional arguments:
+  source                BrainFC result folder/result.json, or a numeric data
+                        file
+
+options:
+  -h, --help            show this help message and exit
+  --kind {auto,timeseries,connectivity}
+  --matrix-kind {auto,correlation,fisher_z,covariance}
+  --variable VARIABLE
+  --roi-columns ROI_COLUMNS
+  --config CONFIG       Network AnalysisConfig JSON
+  --metadata METADATA   ROI IDs, labels, coordinates and metadata JSON
+  --output OUTPUT       New ZIP or JSON result; existing files refused
 ```
 
 ## batch

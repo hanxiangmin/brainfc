@@ -51,6 +51,9 @@ def create_app(workspace=None):
     executor = ThreadPoolExecutor(max_workers=1)
     lock = threading.RLock()
     active = set()
+    from ..network.web.app import create_app as create_network_app
+
+    network_app = create_network_app(root / "networks")
     # A prior process cannot still be running a job owned by this server instance.
     for state in jobs_dir.glob("*/status.json"):
         old = json.loads(state.read_text(encoding="utf-8"))
@@ -62,8 +65,11 @@ def create_app(workspace=None):
 
     @asynccontextmanager
     async def lifespan(app):
-        yield
-        executor.shutdown(wait=False, cancel_futures=True)
+        async with network_app.router.lifespan_context(network_app):
+            try:
+                yield
+            finally:
+                executor.shutdown(wait=False, cancel_futures=True)
 
     app = FastAPI(
         title="BrainFC",
@@ -574,6 +580,62 @@ def create_app(workspace=None):
             path, filename=name if name.endswith((".zip", ".csv", ".tsv", ".npy", ".pdf", ".svg")) else None
         )
 
+    @app.post(
+        "/api/jobs/{job_id}/network-input",
+        tags=["Network analysis"],
+        summary="Transfer a completed extraction to network analysis with its ROI mapping",
+    )
+    def network_input(job_id: str):
+        """Copy the full matrix and processing metadata to the local network workspace.
+
+        Only completed extraction jobs are accepted. Returns an uploaded-file record
+        and the corresponding input options for /networks/api/v1/jobs. The source
+        matrix is not thresholded, and no signal cleaning/correlation is repeated.
+        Repeated calls reuse the prepared input. No source files leave this server.
+        """
+        import numpy as np
+        from ..network import load_connectome
+        from ..network.io import inspect_file
+        from ..network.web.storage import now
+
+        dest = folder(job_id)
+        state = json.loads((dest / "status.json").read_text(encoding="utf-8"))
+        if state.get("status") != "complete" or not (dest / "result/result.json").is_file():
+            raise HTTPException(409, "A completed extraction result is required.")
+        store = network_app.state.store
+        with lock:
+            prepared = dest / "network-input.json"
+            if prepared.exists():
+                entry = json.loads(prepared.read_text(encoding="utf-8"))
+                try:
+                    store.get("uploads", entry["file"]["id"])
+                    return entry
+                except KeyError:
+                    pass
+            dataset = load_connectome(dest / "result")
+            identifier = uuid.uuid4().hex
+            record = {"id": identifier, "name": f"connectome-{job_id[:8]}.npy",
+                      "suffix": ".npy", "created_at": now()}
+            path = store.upload_path(record)
+            np.save(path, dataset.data, allow_pickle=False)
+            record.update(inspect_file(path, source_name=record["name"]))
+            record["bytes"] = path.stat().st_size
+            options = {"kind": "connectivity", "matrix_kind": "correlation",
+                       "roi_ids": dataset.roi_ids, "labels": dataset.labels,
+                       "coordinates": dataset.coordinates.tolist() if dataset.coordinates is not None else None,
+                       "metadata": dataset.metadata}
+            # Bound metadata stays server-side; the browser receives only a compact preview.
+            record["brainfc_input"] = options
+            record["brainfc_job"] = job_id
+            store.put("uploads", record)
+            public_record = {k: v for k, v in record.items() if k != "brainfc_input"}
+            entry = {"file": public_record, "n_rois": dataset.n_rois,
+                     "has_geometry": "brainfc_geometry" in dataset.metadata,
+                     "input": {"kind": "connectivity", "matrix_kind": "correlation"}}
+            prepared.write_text(json.dumps(entry, ensure_ascii=False), encoding="utf-8")
+            return entry
+
+    app.mount("/networks", network_app, name="networks")
     static = Path(__file__).parent / "static"
     app.mount("/static", StaticFiles(directory=static), name="static")
     if (static / "reference").is_dir():

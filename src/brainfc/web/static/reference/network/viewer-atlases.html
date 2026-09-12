@@ -1,0 +1,113 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>viewer-atlases · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="03">三维查看器与图谱（0.3）</h1>
+<h2 id="_1">从上传到三维脑</h2>
+<p>上传矩阵或 ROI 时序 → 确认变量与数据形式 → 分析 → 打开结果 → 选择匹配图谱 → 明确矩阵每行的 ROI 顺序 → 验证并叠加连接。</p>
+<p>首次安装标准图谱需要网络，其后同一工作区可离线使用。三维资源不是患者影像，不随 wheel 分发。Python <code>AtlasRegistry(workspace / 'atlases')</code> 与网页使用完全相同的导入、验证和表面生成代码。网页里的“图谱预览”只切换参考图谱，不改变已有矩阵。更换分区需要该分区对应的时序或矩阵；纠正已经保存的绑定，需要重新打开原始数据并生成新结果，历史结果保持原样。</p>
+<table>
+<thead>
+<tr>
+<th>风格</th>
+<th>表达</th>
+<th>全局与选择</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>节点连线</td>
+<td>ROI 球体、带符号连接圆柱、弧形成员连线与 H 六边形锚点</td>
+<td>默认普通图；可主动开启超图或叠加</td>
+</tr>
+<tr>
+<td>透明包络</td>
+<td>三成员三角面；其他非退化成员集合的凸包</td>
+<td>点选后高亮完整真实成员，包络内部非成员不加入</td>
+</tr>
+<tr>
+<td>脑区分区表面</td>
+<td>从分区 NIfTI 提取各 ROI 表面及几何轮廓</td>
+<td>分区表面可选，普通边和超边轮廓叠加</td>
+</tr>
+</tbody>
+</table>
+<p>三种风格与深夜蓝 / 论文白独立选择。初始参考脑不透明度 20%，可连续调整。普通边正值为橙色，负值为蓝色，宽度随同一图内的绝对权重变化。超边颜色只标识集合，不编码统计显著性。不同 ID 可能共用有限分类颜色，以 ID 和成员表为准。ROI 球体按图谱提供的分类颜色或半球着色；分区表面使用图谱颜色，缺失时按稳定 ROI ID 配色。两套皮肤不改变颜色语义。</p>
+<p>0.2.1 的全局包络使用轻薄透明面与细轮廓，超边较多时只降低视觉强度，不删边。0.3 将球棍与骨架合并，使用轻微弯曲的成员连线与带 H 字的平面空心六边形锚点；曲线只表达集合成员关系，不表示真实纤维束。</p>
+<p>点选后，无关节点不透明度为 2.5%，无关普通边 / 骨架 / 轮廓为 0.9%，无关包络面 / 分区面为 0.2%，无关标签为 2.5%。这些是实际透明度，不是把不透明物体涂成背景色。所选超边及全部成员保持清楚；选中节点时，该节点最突出，关联节点及结构次之。参考脑不透明度暂时降至最多 6.5%，恢复全局后使用原滑块值。成员标签优先布局，脑区坐标不动。选中的超边另加清晰的细管轮廓。</p>
+<h3 id="_2">选择与标签</h3>
+<ul>
+<li>全局默认显示全部英文缩写与当前开启图层的全部结构，不截断边数。标签只在屏幕上偏移，引线指向真实 ROI 坐标。</li>
+<li>点击 ROI：显示缩写、源英文全名、半球、相邻普通边与所属超边；其他结构淡化。</li>
+<li>点击普通边：显示两个端点及带符号连接值；显示值是分析输出的相关矩阵值，Fisher-z 输入已在分析时显式转换。</li>
+<li>点击超边：按 ID 高亮完整成员列表；三维包络、成员表和热图共享选择。</li>
+<li>重叠位置提供候选列表；具有相同成员的不同自定义超边保留独立 ID。</li>
+<li>“仅看所选”是用户主动的显示筛选，可随时“恢复全局”；底部显示当前 / 全部数量。</li>
+<li>原始数值 ID <code>1</code> 与字符串 ID <code>"1"</code> 在数据和显示选择中保持不同身份。内部视图键编码为 JSON <code>["number",1]</code> / <code>["string","1"]</code>，原始 ID 不改写。</li>
+</ul>
+<p>三维相机支持旋转、平移、缩放和标准前 / 后 / 左 / 右 / 顶视角。方向以 RAS+ 毫米坐标标记，不根据当前屏幕左侧猜测半球。NiiVue 在底部显示原始分区叠加参考脑，用于切片核查，不负责重新配准。</p>
+<h2 id="_3">标准目录及来源</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>标签与版本</th>
+<th>确切参考空间</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>aal-spm12-116</code></td>
+<td>AAL SPM12，116 区</td>
+<td>MNIColin27</td>
+</tr>
+<tr>
+<td><code>aal-spm12-90</code></td>
+<td>同一 SPM12 的 90 区非小脑子集，排除 Cerebelum 与 Vermis</td>
+<td>MNIColin27</td>
+</tr>
+<tr>
+<td><code>schaefer-2018-100-7</code></td>
+<td>Schaefer2018 v0.14.3，100 区 / Yeo7</td>
+<td>MNI152NLin6Asym，2 mm</td>
+</tr>
+<tr>
+<td><code>schaefer-2018-200-7</code></td>
+<td>同版本，200 区 / Yeo7</td>
+<td>MNI152NLin6Asym，2 mm</td>
+</tr>
+<tr>
+<td><code>schaefer-2018-400-7</code></td>
+<td>同版本，400 区 / Yeo7</td>
+<td>MNI152NLin6Asym，2 mm</td>
+</tr>
+</tbody>
+</table>
+<p>图谱通过 Nilearn 官方下载器取得；Schaefer 下载链接固定 CBIG 的 <code>v0.14.3-Update_Yeo2011_Schaefer2018_labelname</code> 标签。参考脑使用 TemplateFlow 对应空间的 T1w 与 brain mask。安装器检查返回的 ROI 数量与空间，不接受未经核实的上游变化。缓存记录标签、来源、版本及内容哈希。</p>
+<p>AAL 图像标签并不连续（例如 Precentral_L 的值是 2001），不能直接作为矩阵行号。116/90 行的矩阵也不能证明其图谱身份。<a href="https://nilearn.github.io/stable/modules/generated/nilearn.datasets.fetch_atlas_aal.html">Nilearn AAL 文档</a></p>
+<p>AAL90 缩写及英文扩展采用论文补充材料 Table S9 的已发表字典；小脑分区保留上游标识。Schaefer 使用原图谱提供的网络 / 分区名称与缩写，不虚构传统解剖全名。<a href="https://wrap.warwick.ac.uk/id/eprint/80514/2/WRAP_Supplementary.pdf">AAL 字典来源</a>、<a href="https://github.com/ThomasYeoLab/CBIG/tree/v0.14.3-Update_Yeo2011_Schaefer2018_labelname/stable_projects/brain_parcellation/Schaefer2018_LocalGlobal">Schaefer 源版本</a></p>
+<h2 id="_4">自定义图谱</h2>
+<ol>
+<li>上传 3D 整数分区 <code>.nii</code> / <code>.nii.gz</code>，0 表示背景。概率图、4D fMRI、空分区和非有限值不接受。</li>
+<li>上传 CSV / TSV，每个非零标签对应一行：</li>
+</ol>
+<pre><code class="language-csv">label_value,roi_id,abbreviation,name,hemisphere,network,color
+2001,Precentral_L,PreCG.L,Left Precentral gyrus,L,,
+2002,Precentral_R,PreCG.R,Right Precentral gyrus,R,,
+</code></pre>
+<p>前五列必需；<code>network</code>、<code>color</code> 可选。缩写、ID、图像标签值均须唯一；脑区全名不能为空。半球为 <code>L</code>、<code>R</code>、<code>M</code>（中线）、<code>B</code>（双侧）。不能缺少缩写后让程序猜解剖名称。</p>
+<ol>
+<li>选择确切兼容参考空间；自定义空间需说明名称 / 版本并提供已经去颅骨且对齐的参考脑。</li>
+<li>显式确认已有空间对齐。检查 NIfTI 单位 mm、有限且非奇异 affine、已编码 qform/sform 一致、标签匹配、世界坐标重叠与矩阵顺序。不进行自动配准；空间声明和视觉切片核查仍需可靠的数据来源。</li>
+<li>验证后生成真实分区表面。ROI 定位点是离分区质心最近的内部体素，保证在本 ROI 中。显示表面采用轻度平滑的 marching cubes；它是分区和 brain mask 的外形，不是新推断的个体皮层或纤维束。原始分割不变。</li>
+</ol>
+<p>每个影像最多 128 MiB（压缩文件）/ 3200 万体素，最多 1000 个非背景分区。矩阵映射按完整有序 ID 列表提供，不按图像标签数值排序。支持一个图谱的明确子集，但必须明确每行对应的 ROI。</p>
+<h2 id="_5">保存、导出和重开</h2>
+<p>“保存”将 <code>ViewConfig</code> 写入结果工作区；地址中的 <code>?result=...</code> 可直接打开同一结果。原始分析 JSON 保持原样，图谱映射与显示状态独立保存。</p>
+<ul>
+<li>当前视角 PNG：包含脑、全部当前可见结构、标签与参考空间，实际从三维画布导出。</li>
+<li>数据与视图 JSON：包含原始数值、图 / 超图、图谱绑定、来源、分析参数、相机和显示设置。</li>
+<li>成员 CSV：每条超边 ID 与每个成员分别保存，包含 ID 类型；不会只导出普通图展开。</li>
+<li>连接矩阵 CSV：完整带 ROI 顺序的输出矩阵。</li>
+<li>恢复视图：打开对应分析结果后，导入其视图 JSON；校验结果内容与图谱版本，再恢复。已保存视图在重新打开结果时自动加载。</li>
+</ul>
+<p>原有 Python 报告导出（HTML / PDF / SVG / GraphML / ZIP）仍可使用 <code>hicbrain.export.export_result</code>；这与当前相机 PNG 是不同导出内容。</p>
+<h2 id="_6">大图显示</h2>
+<p>节点数增加时减少球面分段；超过 18000 条普通边或 400 个节点时使用线段降低几何成本，保留全部连接。画面静止时不重复绘制。共线、共面或不足三点的超边回退为骨架，并显示数量。包络不把内部的其他 ROI 当成员。</p>
+<p>400 个长名称同时标注会拥挤，完整标签优先于自动删减。可主动关闭全局标签、搜索脑区、旋转 / 缩放或仅看所选。大图提示不等于自动删除结构；软件渲染的测试结果不代表用户 GPU 的帧率。</p></main></html>

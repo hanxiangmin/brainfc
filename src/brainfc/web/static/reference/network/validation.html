@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>validation · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="_1">本地数据与接口验证</h1>
+<p>2026-09-10，在 Windows、Python 3.12.14 环境完成文件解析、Python API、真实 HTTP 上传、独立计算任务和 JSON 导出的一致性检查。先检查每个来源 2 个输入，再扩大至每个来源 5 个输入；下表对应扩大后的完整验证。</p>
+<h2 id="_2">已验证结果</h2>
+<p>25/25 个功能数据输入通过；随后将相同参数的文件组成 8 个真实批量上传任务，共处理 25 个文件，8/8 个批量任务通过。全部源文件在单文件与批量验证前后的 SHA-256 保持一致。计数以输入文件为单位，包含不同扫描或不同数据表示，不代表独立受试者数量。</p>
+<table>
+<thead>
+<tr>
+<th>数据来源</th>
+<th>单文件输入</th>
+<th>实测输入形状（时间点 × ROI 或 ROI × ROI）</th>
+<th>Python/HTTP/导出一致</th>
+<th>批量任务文件数</th>
+<th>源文件校验值不变</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ABIDE1</td>
+<td>3 个相关矩阵、2 个时序</td>
+<td>116 × 116；146 × 116</td>
+<td>5/5</td>
+<td>3 + 2</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>ABIDE2</td>
+<td>3 个 Fisher-z 矩阵、2 个时序</td>
+<td>116 × 116；170 × 116</td>
+<td>5/5</td>
+<td>3 + 2</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>ADHD</td>
+<td>5 个 <code>.1D</code> 时序</td>
+<td>172 × 116</td>
+<td>5/5</td>
+<td>5</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>MDD</td>
+<td>5 个时序，显式选择 <code>0:116</code></td>
+<td>200 × 116（选择后）</td>
+<td>5/5</td>
+<td>5</td>
+<td>5/5</td>
+</tr>
+<tr>
+<td>ADNI</td>
+<td>3 个相关矩阵、2 个时序</td>
+<td>90 × 90；187 × 90、190 × 90</td>
+<td>5/5</td>
+<td>3 + 2</td>
+<td>5/5</td>
+</tr>
+</tbody>
+</table>
+<p>MDD 的 <code>0:116</code> 仅用于验证解析与计算流程。此处未验证这些列对应的图谱、脑区顺序或解剖坐标，因此结果不包含解剖定位结论。其他来源也没有根据矩阵尺寸自动指定图谱。</p>
+<p>单文件检查通过正式的 <code>load_data → analyze</code> Python API 与 <code>/api/v1/uploads → /api/v1/jobs → /api/v1/results</code> HTTP 流程分别执行，比较连接矩阵、ROI ID、完整普通图与超图结构及其全局/节点指标，并检查 JSON 导出。数值比较采用相对容差 <code>1e-7</code>、绝对容差 <code>1e-9</code>。批量结果再与已经验证的单文件结果逐一比较。</p>
+<h2 id="_3">数据适配与负例</h2>
+<ul>
+<li>ADHD 按 <code>File</code>、<code>Sub-brick</code> 表头删除辅助列，保留全部数值时序行；遇到仅含表头的文件会报错。</li>
+<li>ABIDE2 Fisher-z 的未定义对角自连接仅在内存副本中置零，记录数量和处理说明。非对角的 NaN/Inf 仍报错，原文件不变。</li>
+<li>脑区中心坐标、坐标表和已识别的标签变量不能作为功能时序输入。扩大后的扫描实际拒绝了 2 个脑区坐标元数据候选和 1 个仅含表头的 ADHD 候选。</li>
+<li>MAT 多变量需要明确选择；检查空数据、非法 ROI 列、重复 ROI ID、非对称矩阵、恒定时序通道、错误坐标数量及资源上限。</li>
+<li>文件导入与统计专项测试为 43 项，通过。统计测试覆盖 Welch 检验、OLS HC3、置信区间、BH-FDR、缺失值处理和重复受试者拒绝。</li>
+</ul>
+<p>验证环境中的主要依赖版本：NumPy 2.5.3、SciPy 1.18.1、pandas 3.0.5、statsmodels 0.15.0、NetworkX 3.6.1、XGI 0.10.2、Nilearn 0.14.1。</p>
+<h2 id="_4">发行与网页验收</h2>
+<ul>
+<li>Windows / Python 3.12.14：100 项自动化测试通过；Ruff 检查通过。两个提示来自测试客户端上游弃用声明，不影响测试结果。</li>
+<li>React TypeScript 检查、Vite 生产构建通过；npm audit 未发现漏洞。前端脚本、NiiVue、Plotly 和第三方许可随 wheel 分发。</li>
+<li>独立虚拟环境从 wheel 安装 <code>[web]</code> 依赖，<code>pip check</code> 通过。使用安装后的包在源码目录之外启动服务，上传、独立进程计算、JSON/ZIP 导出以及本地接口参考页均通过。</li>
+<li>独立进程测试禁止所有 socket 连接后，偏相关、图与超图计算及 Nilearn 自带 MNI 模板加载通过；Chrome 页面测试阻止非回环请求，未观察到外部请求。</li>
+<li>浏览器实际上传 ABIDE1 的 116×116 MAT 矩阵，确认变量、配置分析、查看超边、选择成员和下载 ZIP 全部通过。缺少解剖映射时按预期仅展示矩阵与抽象结构。</li>
+<li>另用 6 ROI 合成输入和明确标注的测试 MNI 坐标检查三维参考脑、切片定位、普通图/超边成员与热图联动。390 像素宽度检查无页面横向溢出。合成输入没有被计入上述真实数据样本数。</li>
+<li>解剖坐标与抽象布局分别保存；布局按 ROI ID 固定，ROI 同步重排不改变布局身份对应。CSV 分别导出 <code>rois.csv</code> 和 <code>layout_coordinates.csv</code>，超边成员表另保存 ID 类型以区分整数与字符串 ID。</li>
+<li>clean wheel 的 Python 与 HTTP 结构/成员相同；浮点数比较使用 <code>rtol=1e-10, atol=1e-12</code>，最大观测差异约 <code>3.33e-16</code>。独立进程的线程数不同可产生末位舍入差异。</li>
+<li>wheel 与源码分发包通过元数据检查；分发内容不含输入影像、时序、矩阵、患者结果、工作区数据库或本机数据目录。源码包包含前端源码、构建脚本、补充许可及 83 项工具目录。</li>
+</ul>
+<p>运行依赖的此次安装快照见 <a href="https://github.com/hanxiangmin/Hyper-Brain/blob/ded30680e600ecbe79c2ef67a1ffaae02e3d7c33/docs/requirements-tested-windows-py312.txt">requirements-tested-windows-py312.txt</a>。这是已测环境记录，其他操作系统和 Python 版本仍需各自运行验收。</p>
+<h2 id="_5">复现步骤</h2>
+<p>安装开发依赖并启动本地服务后，从仓库运行验证脚本，参数指向自己的数据和私有报告目录：</p>
+<pre><code class="language-text">hicbrain serve --no-browser --port 8765
+python examples/validate_local_data.py --data-root &lt;数据目录&gt; --url http://127.0.0.1:8765 --output &lt;私有目录&gt;/verification.json --per-dataset 5 --batch
+</code></pre>
+<p>脚本只向回环地址上传，仅读取源文件。详细报告由使用者保存在包外，包含文件级校验值、任务状态、比较结果及选择阶段的拒绝原因；代码发行包不包含这些数据或报告。</p>
+<p>这些结果验证所选文件的导入和计算流程，不是疾病预测性能、临床验证或整库质量审核。此页未声称已经完成 Linux 平台、全部原始数据或所有图谱的验证。</p></main></html>

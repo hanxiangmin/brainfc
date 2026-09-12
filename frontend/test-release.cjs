@@ -39,6 +39,8 @@ async function main() {
   const errors = [];
   page.on("pageerror", (error) => errors.push(error.message));
   await page.goto("/");
+  assert.equal(await page.locator(".primary").first().evaluate(el => getComputedStyle(el).backgroundColor), "rgb(0, 125, 163)");
+  await page.screenshot({ path: path.join(output, "extraction-home.png"), fullPage: true });
   assert.ok(await page.getByRole("navigation", { name: "处理步骤" }).getByRole("button").nth(1).isDisabled());
   await page.getByRole("button", { name: /演示/ }).first().click();
   await page.getByTestId("brain-scene").waitFor({ timeout: 120000 });
@@ -65,6 +67,41 @@ async function main() {
   await page.getByTestId("synced-views").screenshot({ path: path.join(output, "eight-views.png") });
   const svgUrl = await page.getByRole("link", { name: "SVG ↓", exact: true }).getAttribute("href");
   assert.equal((await page.request.get(svgUrl)).status(), 200);
+  // Continue from a real extraction result without any file upload or ROI re-entry.
+  await page.getByRole("link", { name: "进入网络分析 →", exact: true }).click();
+  await page.getByText("已从 BrainFC 提取结果自动接入", { exact: false }).waitFor();
+  assert.equal(await page.getByRole("button", { name: "开始建模分析", exact: true }).evaluate(el => getComputedStyle(el).backgroundColor), "rgb(0, 125, 163)");
+  await page.screenshot({ path: path.join(output, "network-config.png"), fullPage: true });
+  assert.equal(await page.locator(".connectivity-config").count(), 0);
+  await page.getByRole("button", { name: "开始建模分析", exact: true }).click();
+  let networkJob;
+  for (let i = 0; i < 180; i++) {
+    const queue = await (await page.request.get("/networks/api/v1/jobs")).json();
+    networkJob = queue.jobs[0];
+    if (networkJob && !["queued", "running"].includes(networkJob.status)) break;
+    await delay(500);
+  }
+  assert.equal(networkJob.status, "completed", JSON.stringify(networkJob));
+  assert.deepEqual(networkJob.errors, []);
+  const networkId = networkJob.results[0].id;
+  const network = await (await page.request.get(`/networks/api/v1/results/${networkId}`)).json();
+  assert.deepEqual(network.connectivity, result.connectivity);
+  assert.deepEqual(network.roi_ids, result.rois.map(r => r.roi_id));
+  assert.deepEqual(network.metadata.sample_indices, result.sample_indices);
+  assert.deepEqual(network.metadata.brainfc_geometry, result.geometry);
+  await page.goto(`/networks/?result=${networkId}`);
+  await page.getByTestId("brain-workbench").waitFor({ timeout: 60000 });
+  await page.getByText("● 已验证脑区顺序", { exact: true }).waitFor();
+  await page.getByTestId("brain-scene").waitFor();
+  assert.equal(await page.getByLabel("图谱", { exact: true }).inputValue(), "brainfc-result");
+  assert.ok((await page.getByTestId("brain-workbench").getAttribute("class")).includes("paper"));
+  await page.getByRole("button", { name: "超图", exact: true }).click();
+  await page.getByRole("button", { name: /透明包络/ }).click();
+  await delay(500);
+  await page.getByTestId("brain-workbench").screenshot({ path: path.join(output, "network-workbench.png") });
+  const networkExport = await page.request.get(`/networks/api/v1/results/${networkId}/export?format=json`);
+  assert.equal(networkExport.status(), 200);
+  assert.deepEqual((await networkExport.json()).connectivity, result.connectivity);
   const report = await page.request.get(`/api/jobs/${demo.id}/files/report.html`);
   const offline = path.join(output, "report.html");
   fs.writeFileSync(offline, await report.body());
@@ -99,7 +136,7 @@ async function main() {
   await page.setViewportSize({ width: 390, height: 900 });
   assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
   assert.deepEqual(errors, []);
-  fs.writeFileSync(path.join(output, "validation.json"), JSON.stringify({ status: "passed", demo: demo.id, table: table.id, checks: ["isolated server", "demo extraction", "matrix selection", "3D/eight exact edge synchronization", "SVG", "offline HTML", "headerless upload wizard", "bundled manual navigation", "mobile manual"], errors }, null, 2));
+  fs.writeFileSync(path.join(output, "validation.json"), JSON.stringify({ status: "passed", demo: demo.id, table: table.id, network: networkId, checks: ["isolated server", "demo extraction", "matrix selection", "3D/eight exact edge synchronization", "SVG", "extraction to network handoff", "unchanged matrix and ROI order", "inherited geometry without downloads", "hypergraph envelope", "network export", "offline HTML", "headerless upload wizard", "bundled manual navigation", "mobile manual"], errors }, null, 2));
   console.log(JSON.stringify({ status: "passed", evidence: output }));
 }
 main().catch(async (error) => {

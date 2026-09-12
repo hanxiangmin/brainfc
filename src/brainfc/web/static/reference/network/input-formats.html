@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>input-formats · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="_1">输入格式与本地工作区</h1>
+<h2 id="_2">数组与列</h2>
+<ul>
+<li>FC：R×R，对称；明确 correlation、fisher_z 或 covariance。相关系数范围为 [-1,1]。</li>
+<li>ROI 时序：T×R；非有限值、恒定 ROI、错误列数会被拒绝。</li>
+<li>CSV/TSV/TXT/1D 支持有表头和无表头。ADHD 的 File、Sub-brick 辅助列按名称移除。</li>
+<li>MAT/NPZ 支持选择数值变量；多变量时必须选择。MATLAB v7.3 仅接受数值型二维数据，不解析可执行对象。</li>
+<li>ROI 列选择采用从 0 开始、结束不包含的范围，如 <code>0:116</code>。这只是列选择，不等于已证明 AAL 图谱。</li>
+<li>导入最大 1000 ROI、100000 时间点、5000000 数值单元。网页每文件最大 128 MiB、每次请求最大 512 MiB（包含分块上传）；Python 读取器最大 256 MiB。超出限制须显式分区/降尺度后分析。</li>
+</ul>
+<h2 id="_3">预设</h2>
+<p>ABIDE1/2、ADHD、MDD、ADNI 预设处理常用字段名称和辅助列。MDD 的多图谱 ROISignals 必须选择对应 ROI 范围并保留实际来源说明。矩阵维度和文件夹名称不能替代图谱字典、表型或受试者身份。</p>
+<p><code>ROICorrelation_FisherZ</code> 与 <code>ROICorrelation</code> 应使用不同的矩阵类型。Fisher-z 转回相关系数时对角线显式设为 1；网络分析不计自连接。</p>
+<p>Fisher-z 文件对角线中未定义的 NaN/Inf 自连接在读取副本中置零并记录处理数量；非对角 NaN/Inf 会拒绝。坐标表、已识别的脑区中心与标签变量不作为功能数据。</p>
+<h2 id="roi">ROI 与解剖</h2>
+<p>元数据可提供 <code>roi_ids</code>、<code>labels</code>、R×3 <code>coordinates</code>，以及 <code>metadata.coordinate_space</code>、atlas、atlas_version、TR、滤波/GSR/删帧等。缺少 TR 不阻止静态 FC，但会在报告中标记。缺少脑区坐标时只显示抽象结构。</p>
+<p>只有明确 MNI 坐标才启用模板脑定位。坐标必须逐行匹配 ROI。不要将不同图谱或重复受试者静默合并。</p>
+<h2 id="_4">存储</h2>
+<p>默认工作区位于操作系统的用户数据目录。也可通过 <code>hicbrain serve --workspace PATH</code> 指定。目录包括 uploads、results、exports、templates 和 state.sqlite。上传是复制，原始数据不被覆盖。删除工作区是用户手动操作；软件不会自动清理结果。</p>
+<p>安装时可以联网取得软件依赖；分析任务与网页资源不需要外部网络。真实数据不打包入 wheel/sdist，不用于公开演示站点。</p></main></html>

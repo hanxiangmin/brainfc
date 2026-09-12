@@ -38,6 +38,15 @@ def _parser():
     extract.add_argument("--tr", type=float)
     extract.add_argument("--no-report", action="store_true")
     extract.add_argument("--no-figures", action="store_true")
+    network = sub.add_parser("network", help="Analyze a saved connectome, matrix or ROI time series")
+    network.add_argument("source", help="BrainFC result folder/result.json, or a numeric data file")
+    network.add_argument("--kind", choices=["auto", "timeseries", "connectivity"], default="auto")
+    network.add_argument("--matrix-kind", choices=["auto", "correlation", "fisher_z", "covariance"], default="auto")
+    network.add_argument("--variable")
+    network.add_argument("--roi-columns")
+    network.add_argument("--config", type=Path, help="Network AnalysisConfig JSON")
+    network.add_argument("--metadata", type=Path, help="ROI IDs, labels, coordinates and metadata JSON")
+    network.add_argument("--output", type=Path, required=True, help="New ZIP or JSON result; existing files refused")
     batch = sub.add_parser("batch", help="Extract each fMRIPrep run separately; failed runs are recorded")
     batch.add_argument("bids_dir", type=Path)
     batch.add_argument("--atlas", required=True)
@@ -126,6 +135,28 @@ def main(argv=None):
                 **{k: getattr(args, k) for k in ("atlas", "rois", "confounds", "mask", "reference")},
             )
             print(result.save(args.output, figures=not args.no_figures, report=not args.no_report))
+        elif args.command == "network":
+            from .network import AnalysisConfig, analyze, load_data, load_connectome
+            from .network.export import export_result
+
+            if args.output.exists():
+                raise FileExistsError(f"Output already exists: {args.output}")
+            if args.output.suffix.lower() not in {".zip", ".json"}:
+                raise InputError("Network output must end with .zip or .json.")
+            path = Path(args.source)
+            config = AnalysisConfig.from_dict(json.loads(args.config.read_text(encoding="utf-8-sig"))) if args.config else None
+            if path.is_dir() or path.suffix.lower() == ".json":
+                if args.metadata or args.variable or args.roi_columns or args.kind != "auto" or args.matrix_kind != "auto":
+                    raise InputError("Saved connectomes already define matrix semantics and ROI metadata; omit input overrides.")
+                dataset = load_connectome(path)
+            else:
+                metadata = json.loads(args.metadata.read_text(encoding="utf-8-sig")) if args.metadata else {}
+                dataset = load_data(path, kind=args.kind, matrix_kind=args.matrix_kind,
+                                    variable=args.variable, roi_columns=args.roi_columns, **metadata)
+            result = analyze(dataset, config, progress=lambda percent, message: print(f"{percent}% {message}"))
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            export_result(result, args.output)
+            print(args.output.resolve())
         elif args.command == "batch":
             from .io import discover_bids
             from .pipeline import extract_connectome
@@ -182,7 +213,7 @@ def main(argv=None):
             if args.run:
                 plan.run()
         return 0
-    except (InputError, FileExistsError, FileNotFoundError) as exc:
+    except (ValueError, FileExistsError, FileNotFoundError) as exc:
         parser.error(str(exc))
 
 

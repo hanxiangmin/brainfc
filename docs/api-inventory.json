@@ -72,12 +72,28 @@
     "line": 273
   },
   {
-    "name": "brainfc.models.Connectome.to_hicbrain",
+    "name": "brainfc.models.Connectome.to_network",
     "signature": "(self)",
     "public": true,
     "documented": true,
     "source": "src/brainfc/models.py",
     "line": 308
+  },
+  {
+    "name": "brainfc.models.Connectome.analyze_network",
+    "signature": "(self, config=None, progress=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 327
+  },
+  {
+    "name": "brainfc.models.Connectome.to_hicbrain",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 354
   },
   {
     "name": "brainfc.pipeline.fingerprint",
@@ -421,7 +437,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/cli.py",
-    "line": 61
+    "line": 70
   },
   {
     "name": "brainfc.web.app.create_app",
@@ -430,5 +446,621 @@
     "documented": true,
     "source": "src/brainfc/web/app.py",
     "line": 37
+  },
+  {
+    "name": "brainfc.network.types.ValidationError",
+    "signature": "",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 12
+  },
+  {
+    "name": "brainfc.network.types.BrainDataset",
+    "signature": "(data: 'np.ndarray', kind: 'str', roi_ids: 'list[str]' = <factory>, labels: 'list[str]' = <factory>, coordinates: 'np.ndarray | None' = None, matrix_kind: 'str' = 'correlation', metadata: 'dict[str, Any]' = <factory>, warnings: 'list[str]' = <factory>) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 17
+  },
+  {
+    "name": "brainfc.network.types.BrainDataset.n_rois",
+    "signature": "",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 55
+  },
+  {
+    "name": "brainfc.network.types.AnalysisConfig",
+    "signature": "(connectivity_method: 'str' = 'pearson', graph_method: 'str' = 'density', threshold: 'float' = 0.2, density: 'float' = 0.1, k: 'int' = 5, hypergraph_method: 'str' = 'knn', hypergraph_ks: 'list[int]' = <factory>, custom_edges: 'list[dict[str, Any]]' = <factory>, groups: 'dict[str, list[str]]' = <factory>, compute_graph: 'bool' = True, compute_hypergraph: 'bool' = True) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 61
+  },
+  {
+    "name": "brainfc.network.types.AnalysisConfig.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 112
+  },
+  {
+    "name": "brainfc.network.types.AnalysisConfig.from_dict",
+    "signature": "(data)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 117
+  },
+  {
+    "name": "brainfc.network.types.AnalysisResult",
+    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.0', layouts: 'dict[str, Any]' = <factory>) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 126
+  },
+  {
+    "name": "brainfc.network.types.AnalysisResult.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 150
+  },
+  {
+    "name": "brainfc.network.types.AnalysisResult.from_dict",
+    "signature": "(value)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/types.py",
+    "line": 167
+  },
+  {
+    "name": "brainfc.network.bridge._dataset",
+    "signature": "(payload)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/bridge.py",
+    "line": 14
+  },
+  {
+    "name": "brainfc.network.bridge.from_connectome",
+    "signature": "(connectome)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/bridge.py",
+    "line": 42
+  },
+  {
+    "name": "brainfc.network.bridge.load_connectome",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/bridge.py",
+    "line": 76
+  },
+  {
+    "name": "brainfc.network.analysis.analyze",
+    "signature": "(dataset, config=None, progress=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/analysis.py",
+    "line": 15
+  },
+  {
+    "name": "brainfc.network.io._path",
+    "signature": "(path: 'str | Path') -> 'Path'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 34
+  },
+  {
+    "name": "brainfc.network.io._numeric",
+    "signature": "(value: 'str') -> 'bool'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 47
+  },
+  {
+    "name": "brainfc.network.io._helper",
+    "signature": "(value: 'str') -> 'bool'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 55
+  },
+  {
+    "name": "brainfc.network.io._read_text",
+    "signature": "(path: 'Path') -> 'tuple[np.ndarray, dict[str, Any]]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 59
+  },
+  {
+    "name": "brainfc.network.io._check_array_header",
+    "signature": "(shape, dtype) -> 'None'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 121
+  },
+  {
+    "name": "brainfc.network.io._npy_header",
+    "signature": "(stream)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 128
+  },
+  {
+    "name": "brainfc.network.io._variables",
+    "signature": "(path: 'Path') -> 'tuple[list[dict[str, Any]], dict[str, Any]]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 140
+  },
+  {
+    "name": "brainfc.network.io._suggestion",
+    "signature": "(name: 'str', shape: 'list[int]') -> 'tuple[str, str]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 184
+  },
+  {
+    "name": "brainfc.network.io._array_suggestion",
+    "signature": "(filename: 'str', variable: 'str', shape: 'list[int]') -> 'tuple[str, str]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 197
+  },
+  {
+    "name": "brainfc.network.io._metadata_array",
+    "signature": "(filename: 'str', variable: 'str') -> 'bool'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 204
+  },
+  {
+    "name": "brainfc.network.io._source_name",
+    "signature": "(path: 'Path', supplied: 'str | None') -> 'str'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 213
+  },
+  {
+    "name": "brainfc.network.io.inspect_file",
+    "signature": "(path: 'str | Path', source_name: 'str | None' = None) -> 'dict[str, Any]'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/io.py",
+    "line": 220
+  },
+  {
+    "name": "brainfc.network.io._columns",
+    "signature": "(selection, count: 'int') -> 'list[int]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/io.py",
+    "line": 255
+  },
+  {
+    "name": "brainfc.network.io.load_data",
+    "signature": "(path: 'str | Path', kind: 'str' = 'auto', variable: 'str | None' = None, roi_columns: 'list[int] | str | None' = None, matrix_kind: 'str' = 'auto', roi_ids=None, labels=None, coordinates=None, metadata=None, preset: 'str' = 'generic', source_name: 'str | None' = None) -> 'BrainDataset'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/io.py",
+    "line": 275
+  },
+  {
+    "name": "brainfc.network.io.validate_dataset",
+    "signature": "(dataset: 'BrainDataset') -> 'list[str]'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/io.py",
+    "line": 387
+  },
+  {
+    "name": "brainfc.network.connectivity._timeseries",
+    "signature": "(value) -> 'np.ndarray'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 17
+  },
+  {
+    "name": "brainfc.network.connectivity._standardized",
+    "signature": "(data: 'np.ndarray') -> 'np.ndarray'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 35
+  },
+  {
+    "name": "brainfc.network.connectivity.compute_connectivity",
+    "signature": "(timeseries, method: 'str' = 'pearson') -> 'np.ndarray'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 45
+  },
+  {
+    "name": "brainfc.network.connectivity._transform_input",
+    "signature": "(matrix) -> 'tuple[np.ndarray, np.ndarray]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 76
+  },
+  {
+    "name": "brainfc.network.connectivity.fisher_z",
+    "signature": "(matrix) -> 'np.ndarray'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 94
+  },
+  {
+    "name": "brainfc.network.connectivity.inverse_fisher_z",
+    "signature": "(matrix) -> 'np.ndarray'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/connectivity.py",
+    "line": 111
+  },
+  {
+    "name": "brainfc.network.graph._validate_matrix",
+    "signature": "(matrix, roi_ids=None) -> 'tuple[np.ndarray, list[str]]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/graph.py",
+    "line": 13
+  },
+  {
+    "name": "brainfc.network.graph._positive_integer",
+    "signature": "(value, name: 'str') -> 'int'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/graph.py",
+    "line": 36
+  },
+  {
+    "name": "brainfc.network.graph._at_least",
+    "signature": "(values: 'np.ndarray', cutoff: 'float') -> 'np.ndarray'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/graph.py",
+    "line": 42
+  },
+  {
+    "name": "brainfc.network.graph.build_graph",
+    "signature": "(matrix, roi_ids=None, method: 'str' = 'density', threshold: 'float' = 0.2, density: 'float' = 0.1, k: 'int' = 5) -> 'nx.Graph'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/graph.py",
+    "line": 47
+  },
+  {
+    "name": "brainfc.network.graph.analyze_graph",
+    "signature": "(graph: 'nx.Graph') -> 'dict'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/graph.py",
+    "line": 116
+  },
+  {
+    "name": "brainfc.network.graph.to_payload",
+    "signature": "(graph: 'nx.Graph') -> 'dict'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/graph.py",
+    "line": 202
+  },
+  {
+    "name": "brainfc.network.hypergraph._edge_id",
+    "signature": "(value)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/hypergraph.py",
+    "line": 25
+  },
+  {
+    "name": "brainfc.network.hypergraph._members",
+    "signature": "(value, valid: 'set[str]') -> 'list[str]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/hypergraph.py",
+    "line": 31
+  },
+  {
+    "name": "brainfc.network.hypergraph._weight",
+    "signature": "(value) -> 'float'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/hypergraph.py",
+    "line": 43
+  },
+  {
+    "name": "brainfc.network.hypergraph.build_hypergraph",
+    "signature": "(matrix, roi_ids=None, method: 'str' = 'knn', ks=None, custom_edges=None, groups=None) -> 'xgi.Hypergraph'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/hypergraph.py",
+    "line": 49
+  },
+  {
+    "name": "brainfc.network.hypergraph.to_payload",
+    "signature": "(hypergraph: 'xgi.Hypergraph') -> 'dict'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/hypergraph.py",
+    "line": 163
+  },
+  {
+    "name": "brainfc.network.statistics._clean",
+    "signature": "(value)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/statistics.py",
+    "line": 13
+  },
+  {
+    "name": "brainfc.network.statistics._numbers",
+    "signature": "(values, name: 'str') -> 'pd.Series'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/statistics.py",
+    "line": 25
+  },
+  {
+    "name": "brainfc.network.statistics.describe",
+    "signature": "(values) -> 'dict'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/statistics.py",
+    "line": 39
+  },
+  {
+    "name": "brainfc.network.statistics._bh",
+    "signature": "(pvalues: 'list[float]') -> 'list[float]'",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/statistics.py",
+    "line": 53
+  },
+  {
+    "name": "brainfc.network.statistics.compare_groups",
+    "signature": "(data, group_column, subject_column, feature_columns, covariates=None) -> 'dict'",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/statistics.py",
+    "line": 62
+  },
+  {
+    "name": "brainfc.network.export._json",
+    "signature": "(value)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/export.py",
+    "line": 18
+  },
+  {
+    "name": "brainfc.network.export._write_rows",
+    "signature": "(path, rows)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/export.py",
+    "line": 22
+  },
+  {
+    "name": "brainfc.network.export._csv_bundle",
+    "signature": "(result, target)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/export.py",
+    "line": 40
+  },
+  {
+    "name": "brainfc.network.export._html_report",
+    "signature": "(result)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/export.py",
+    "line": 68
+  },
+  {
+    "name": "brainfc.network.export.export_result",
+    "signature": "(result, path, format=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/export.py",
+    "line": 93
+  },
+  {
+    "name": "brainfc.network.visualization.plot_result",
+    "signature": "(result, path=None, format=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/visualization.py",
+    "line": 12
+  },
+  {
+    "name": "brainfc.network.visualization.write_html",
+    "signature": "(result, path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/visualization.py",
+    "line": 71
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasSpec",
+    "signature": "(id: 'str', name: 'str', version: 'str', space: 'str', labels: 'list[dict]', sources: 'list[str]', license: 'str', affine: 'list[list[float]]', shape: 'list[int]', sha256: 'dict[str, str]', custom: 'bool' = True, schema_version: 'int' = 1) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 59
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasSpec.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 81
+  },
+  {
+    "name": "brainfc.network.atlas._digest",
+    "signature": "(path)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 86
+  },
+  {
+    "name": "brainfc.network.atlas._volume",
+    "signature": "(path, *, labels=False)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 94
+  },
+  {
+    "name": "brainfc.network.atlas._labels",
+    "signature": "(table)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 134
+  },
+  {
+    "name": "brainfc.network.atlas._surface",
+    "signature": "(mask, affine, *, step=1)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 181
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry",
+    "signature": "(root=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 208
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.list",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 228
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.get",
+    "signature": "(self, atlas_id)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 236
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.asset",
+    "signature": "(self, atlas_id, name)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 243
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.import_atlas",
+    "signature": "(self, parcellation, labels, *, name, space, reference, version='custom-1', sources=None, license='User supplied; retain original terms', atlas_id=None, custom=True, space_confirmed=False)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 260
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.bind",
+    "signature": "(self, result, atlas_id, ordered_roi_ids, *, confirmed=False)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 406
+  },
+  {
+    "name": "brainfc.network.atlas.AtlasRegistry.install",
+    "signature": "(self, atlas_id)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas.py",
+    "line": 457
+  },
+  {
+    "name": "brainfc.network.atlas_sources._download",
+    "signature": "(url, target)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/network/atlas_sources.py",
+    "line": 65
+  },
+  {
+    "name": "brainfc.network.atlas_sources.reference_brain",
+    "signature": "(root, space)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas_sources.py",
+    "line": 86
+  },
+  {
+    "name": "brainfc.network.atlas_sources.install_builtin",
+    "signature": "(registry, atlas_id)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/atlas_sources.py",
+    "line": 111
+  },
+  {
+    "name": "brainfc.network.view.ViewConfig",
+    "signature": "(style: str = 'ballstick', theme: str = 'paper', layer: str = 'graph', opacity: float = 0.2, labels: bool = False, only_selected: bool = False, selection: dict | None = None, camera: dict = <factory>, schema_version: int = 1) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/view.py",
+    "line": 9
+  },
+  {
+    "name": "brainfc.network.view.ViewConfig.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/view.py",
+    "line": 75
+  },
+  {
+    "name": "brainfc.network.view.ViewConfig.from_dict",
+    "signature": "(value)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/view.py",
+    "line": 80
+  },
+  {
+    "name": "brainfc.network.cli.main",
+    "signature": "(argv=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/network/cli.py",
+    "line": 12
   }
 ]

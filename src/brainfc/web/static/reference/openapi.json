@@ -1402,7 +1402,7 @@
   "info": {
     "description": "Local single-run fMRI connectivity API. Paths refer to this server's filesystem. Use /api/preflight before /api/jobs, then poll the returned id. Extraction shares the Python core. Bind to loopback and use one server per workspace. Responses and exports include local paths.",
     "title": "BrainFC",
-    "version": "0.3.0"
+    "version": "0.4.0"
   },
   "openapi": "3.1.0",
   "paths": {
@@ -1845,6 +1845,47 @@
         "summary": "Download a named result artifact or preprocessing log",
         "tags": [
           "Results"
+        ]
+      }
+    },
+    "/api/jobs/{job_id}/network-input": {
+      "post": {
+        "description": "Copy the full matrix and processing metadata to the local network workspace.\n\nOnly completed extraction jobs are accepted. Returns an uploaded-file record\nand the corresponding input options for /networks/api/v1/jobs. The source\nmatrix is not thresholded, and no signal cleaning/correlation is repeated.\nRepeated calls reuse the prepared input. No source files leave this server.",
+        "operationId": "network_input_api_jobs__job_id__network_input_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Transfer a completed extraction to network analysis with its ROI mapping",
+        "tags": [
+          "Network analysis"
         ]
       }
     },

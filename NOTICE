@@ -6,14 +6,23 @@ https://github.com/hanxiangmin/Hyper-Brain (Apache License 2.0).
 Adapted 2026-09-12. Changes include eight camera directions, coordinate bounds,
 smoothed display surfaces, translucent materials, foreground hover labels,
 and synchronized edge selection and eight-view export.
-Analysis is independent of Hyper-Brain.
+Hyper-Brain's graph, native hypergraph, atlas, statistics and local analysis
+workbench are integrated in src/brainfc/network and network-frontend as of
+BrainFC 0.4.0. The original Apache-2.0 license is retained. See
+docs/network/upstream.json for the exact upstream commit and source-file list.
+The hicbrain namespace is a compatibility alias to this single implementation.
 React and Three.js are distributed under their MIT licenses. Their complete
 license texts are included with the bundled frontend in THIRD_PARTY_NOTICES.txt.
-Atlas and participant datasets are not included in the distribution; their
-licenses and citations are determined by the original providers.
+Atlas downloads retain their original providers' licenses and citations.
+The reviewed rest01 example includes ROI signals, confounds and a binary brain
+mask; its direct-identifier review and distribution scope are documented in
+docs/privacy-review.md. Raw DICOM and individual T1/BOLD intensity images are excluded.
+The integrated network client retains its full dependency/WASM/font notices in
+src/brainfc/network/web/static/THIRD_PARTY_NOTICES.txt.
 
 The standalone diagram viewer in docs/assets/processing.html is generated with
 archify skill 2.16 (MIT), https://github.com/tt-a1i/archify.
 The accompanying license is in docs/assets/ARCHIFY-LICENSE.
 The README hero is AI-generated conceptual product artwork; the separately
-identified application previews use synthetic signals and are actual renders.
+identified README application previews use the reviewed rest01 signals and are
+actual renders. Older synthetic gallery examples remain explicitly identified.

@@ -1,4 +1,4 @@
-# HTTP 完整接口 · 0.3.0
+# HTTP 完整接口 · 0.4.0
 
 从实际 FastAPI OpenAPI 生成。运行服务后可在 `/docs`、`/redoc` 查看交互说明；机器可读定义在 `/openapi.json`，离线副本为 [openapi.json](openapi.json)。
 
@@ -766,6 +766,46 @@ Download a named result artifact or preprocessing log
   "responses": {
     "200": {
       "description": "Successful Response"
+    },
+    "422": {
+      "description": "Validation Error",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/HTTPValidationError"
+          }
+        }
+      }
+    }
+  }
+}
+```
+
+## POST /api/jobs/{job_id}/network-input
+
+Transfer a completed extraction to network analysis with its ROI mapping
+
+```json
+{
+  "parameters": [
+    {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+        "type": "string",
+        "title": "Job Id"
+      }
+    }
+  ],
+  "responses": {
+    "200": {
+      "description": "Successful Response",
+      "content": {
+        "application/json": {
+          "schema": {}
+        }
+      }
     },
     "422": {
       "description": "Validation Error",

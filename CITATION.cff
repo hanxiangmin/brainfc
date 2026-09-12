@@ -6,7 +6,7 @@ repository-code: "https://github.com/hanxiangmin/brainfc"
 abstract: "Local single-run fMRI to ROI time series and signed functional connectivity, with a Python API, command line, and local graphical interface."
 authors:
   - name: "BrainFC contributors"
-version: 0.3.0
+version: 0.4.0
 date-released: 2026-09-12
 license: Apache-2.0
 keywords:

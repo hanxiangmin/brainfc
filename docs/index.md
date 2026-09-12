@@ -23,3 +23,7 @@
 连接矩阵是一次扫描内 ROI 信号的相关性描述。库保留原始 ROI 顺序、有符号数值、原始帧索引及处理来源；显示筛选不修改矩阵。
 
 原始 DICOM/BIDS 由外部 dcm2niix/fMRIPrep 处理。库提供命令计划和调用接口，但完整外部预处理链路尚未在本项目验证环境中实跑。组间统计、疾病诊断、任务 GLM、超图构建不属于本库的计算范围。
+
+## 网络与超图
+
+[网络分析指南](network-analysis.md) · [Hyper-Brain 迁移](hyper-brain-migration.md) · [网络 HTTP 参考](network-http-reference.md)

@@ -1,0 +1,832 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>网络分析 HTTP 接口 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="http">网络分析 HTTP 完整接口</h1>
+<p>运行 <code>brainfc serve</code> 后，以下路由位于 <code>/networks</code> 下。交互说明在 <code>/networks/docs</code>，实际 OpenAPI 在 <code>/networks/openapi.json</code>。</p>
+<p>提取结果转入接口 <code>POST /api/jobs/{job_id}/network-input</code> 见主 HTTP 参考。矩阵上传、任务、图谱、统计请求示例见 <a href="network-analysis.html">网络分析指南</a>。以下签名来自实际网络服务的 OpenAPI。</p>
+<p>机器可读定义：<a href="network-openapi.json">network-openapi.json</a>。</p>
+<h2 id="get-networksapiv1atlases">GET /networks/api/v1/atlases</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Catalog&quot;,
+  &quot;operationId&quot;: &quot;catalog_api_v1_atlases_get&quot;,
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1atlases">POST /networks/api/v1/atlases</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Upload Atlas&quot;,
+  &quot;operationId&quot;: &quot;upload_atlas_api_v1_atlases_post&quot;,
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;multipart/form-data&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/Body_upload_atlas_api_v1_atlases_post&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1atlasesatlas_id">GET /networks/api/v1/atlases/{atlas_id}</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Spec&quot;,
+  &quot;operationId&quot;: &quot;spec_api_v1_atlases__atlas_id__get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;atlas_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Atlas Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1atlasesatlas_idinstall">POST /networks/api/v1/atlases/{atlas_id}/install</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Install&quot;,
+  &quot;operationId&quot;: &quot;install_api_v1_atlases__atlas_id__install_post&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;atlas_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Atlas Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1atlasesatlas_idassetsname">GET /networks/api/v1/atlases/{atlas_id}/assets/{name}</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Asset&quot;,
+  &quot;operationId&quot;: &quot;asset_api_v1_atlases__atlas_id__assets__name__get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;atlas_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Atlas Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;name&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Name&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1resultsresult_idatlas">POST /networks/api/v1/results/{result_id}/atlas</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Binding&quot;,
+  &quot;operationId&quot;: &quot;binding_api_v1_results__result_id__atlas_post&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    }
+  ],
+  &quot;requestBody&quot;: {
+    &quot;required&quot;: true,
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;additionalProperties&quot;: true,
+          &quot;title&quot;: &quot;Body&quot;
+        }
+      }
+    }
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1resultsresult_idmapped">GET /networks/api/v1/results/{result_id}/mapped</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Mapped Result&quot;,
+  &quot;operationId&quot;: &quot;mapped_result_api_v1_results__result_id__mapped_get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1resultsresult_idview">GET /networks/api/v1/results/{result_id}/view</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Get View&quot;,
+  &quot;operationId&quot;: &quot;get_view_api_v1_results__result_id__view_get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="put-networksapiv1resultsresult_idview">PUT /networks/api/v1/results/{result_id}/view</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Save View&quot;,
+  &quot;operationId&quot;: &quot;save_view_api_v1_results__result_id__view_put&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    }
+  ],
+  &quot;requestBody&quot;: {
+    &quot;required&quot;: true,
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;additionalProperties&quot;: true,
+          &quot;title&quot;: &quot;Body&quot;
+        }
+      }
+    }
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1health">GET /networks/api/v1/health</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Health&quot;,
+  &quot;operationId&quot;: &quot;health_api_v1_health_get&quot;,
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1uploads">GET /networks/api/v1/uploads</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Uploads&quot;,
+  &quot;operationId&quot;: &quot;uploads_api_v1_uploads_get&quot;,
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1uploads">POST /networks/api/v1/uploads</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Upload&quot;,
+  &quot;operationId&quot;: &quot;upload_api_v1_uploads_post&quot;,
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;multipart/form-data&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/Body_upload_api_v1_uploads_post&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1jobs">GET /networks/api/v1/jobs</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Jobs&quot;,
+  &quot;operationId&quot;: &quot;jobs_api_v1_jobs_get&quot;,
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1jobs">POST /networks/api/v1/jobs</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Submit&quot;,
+  &quot;operationId&quot;: &quot;submit_api_v1_jobs_post&quot;,
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;additionalProperties&quot;: true,
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;title&quot;: &quot;Body&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1jobsjob_id">GET /networks/api/v1/jobs/{job_id}</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Job&quot;,
+  &quot;operationId&quot;: &quot;job_api_v1_jobs__job_id__get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1jobsjob_idcancel">POST /networks/api/v1/jobs/{job_id}/cancel</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Cancel&quot;,
+  &quot;operationId&quot;: &quot;cancel_api_v1_jobs__job_id__cancel_post&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1jobsjob_idretry">POST /networks/api/v1/jobs/{job_id}/retry</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Retry&quot;,
+  &quot;operationId&quot;: &quot;retry_api_v1_jobs__job_id__retry_post&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1resultsresult_id">GET /networks/api/v1/results/{result_id}</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Result&quot;,
+  &quot;operationId&quot;: &quot;result_api_v1_results__result_id__get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1resultsresult_idexport">GET /networks/api/v1/results/{result_id}/export</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Export&quot;,
+  &quot;operationId&quot;: &quot;export_api_v1_results__result_id__export_get&quot;,
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;result_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Result Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;format&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;default&quot;: &quot;zip&quot;,
+        &quot;title&quot;: &quot;Format&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-networksapiv1template">GET /networks/api/v1/template</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Template&quot;,
+  &quot;operationId&quot;: &quot;template_api_v1_template_get&quot;,
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-networksapiv1statistics">POST /networks/api/v1/statistics</h2>
+<pre><code class="language-json">{
+  &quot;summary&quot;: &quot;Statistics&quot;,
+  &quot;operationId&quot;: &quot;statistics_api_v1_statistics_post&quot;,
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;additionalProperties&quot;: true,
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;title&quot;: &quot;Body&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {}
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="_1">数据模型</h2>
+<pre><code class="language-json">{
+  &quot;schemas&quot;: {
+    &quot;Body_upload_api_v1_uploads_post&quot;: {
+      &quot;properties&quot;: {
+        &quot;files&quot;: {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;,
+            &quot;contentMediaType&quot;: &quot;application/octet-stream&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;,
+          &quot;title&quot;: &quot;Files&quot;
+        }
+      },
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;required&quot;: [
+        &quot;files&quot;
+      ],
+      &quot;title&quot;: &quot;Body_upload_api_v1_uploads_post&quot;
+    },
+    &quot;Body_upload_atlas_api_v1_atlases_post&quot;: {
+      &quot;properties&quot;: {
+        &quot;metadata&quot;: {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;title&quot;: &quot;Metadata&quot;
+        },
+        &quot;parcellation&quot;: {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;contentMediaType&quot;: &quot;application/octet-stream&quot;,
+          &quot;title&quot;: &quot;Parcellation&quot;
+        },
+        &quot;labels&quot;: {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;contentMediaType&quot;: &quot;application/octet-stream&quot;,
+          &quot;title&quot;: &quot;Labels&quot;
+        },
+        &quot;reference&quot;: {
+          &quot;anyOf&quot;: [
+            {
+              &quot;type&quot;: &quot;string&quot;,
+              &quot;contentMediaType&quot;: &quot;application/octet-stream&quot;
+            },
+            {
+              &quot;type&quot;: &quot;null&quot;
+            }
+          ],
+          &quot;title&quot;: &quot;Reference&quot;
+        }
+      },
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;required&quot;: [
+        &quot;metadata&quot;,
+        &quot;parcellation&quot;,
+        &quot;labels&quot;
+      ],
+      &quot;title&quot;: &quot;Body_upload_atlas_api_v1_atlases_post&quot;
+    },
+    &quot;HTTPValidationError&quot;: {
+      &quot;properties&quot;: {
+        &quot;detail&quot;: {
+          &quot;items&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/ValidationError&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;,
+          &quot;title&quot;: &quot;Detail&quot;
+        }
+      },
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;title&quot;: &quot;HTTPValidationError&quot;
+    },
+    &quot;ValidationError&quot;: {
+      &quot;properties&quot;: {
+        &quot;loc&quot;: {
+          &quot;items&quot;: {
+            &quot;anyOf&quot;: [
+              {
+                &quot;type&quot;: &quot;string&quot;
+              },
+              {
+                &quot;type&quot;: &quot;integer&quot;
+              }
+            ]
+          },
+          &quot;type&quot;: &quot;array&quot;,
+          &quot;title&quot;: &quot;Location&quot;
+        },
+        &quot;msg&quot;: {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;title&quot;: &quot;Message&quot;
+        },
+        &quot;type&quot;: {
+          &quot;type&quot;: &quot;string&quot;,
+          &quot;title&quot;: &quot;Error Type&quot;
+        },
+        &quot;input&quot;: {
+          &quot;title&quot;: &quot;Input&quot;
+        },
+        &quot;ctx&quot;: {
+          &quot;type&quot;: &quot;object&quot;,
+          &quot;title&quot;: &quot;Context&quot;
+        }
+      },
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;required&quot;: [
+        &quot;loc&quot;,
+        &quot;msg&quot;,
+        &quot;type&quot;
+      ],
+      &quot;title&quot;: &quot;ValidationError&quot;
+    }
+  }
+}
+</code></pre></main></html>

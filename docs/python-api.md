@@ -187,4 +187,4 @@ print(plan.to_dict()["argv"])
 
 `InputError` 继承 `ValueError`，代表主动检测到的不兼容输入。文件权限、损坏的 JSON/表格和外部进程异常也可能以原始异常类型传播。推荐只捕获自己能处理的异常，记录文件名和参数；批处理可逐 run 捕获异常并保留成功结果。
 
-0.x 版本继续演进，推荐对可复现实验固定精确版本。`Connectome` 可变，直接实例化不会验证字段一致性；修改矩阵或 ROI 后，应自行维护一致性。可选 `result.to_hicbrain()` 需要另外安装提供 `hicbrain` 模块的 Hyper-Brain。
+0.x 版本继续演进，推荐对可复现实验固定精确版本。`Connectome` 可变，直接实例化不会验证字段一致性；修改矩阵或 ROI 后，应自行维护一致性。从 0.4.0 起，使用 `result.to_network()` 或 `result.analyze_network()` 进入内置图/超图模块；`to_hicbrain()` 保留为兼容别名，不再需要另装 Hyper-Brain。见[网络分析指南](network-analysis.md)。

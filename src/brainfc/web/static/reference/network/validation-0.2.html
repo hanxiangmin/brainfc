@@ -1,0 +1,50 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>validation-0.2 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="hic-brain-02">HIC-Brain 0.2 验证记录</h1>
+<p>日期：2026-09-10。环境：Windows、Python 3.12.14、Node.js 24.19.0；浏览器使用独立 Chromium / WebGL 2 软件渲染。下列为本轮实际执行的检查，0.1 的历史数据检查另见 <a href="validation.html">原验收记录</a>。</p>
+<h2 id="_1">核心与结构身份</h2>
+<ul>
+<li>Python：138 项测试通过，包含原有 100 项与新增 38 项图谱、空间、映射和视图测试。</li>
+<li>前端：5 项结构身份测试通过；TypeScript 检查与生产构建通过。</li>
+<li>Ruff 检查通过。第三方许可生成器验证 21 个运行时包和 14 个补充许可来源。</li>
+<li>保留普通边稳定 ID、原始连接权重和完整超边成员。数值 ID <code>1</code> 与字符串 ID <code>"1"</code> 的超边可分别选择；不会因成员相同而合并自定义超边。</li>
+<li>验证不同 ROI 顺序映射、源文件不变、非连续图像标签、错误 / 重复 / 缺失标签、整数溢出、非有限值、4D 输入、空间单位、qform / sform、空间重叠、MNI 左右半球冲突、无效相机等情况。</li>
+<li>单元测试仅使用合成输入，不需要网络、公开数据集或图谱下载。</li>
+</ul>
+<p>测试过程中出现上游 Starlette / scikit-image 的弃用提示；没有失败测试。测试通过不代表任意硬件、任意新图谱均已验证。</p>
+<h2 id="_2">图谱与真实上传</h2>
+<p>五个标准目录项已实际下载并生成表面：AAL SPM12 90 / 116（MNIColin27）及 Schaefer2018 100 / 200 / 400、7 网络（MNI152NLin6Asym）。它们的分区影像、标签、参考脑和来源缓存独立于安装包。</p>
+<p>本轮从已有上传副本重新读取 ABIDE1、ABIDE2、ADHD、MDD、ADNI 各一个输入，全部经过正式上传、解析、计算和结果接口，5/5 成功。MDD 仍明确选择已记录的列范围，仅验证数值解析；没有确认其解剖映射。没有因矩阵尺寸相同而自动绑定图谱。</p>
+<p>另生成明确标为 Synthetic 的 90、116、200、400 ROI 时序，用正式上传与分析接口生成网络，再绑定已知图谱顺序。Python 与 HTTP 的 ROI 身份、图 / 超图结构及数值一致，数值比较容差为 <code>rtol=1e-10, atol=1e-12</code>。这些示例用于验证界面，不是患者结果或疾病模型。</p>
+<h2 id="_3">三维交互</h2>
+<ul>
+<li>116 ROI 检查全部四种风格、深浅两种皮肤；显示全部 267 条普通边、112 条超边及 116 个缩写时，切换不改变结构。</li>
+<li>90、200、400 ROI 检查包络、骨架、分区表面切换；节点、连接、超边和标签数量与源结果一致。标准球棍及八种组合另在 116 ROI 上检查。</li>
+<li>通过实际画布拖动、右键平移、滚轮缩放、复位和透明脑内拾取，验证相机及选择。</li>
+<li>节点、普通边和超边详情与成员表、热图联动；选择后切换风格保持同一对象；“仅看所选”与“恢复全局”可用。</li>
+<li>当前视角 PNG 从实际画布导出；JSON 导出的连接矩阵、普通图及原生超图与原始分析一致。保存 / 重开、导入 JSON 恢复相机与选择已检查。</li>
+<li>NiiVue 实际加载参考影像和分区，不只检查空画布；检查切片组件没有报错，并查看渲染截图。</li>
+<li>自定义图谱经过网页 NIfTI / TSV 上传：5 个合成 ROI、非零世界坐标平移、合成参考影像。5 ROI 图谱绑定 116 行输入被拒绝；匹配的 5 行输入成功。相机按自定义表面位置居中；三条共线 / 共面超边均回退为骨架，完整成员和两个同成员不同类型 ID 保留。</li>
+</ul>
+<p>浏览器检查使用软件渲染，不作为 GPU 帧率基准。400 个长缩写同时出现仍可能拥挤；系统保留全部标签并提供用户主动隐藏标签、搜索、旋转 / 缩放、仅看所选。复杂结构降低几何精度，不自动删除边或超边。</p>
+<h2 id="_4">安装与离线</h2>
+<p>新建 Python 3.12 环境，从 wheel 安装 <code>[web]</code> 及全部依赖；<code>pip check</code> 无依赖冲突。隔离模式确认导入来自安装环境 <code>site-packages</code>，不是源码目录。</p>
+<p>安装环境执行以下检查：</p>
+<ul>
+<li>禁止网络连接后，Python 分析与五个已缓存标准图谱读取通过。</li>
+<li>使用安装包启动本地服务，上传合成矩阵、运行独立计算任务，与同环境 Python API 比较，结果一致。</li>
+<li>浏览器阻断所有非本地 HTTP(S) 请求，八种展示组合与切片核查成功；没有外部请求、页面异常或失败的资源响应。网页脚本随 wheel 分发。</li>
+</ul>
+<p>首次获取尚未安装的标准图谱需要网络；完全离线机器可导入已经取得且许可允许使用的匹配 NIfTI、标签表和参考脑。</p>
+<p>构建 wheel / sdist，执行元数据检查与内容检查。发行包包含代码、网页、文档和合成测试，不包含用户数据、已安装图谱、工作区数据库、历史结果或本机数据根目录。具体安装依赖见 <a href="https://github.com/hanxiangmin/Hyper-Brain/blob/ded30680e600ecbe79c2ef67a1ffaae02e3d7c33/docs/requirements-tested-windows-py312-0.2.txt">Windows Python 3.12 依赖快照</a>。此记录不表示已发布到 PyPI 或 GitHub。</p>
+<h2 id="_5">复现</h2>
+<pre><code class="language-bash">python -m pytest -q
+python -m ruff check src tests
+cd frontend
+npm ci
+npm run check
+npm test
+npm run build
+cd ..
+python -m build
+python -m twine check dist/hic_brain-0.2.0*
+</code></pre>
+<p>交互验证使用本地独立测试浏览器、真实文件上传和结果接口。测试截图、数据副本、下载缓存与浏览器检查日志保存在本轮本地工作区，不作为科研结果分发。</p></main></html>

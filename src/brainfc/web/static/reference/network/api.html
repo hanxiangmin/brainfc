@@ -1,0 +1,105 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>api · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="python-api-and-local-http-api">Python API and local HTTP API</h1>
+<h2 id="shared-data-objects">Shared data objects</h2>
+<p><code>BrainDataset(data, kind, roi_ids=[], labels=[], coordinates=None, matrix_kind='correlation', metadata={}, warnings=[])</code> holds a numeric T×R timeseries or R×R connectivity array. <code>coordinates</code>, when present, is R×3, with the coordinate space named in metadata. ROI IDs must be unique.</p>
+<p><code>AnalysisConfig</code> contains connectivity_method (<code>pearson</code>, <code>spearman</code>, <code>partial</code>); graph_method (<code>weighted</code>, <code>threshold</code>, <code>density</code>, <code>knn</code>, <code>mst</code>); threshold, density and k; hypergraph_method (<code>knn</code>, <code>multiscale</code>, <code>custom</code>, <code>template</code>); hypergraph_ks; custom_edges; groups; compute_graph and compute_hypergraph. Defaults: Pearson, graph density 0.1, hypergraph kNN k=5. Both analyses enabled.</p>
+<p><code>AnalysisResult</code> stores correlation, ROI identities, labels, anatomical coordinates, native graph/hypergraph payloads, config, metadata, warnings and software version. <code>layouts.graph_2d</code> separately stores a deterministic circular display layout by ROI ID, with unitless coordinates and <code>coordinate_space='display'</code>. <code>to_dict()</code> is JSON-safe; <code>from_dict()</code> restores an exported result (including older results without saved layouts).</p>
+<h2 id="read-and-validate">Read and validate</h2>
+<pre><code class="language-python">from brainfc.network.io import inspect_file, load_data, validate_dataset
+
+print(inspect_file(&quot;subject.mat&quot;))
+data = load_data(&quot;subject.mat&quot;, kind=&quot;timeseries&quot;, variable=&quot;ROISignals&quot;,
+                roi_columns=&quot;0:116&quot;, metadata={&quot;tr&quot;: 2.0})
+warnings = validate_dataset(data)
+</code></pre>
+<p><code>roi_columns</code> accepts a zero-based integer list or a half-open Python slice string. Multi-array MAT/NPZ requires a variable. <code>matrix_kind</code> is <code>auto</code>, <code>correlation</code>, <code>fisher_z</code>, or <code>covariance</code>. Presets are <code>generic</code>, <code>abide1</code>, <code>abide2</code>, <code>adhd</code>, <code>mdd</code>, <code>adni</code>; they never infer diagnosis or anatomical labels.</p>
+<h2 id="construct-structures-directly">Construct structures directly</h2>
+<pre><code class="language-python">from brainfc.network.connectivity import compute_connectivity, fisher_z, inverse_fisher_z
+from brainfc.network.graph import build_graph, analyze_graph
+from brainfc.network.hypergraph import build_hypergraph, to_payload
+
+fc = compute_connectivity(data.data, method=&quot;pearson&quot;)
+graph = build_graph(fc, data.roi_ids, method=&quot;density&quot;, density=0.1)
+metrics = analyze_graph(graph)
+hypergraph = build_hypergraph(fc, data.roi_ids, method=&quot;custom&quot;,
+    custom_edges=[{&quot;id&quot;: &quot;network-A&quot;, &quot;members&quot;: data.roi_ids[:3], &quot;weight&quot;: 1}])
+native = to_payload(hypergraph)
+</code></pre>
+<p>Graph functions return NetworkX Graph objects; hypergraph construction returns an XGI Hypergraph. <code>to_payload</code> retains native hyperedge IDs and membership. kNN-generated duplicate member sets are consolidated with their originating scales/centers retained.</p>
+<h2 id="cohort-statistics">Cohort statistics</h2>
+<pre><code class="language-python">import pandas as pd
+from brainfc.network.statistics import compare_groups
+
+table = pd.read_csv(&quot;participant_metrics.csv&quot;)
+comparison = compare_groups(table, group_column=&quot;group&quot;, subject_column=&quot;subject_id&quot;,
+    feature_columns=[&quot;efficiency&quot;, &quot;mean_hyperdegree&quot;], covariates=[&quot;age&quot;, &quot;mean_fd&quot;])
+</code></pre>
+<p>Two groups and independent subject IDs are required. With covariates, categorical covariates are encoded by the documented implementation; consult returned design and exclusions. Missing rows, tested families and group order are reported. ROI rows or repeated scans must not be presented as independent participants.</p>
+<h2 id="exports">Exports</h2>
+<p><code>export_result(result, path, format=None)</code> supports json, html, svg, png, pdf, graphml, hyperedges, zip, csv. <code>csv</code> is a ZIP of complete labeled tables. <code>zip</code> adds the JSON source of truth, standalone HTML, GraphML, native hyperedges, and figures. Spreadsheet values that resemble formulas are escaped; JSON preserves exact identifiers.</p>
+<h2 id="local-http">Local HTTP</h2>
+<h3 id="atlas-and-independent-view-state-02">Atlas and independent view state (0.2)</h3>
+<pre><code class="language-python">from brainfc.network import AtlasRegistry, AtlasSpec, ViewConfig
+
+registry = AtlasRegistry(&quot;./my-analysis/atlases&quot;)
+catalog = registry.list()                   # includes uninstalled standard entries
+spec = registry.install(&quot;aal-spm12-116&quot;)   # explicit first-use download
+# Supply your independently verified, ordered atlas IDs, one per matrix row.
+mapped = registry.bind(result, spec[&quot;id&quot;], ordered_roi_ids, confirmed=True)
+view = ViewConfig(style=&quot;envelope&quot;, theme=&quot;midnight&quot;, layer=&quot;both&quot;, opacity=0.2)
+
+custom = registry.import_atlas(&quot;atlas.nii.gz&quot;, &quot;labels.tsv&quot;,
+    name=&quot;My parcellation&quot;, space=&quot;my-reference-v1&quot;, version=&quot;1.0&quot;,
+    reference=&quot;aligned_brain_only_reference.nii.gz&quot;, space_confirmed=True)
+surface_path = registry.asset(custom[&quot;id&quot;], &quot;geometry.json&quot;)
+</code></pre>
+<p><code>AtlasSpec</code> records version, exact space, labels / names / hemispheres / representative coordinates, source URLs, license and source/content hashes. <code>bind</code> returns a copy, retaining source ROI IDs, connectivity, graph IDs, native hyperedges and analysis parameters. Its added <code>metadata.roi_metadata</code> maps source ROI IDs to atlas ROI IDs. Anatomical coordinates use RAS+ millimetres; display layouts stay separate. Installation and custom-import details: <a href="viewer-atlases.html">atlas guide</a>.</p>
+<p><code>ViewConfig</code> fields are <code>style</code>, <code>theme</code>, <code>layer</code>, <code>opacity</code>, <code>labels</code>, <code>only_selected</code>, <code>selection</code>, <code>camera</code>, <code>schema_version</code>. Camera contains <code>position</code>, <code>target</code>, <code>up</code> as finite XYZ vectors. Selection is <code>{kind: 'node'|'edge'|'hyperedge', id: stable_string_key}</code>; native hyperedge IDs are encoded with type in the view only, e.g. <code>'["number",1]'</code> and <code>'["string","1"]'</code>. <code>to_dict</code> / <code>from_dict</code> validates independent view JSON.</p>
+<table>
+<thead>
+<tr>
+<th>Method / endpoint</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET <code>/api/v1/atlases</code></td>
+<td>List standard catalogue and locally installed atlases</td>
+</tr>
+<tr>
+<td>POST <code>/api/v1/atlases/{id}/install</code></td>
+<td>Download official resources and generate local geometry</td>
+</tr>
+<tr>
+<td>GET <code>/api/v1/atlases/{id}</code></td>
+<td>Return installed AtlasSpec</td>
+</tr>
+<tr>
+<td>POST <code>/api/v1/atlases</code></td>
+<td>Multipart <code>parcellation</code>, <code>labels</code>, optional <code>reference</code>, JSON string <code>metadata</code></td>
+</tr>
+<tr>
+<td>GET <code>/api/v1/atlases/{id}/assets/{name}</code></td>
+<td>Read allowlisted geometry, labels, parcellation or reference</td>
+</tr>
+<tr>
+<td>POST <code>/api/v1/results/{id}/atlas</code></td>
+<td>Bind explicit <code>atlas_id</code>, <code>ordered_roi_ids</code>, <code>confirmed: true</code></td>
+</tr>
+<tr>
+<td>GET <code>/api/v1/results/{id}/mapped</code></td>
+<td>Read result plus verified atlas binding, leaving original result unchanged</td>
+</tr>
+<tr>
+<td>GET / PUT <code>/api/v1/results/{id}/view</code></td>
+<td>Read / validate and save ViewConfig</td>
+</tr>
+</tbody>
+</table>
+<p>Atlas upload metadata requires <code>name</code>, exact <code>space</code>, and <code>space_confirmed: true</code>; optional <code>version</code>, <code>sources</code>, <code>license</code>. Custom spaces require their own reference brain. Standard spaces can use their matched installed/downloaded reference when omitted. An invalid import returns 422; a failed upstream installation returns 502 with retry context. Atlas generation runs outside the HTTP event loop; analysis jobs retain their process queue.</p>
+<h3 id="existing-analysis-endpoints">Existing analysis endpoints</h3>
+<p>The web extra provides FastAPI and interactive OpenAPI documentation at <code>/docs</code>. Endpoints are <code>/api/v1/uploads</code>, <code>/api/v1/jobs</code>, <code>/api/v1/jobs/{id}</code>, <code>/api/v1/jobs/{id}/cancel</code>, <code>/api/v1/jobs/{id}/retry</code>, <code>/api/v1/results/{id}</code>, <code>/api/v1/results/{id}/export</code>, <code>/api/v1/statistics</code> and <code>/api/v1/template</code>.</p>
+<p>Uploads use multipart field <code>files</code>. Job JSON has <code>file_ids</code>, <code>input</code> (load_data options except path), and <code>analysis</code> (AnalysisConfig). File IDs are opaque; arbitrary server file paths are not accepted. Local service access from a foreign browser origin is rejected.</p>
+<pre><code class="language-json">{&quot;file_ids&quot;:[&quot;returned-upload-id&quot;],&quot;input&quot;:{&quot;kind&quot;:&quot;timeseries&quot;,&quot;variable&quot;:&quot;ROISignals&quot;,&quot;roi_columns&quot;:&quot;0:116&quot;},&quot;analysis&quot;:{&quot;graph_method&quot;:&quot;density&quot;,&quot;density&quot;:0.1,&quot;hypergraph_method&quot;:&quot;knn&quot;,&quot;k&quot;:5}}
+</code></pre>
+<p>Jobs are durable across restarts. Running/queued work is marked interrupted on restart; retry creates a new job rather than silently overwriting results. One subprocess runs at a time. Batch failures are isolated and explicitly listed beside successful results.</p></main></html>

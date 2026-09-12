@@ -1,6 +1,6 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>全部函数与参数 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="api-030">API 完整参考 · 0.3.0</h1>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>全部函数与参数 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="api-040">API 完整参考 · 0.4.0</h1>
 <p>由实际 Python 签名和源码 docstring 自动生成。修改接口后运行 <code>python scripts/generate_reference.py</code>；CI 检查文档是否同步。</p>
-<p>共 <strong>48 个类、函数和方法条目</strong>；包括所有模块公开处理函数及 <code>_confounds</code> 的行为契约。HTTP 数据模型另见 <a href="http-reference.html">HTTP 完整接口</a>。</p>
+<p>共 <strong>93 个类、函数和方法条目</strong>；包括所有模块公开处理函数及 <code>_confounds</code> 的行为契约。HTTP 数据模型另见 <a href="http-reference.html">HTTP 完整接口</a>。</p>
 <p>推荐入口见 <a href="python-api.html">Python 使用指南</a>。底层函数面向高级用户，完整校验仍由 <code>extract_connectome</code> 执行。</p>
 <h2 id="config">Config 默认值</h2>
 <table>
@@ -311,23 +311,60 @@ Embeds matrices and provenance including local input paths. Without coordinates
 the report still shows matrix/QC. Requires browser WebGL for the 3D view.
 </code></pre>
 <p>源码：<code>src/brainfc/models.py</code>，第 273 行。</p>
-<h3 id="connectometo_hicbrain">Connectome.to_hicbrain</h3>
-<pre><code class="language-python">Connectome.to_hicbrain(self)
+<h3 id="connectometo_network">Connectome.to_network</h3>
+<pre><code class="language-python">Connectome.to_network(self)
 </code></pre>
-<pre><code class="language-text">Create a connectivity BrainDataset in separately installed Hyper-Brain.
+<pre><code class="language-text">Copy this result into the integrated brainfc.network BrainDataset.
 
 Returns
 -------
-hicbrain.BrainDataset
-    A copy of the signed matrix with ROI IDs, names, optional coordinates and
-    brainfc provenance in metadata. No hyperedges are inferred.
+brainfc.network.BrainDataset
+    Complete signed connectivity, original ROI order, coordinates, frame
+    indices, QC and provenance. No temporal reprocessing is performed.
 
 Raises
 ------
-ImportError
-    The independent hicbrain import is unavailable. Hyper-Brain is optional.
+brainfc.network.ValidationError
+    Invalid matrix, ROI identities/order, or coordinates. All processing
+    and display metadata is copied. No separate installation is needed.
 </code></pre>
 <p>源码：<code>src/brainfc/models.py</code>，第 308 行。</p>
+<h3 id="connectomeanalyze_network">Connectome.analyze_network</h3>
+<pre><code class="language-python">Connectome.analyze_network(self, config=None, progress=None)
+</code></pre>
+<pre><code class="language-text">Analyze graphs/hypergraphs directly from this run's full matrix.
+
+Parameters
+----------
+config : brainfc.network.AnalysisConfig, dict or None
+    None uses density=0.1 graph and k=5 FC-profile hypergraph defaults.
+    Prefer an explicit configuration for reproducible research.
+progress : callable or None
+    Optional callback receiving (percent, message).
+
+Returns
+-------
+brainfc.network.AnalysisResult
+    Signed graph edges, native hyperedges, metrics and source metadata.
+    The original Connectome is unchanged. Constructed hyperedges are
+    descriptive structures, not evidence of higher-order interactions.
+
+Raises
+------
+brainfc.network.ValidationError
+    Invalid connectome or analysis configuration.
+</code></pre>
+<p>源码：<code>src/brainfc/models.py</code>，第 327 行。</p>
+<h3 id="connectometo_hicbrain">Connectome.to_hicbrain</h3>
+<pre><code class="language-python">Connectome.to_hicbrain(self)
+</code></pre>
+<pre><code class="language-text">Compatibility alias for to_network, retained for existing scripts.
+
+Returns brainfc.network.BrainDataset (also exposed as hicbrain.BrainDataset).
+No separate Hyper-Brain installation is needed; new code should use
+to_network or analyze_network. Validation and copying match to_network.
+</code></pre>
+<p>源码：<code>src/brainfc/models.py</code>，第 354 行。</p>
 <h2 id="brainfcpipeline">brainfc.pipeline</h2>
 <h3 id="fingerprint">fingerprint</h3>
 <pre><code class="language-python">fingerprint(path)
@@ -967,7 +1004,7 @@ SystemExit(2) for usage, InputError and common path errors. Unexpected
 library/external-process errors propagate; a failed batch exits with 2
 after preserving successful run outputs and batch.json.
 </code></pre>
-<p>源码：<code>src/brainfc/cli.py</code>，第 61 行。</p>
+<p>源码：<code>src/brainfc/cli.py</code>，第 70 行。</p>
 <h2 id="brainfcwebapp">brainfc.web.app</h2>
 <h3 id="create_app">create_app</h3>
 <pre><code class="language-python">create_app(workspace=None)
@@ -982,4 +1019,458 @@ account authentication. Bind to loopback, as brainfc serve does.
 The app uses one worker with at most eight active/queued jobs. /docs, /redoc
 and /openapi.json describe HTTP contracts; see docs/http-api.md.
 </code></pre>
-<p>源码：<code>src/brainfc/web/app.py</code>，第 37 行。</p></main></html>
+<p>源码：<code>src/brainfc/web/app.py</code>，第 37 行。</p>
+<h2 id="brainfcnetworktypes">brainfc.network.types</h2>
+<h3 id="validationerror">ValidationError</h3>
+<pre><code class="language-python">ValidationError
+</code></pre>
+<pre><code class="language-text">An input cannot be analyzed without an explicit correction.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 12 行。</p>
+<h3 id="braindataset">BrainDataset</h3>
+<pre><code class="language-python">BrainDataset(data: 'np.ndarray', kind: 'str', roi_ids: 'list[str]' = &lt;factory&gt;, labels: 'list[str]' = &lt;factory&gt;, coordinates: 'np.ndarray | None' = None, matrix_kind: 'str' = 'correlation', metadata: 'dict[str, Any]' = &lt;factory&gt;, warnings: 'list[str]' = &lt;factory&gt;) -&gt; None
+</code></pre>
+<pre><code class="language-text">Network-analysis input: a matrix or already-prepared ROI time series.
+
+data is a real 2D array; kind is 'connectivity' (R x R) or 'timeseries'
+(T x R). roi_ids and labels are ordered nonempty strings, defaulting to
+ROI_001... and the IDs respectively. coordinates is optional R x 3 RAS+ mm;
+declare its exact coordinate_space in metadata. matrix_kind is correlation,
+fisher_z or covariance (last two only for connectivity). metadata and warnings
+hold caller provenance and known limitations. Construction coerces numeric
+values; validate_dataset/analyze performs scientific shape/scale checks.
+Matrices are not copied when the input already has float dtype.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 17 行。</p>
+<h3 id="braindatasetn_rois">BrainDataset.n_rois</h3>
+<pre><code class="language-python">BrainDataset.n_rois
+</code></pre>
+<pre><code class="language-text">Return the number of data columns, i.e. ordered regions.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 55 行。</p>
+<h3 id="analysisconfig">AnalysisConfig</h3>
+<pre><code class="language-python">AnalysisConfig(connectivity_method: 'str' = 'pearson', graph_method: 'str' = 'density', threshold: 'float' = 0.2, density: 'float' = 0.1, k: 'int' = 5, hypergraph_method: 'str' = 'knn', hypergraph_ks: 'list[int]' = &lt;factory&gt;, custom_edges: 'list[dict[str, Any]]' = &lt;factory&gt;, groups: 'dict[str, list[str]]' = &lt;factory&gt;, compute_graph: 'bool' = True, compute_hypergraph: 'bool' = True) -&gt; None
+</code></pre>
+<pre><code class="language-text">Settings for descriptive graph and hypergraph construction.
+
+connectivity_method: pearson/spearman/partial, only used for time series;
+partial uses Ledoit-Wolf shrinkage. No signal cleaning is performed here.
+graph_method: weighted/threshold/density/knn/mst; signed values are preserved,
+while edge selection ranks absolute weights. threshold is in [0,1], density
+in (0,1], k a positive integer. Cutoff ties can increase the realized density.
+hypergraph_method: knn/multiscale/template/custom. knn uses k; multiscale uses
+hypergraph_ks. custom_edges contains {id, members, optional weight} records;
+groups maps template IDs to ROI-ID lists. Custom IDs retain their str/int type
+and distinct IDs with identical memberships remain distinct.
+compute_graph/compute_hypergraph enable each structure; at least one must be
+true. All defaults appear in the generated signature. Invalid configuration
+raises ValidationError. Constructed hyperedges are descriptive, not a test
+for irreducible physiological interactions.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 61 行。</p>
+<h3 id="analysisconfigto_dict">AnalysisConfig.to_dict</h3>
+<pre><code class="language-python">AnalysisConfig.to_dict(self)
+</code></pre>
+<pre><code class="language-text">Return a deep dataclass-field dictionary suitable for JSON serialization.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 112 行。</p>
+<h3 id="analysisconfigfrom_dict">AnalysisConfig.from_dict</h3>
+<pre><code class="language-python">AnalysisConfig.from_dict(data)
+</code></pre>
+<pre><code class="language-text">Validate keyword fields and construct a configuration; reject unknown keys.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 117 行。</p>
+<h3 id="analysisresult">AnalysisResult</h3>
+<pre><code class="language-python">AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.4.0', layouts: 'dict[str, Any]' = &lt;factory&gt;) -&gt; None
+</code></pre>
+<pre><code class="language-text">Serializable descriptive network result, normally returned by analyze.
+
+connectivity: full R x R correlation (unit diagonal). roi_ids/labels preserve
+input order; coordinates are independent of display layouts. graph contains
+signed edges, construction metadata and global/node metrics; hypergraph holds
+native member sets with original IDs, sparse incidence and structure metrics.
+config is the resolved AnalysisConfig; metadata holds input hashes, coordinate
+space and processing provenance; warnings lists limitations. version records
+BrainFC's version; layouts stores display-only positions, never anatomy.
+Direct construction/from_dict is not a substitute for analyze validation.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 126 行。</p>
+<h3 id="analysisresultto_dict">AnalysisResult.to_dict</h3>
+<pre><code class="language-python">AnalysisResult.to_dict(self)
+</code></pre>
+<pre><code class="language-text">Return JSON-ready data; arrays become lists and nonfinite scalars become None.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 150 行。</p>
+<h3 id="analysisresultfrom_dict">AnalysisResult.from_dict</h3>
+<pre><code class="language-python">AnalysisResult.from_dict(value)
+</code></pre>
+<pre><code class="language-text">Restore arrays from a trusted serialized result; does not run scientific validation.
+</code></pre>
+<p>源码：<code>src/brainfc/network/types.py</code>，第 167 行。</p>
+<h2 id="brainfcnetworkbridge">brainfc.network.bridge</h2>
+<h3 id="from_connectome">from_connectome</h3>
+<pre><code class="language-python">from_connectome(connectome)
+</code></pre>
+<pre><code class="language-text">Copy a BrainFC Connectome into a network-analysis BrainDataset.
+
+Parameters
+----------
+connectome : brainfc.Connectome
+    An extracted run, with its complete signed correlation matrix.
+
+Returns
+-------
+BrainDataset
+    Connectivity input with the original ROI order, names, coordinates,
+    frame indices, QC and processing provenance. Available display geometry
+    is copied into metadata; no atlas is guessed from the matrix size.
+
+Raises
+------
+ValidationError
+    Wrong input type, inconsistent dimensions/ROI identifiers, invalid
+    coordinates, or an invalid correlation matrix.
+
+Notes
+-----
+This does not clean signals, recompute correlations, threshold the matrix
+or construct hyperedges. The returned arrays/metadata are independent copies.
+Pass the result to analyze with an explicit AnalysisConfig.
+</code></pre>
+<p>源码：<code>src/brainfc/network/bridge.py</code>，第 42 行。</p>
+<h3 id="load_connectome">load_connectome</h3>
+<pre><code class="language-python">load_connectome(path)
+</code></pre>
+<pre><code class="language-text">Read a saved BrainFC result as a network-analysis BrainDataset.
+
+Parameters
+----------
+path : str or pathlib.Path
+    A Connectome.save output directory or its result.json file. Input paths
+    recorded inside provenance are metadata only and are never opened.
+
+Returns
+-------
+BrainDataset
+    Same transfer contract as from_connectome; time series are not reprocessed.
+
+Raises
+------
+FileNotFoundError
+    Result JSON does not exist.
+ValidationError
+    JSON is invalid, schema_version is unsupported, or the matrix/ROI mapping
+    fails validation. Loading never modifies the saved result.
+</code></pre>
+<p>源码：<code>src/brainfc/network/bridge.py</code>，第 76 行。</p>
+<h2 id="brainfcnetworkanalysis">brainfc.network.analysis</h2>
+<h3 id="analyze">analyze</h3>
+<pre><code class="language-python">analyze(dataset, config=None, progress=None)
+</code></pre>
+<pre><code class="language-text">Analyze a validated dataset without modifying it or its source file.
+
+``progress``, when supplied, receives ``(percent, message)``. Returned
+structures retain ROI identities; display layouts never change coordinates.
+</code></pre>
+<p>源码：<code>src/brainfc/network/analysis.py</code>，第 15 行。</p>
+<h2 id="brainfcnetworkio">brainfc.network.io</h2>
+<h3 id="inspect_file">inspect_file</h3>
+<pre><code class="language-python">inspect_file(path: 'str | Path', source_name: 'str | None' = None) -&gt; 'dict[str, Any]'
+</code></pre>
+<pre><code class="language-text">Return array candidates and nonbinding parsing suggestions, without paths.
+</code></pre>
+<p>源码：<code>src/brainfc/network/io.py</code>，第 220 行。</p>
+<h3 id="load_data">load_data</h3>
+<pre><code class="language-python">load_data(path: 'str | Path', kind: 'str' = 'auto', variable: 'str | None' = None, roi_columns: 'list[int] | str | None' = None, matrix_kind: 'str' = 'auto', roi_ids=None, labels=None, coordinates=None, metadata=None, preset: 'str' = 'generic', source_name: 'str | None' = None) -&gt; 'BrainDataset'
+</code></pre>
+<pre><code class="language-text">Read a numeric file and validate it, preserving input scale and ROI order.
+
+Fisher-z values are never guessed from their range and are never silently
+converted here. Select ``matrix_kind='fisher_z'`` or use a named FisherZ MAT
+variable; the analysis layer performs the recorded inverse transform.
+</code></pre>
+<p>源码：<code>src/brainfc/network/io.py</code>，第 275 行。</p>
+<h3 id="validate_dataset">validate_dataset</h3>
+<pre><code class="language-python">validate_dataset(dataset: 'BrainDataset') -&gt; 'list[str]'
+</code></pre>
+<pre><code class="language-text">Validate scientific shape/scale contracts; return nonblocking metadata gaps.
+</code></pre>
+<p>源码：<code>src/brainfc/network/io.py</code>，第 387 行。</p>
+<h2 id="brainfcnetworkconnectivity">brainfc.network.connectivity</h2>
+<h3 id="compute_connectivity">compute_connectivity</h3>
+<pre><code class="language-python">compute_connectivity(timeseries, method: 'str' = 'pearson') -&gt; 'np.ndarray'
+</code></pre>
+<pre><code class="language-text">Return an ROI by ROI correlation matrix with a unit diagonal.
+
+No filtering, motion regression, detrending, or temporal imputation occurs.
+``partial`` estimates shrinkage covariance independently for this input.
+</code></pre>
+<p>源码：<code>src/brainfc/network/connectivity.py</code>，第 45 行。</p>
+<h3 id="fisher_z">fisher_z</h3>
+<pre><code class="language-python">fisher_z(matrix) -&gt; 'np.ndarray'
+</code></pre>
+<pre><code class="language-text">Apply arctanh off-diagonal and set the unused diagonal to zero.
+
+Exact +/-1 coefficients are clipped to +/- (1 - machine epsilon), with a
+warning, so serialization remains finite. Diagonal values are ignored.
+</code></pre>
+<p>源码：<code>src/brainfc/network/connectivity.py</code>，第 94 行。</p>
+<h3 id="inverse_fisher_z">inverse_fisher_z</h3>
+<pre><code class="language-python">inverse_fisher_z(matrix) -&gt; 'np.ndarray'
+</code></pre>
+<pre><code class="language-text">Convert a Fisher-z matrix to correlations; restore a unit diagonal.
+
+Infinite or missing diagonal values are permitted because self-connections
+are excluded from analysis. Off-diagonal values must be finite.
+</code></pre>
+<p>源码：<code>src/brainfc/network/connectivity.py</code>，第 111 行。</p>
+<h2 id="brainfcnetworkgraph">brainfc.network.graph</h2>
+<h3 id="build_graph">build_graph</h3>
+<pre><code class="language-python">build_graph(matrix, roi_ids=None, method: 'str' = 'density', threshold: 'float' = 0.2, density: 'float' = 0.1, k: 'int' = 5) -&gt; 'nx.Graph'
+</code></pre>
+<pre><code class="language-text">Build an undirected graph, retaining edge signs and discarding self-loops.
+
+Selection ranks absolute connection strength. Density and kNN include all
+cutoff ties, so actual density/degree can exceed the request. kNN uses the
+union of directed neighbor choices. MST maximizes absolute strength and
+retains the original signed weights; zero weights denote absent edges, so
+disconnected inputs yield a forest. MST ties use canonical ROI-ID pairs.
+</code></pre>
+<p>源码：<code>src/brainfc/network/graph.py</code>，第 47 行。</p>
+<h3 id="analyze_graph">analyze_graph</h3>
+<pre><code class="language-python">analyze_graph(graph: 'nx.Graph') -&gt; 'dict'
+</code></pre>
+<pre><code class="language-text">Describe signed structure; lengths, clustering and communities use w&gt;0.
+
+Length = 1 / weight. Efficiency averages reciprocal shortest-path length
+over all ordered distinct ROI pairs (unreachable pairs contribute zero).
+Clustering is Onnela weighted clustering, normalized by maximum positive
+edge weight. Exact weighted betweenness is bounded to &lt;=300 ROIs and
+&lt;=10000 positive edges; larger inputs report null with an explicit reason.
+Community labels are descriptive Louvain partitions, resolution=1, seed=0.
+</code></pre>
+<p>源码：<code>src/brainfc/network/graph.py</code>，第 116 行。</p>
+<h3 id="to_payload">to_payload</h3>
+<pre><code class="language-python">to_payload(graph: 'nx.Graph') -&gt; 'dict'
+</code></pre>
+<pre><code class="language-text">Return JSON-safe edge records and metrics; retain input edge signs.
+</code></pre>
+<p>源码：<code>src/brainfc/network/graph.py</code>，第 202 行。</p>
+<h2 id="brainfcnetworkhypergraph">brainfc.network.hypergraph</h2>
+<h3 id="build_hypergraph">build_hypergraph</h3>
+<pre><code class="language-python">build_hypergraph(matrix, roi_ids=None, method: 'str' = 'knn', ks=None, custom_edges=None, groups=None) -&gt; 'xgi.Hypergraph'
+</code></pre>
+<pre><code class="language-text">Return a native XGI Hypergraph, preserving all supplied ROI nodes.
+
+``knn`` accepts one k (default 5); ``multiscale`` accepts up to ten values
+(default 5, 10). Neighbors rank signed cosine similarity of zero-diagonal
+FC profiles. All cutoff ties are included, and zero-norm profiles are
+excluded from profile construction. Each edge includes its center.
+Generated member sets are deduplicated across centers/scales; their IDs
+are hashes of sorted ROI IDs. Explicit custom/template edge IDs are never
+deduplicated, even if two edges contain exactly the same members.
+
+Generated and template edges have unit weight. Custom weights retain their
+supplied sign. Limits: 10000 edges and 250000 total memberships.
+</code></pre>
+<p>源码：<code>src/brainfc/network/hypergraph.py</code>，第 49 行。</p>
+<h3 id="to_payload_1">to_payload</h3>
+<pre><code class="language-python">to_payload(hypergraph: 'xgi.Hypergraph') -&gt; 'dict'
+</code></pre>
+<pre><code class="language-text">Return native edges, sparse incidence and descriptive hypergraph metrics.
+
+Connectivity is incidence connectivity; it does not require constructing
+an expanded pairwise graph. Overlap summarizes the number of shared nodes
+across all distinct edge pairs, including pairs with zero overlap.
+</code></pre>
+<p>源码：<code>src/brainfc/network/hypergraph.py</code>，第 163 行。</p>
+<h2 id="brainfcnetworkstatistics">brainfc.network.statistics</h2>
+<h3 id="describe">describe</h3>
+<pre><code class="language-python">describe(values) -&gt; 'dict'
+</code></pre>
+<pre><code class="language-text">Describe finite observations; missing values are counted, never imputed.
+</code></pre>
+<p>源码：<code>src/brainfc/network/statistics.py</code>，第 39 行。</p>
+<h3 id="compare_groups">compare_groups</h3>
+<pre><code class="language-python">compare_groups(data, group_column, subject_column, feature_columns, covariates=None) -&gt; 'dict'
+</code></pre>
+<pre><code class="language-text">Compare exactly two groups, using group 2 minus group 1 as the effect.
+
+Group order is lexical by its string label and is returned explicitly.
+Missing feature/covariate values use complete cases separately per feature;
+exclusions are recorded. Group and participant IDs cannot be missing. IDs
+must be globally unique, including observations excluded for missing values.
+Numeric covariates use OLS with HC3 covariance and t inference; no covariates
+uses Welch's unequal-variance t test. Features form one BH-FDR family.
+</code></pre>
+<p>源码：<code>src/brainfc/network/statistics.py</code>，第 62 行。</p>
+<h2 id="brainfcnetworkexport">brainfc.network.export</h2>
+<h3 id="export_result">export_result</h3>
+<pre><code class="language-python">export_result(result, path, format=None)
+</code></pre>
+<pre><code class="language-text">Export json, html, svg, png, pdf, graphml, hyperedges JSON or a complete ZIP.
+
+``csv`` exports a ZIP containing complete labeled tables (multiple tables).
+Original source files/time series are not bundled, but processing metadata
+can contain local input paths (including those transferred from BrainFC).
+Review exported provenance before public sharing. The chosen destination
+is overwritten if it already exists; returns pathlib.Path.
+</code></pre>
+<p>源码：<code>src/brainfc/network/export.py</code>，第 93 行。</p>
+<h2 id="brainfcnetworkvisualization">brainfc.network.visualization</h2>
+<h3 id="plot_result">plot_result</h3>
+<pre><code class="language-python">plot_result(result, path=None, format=None)
+</code></pre>
+<pre><code class="language-text">Render FC, a signed graph and native incidence. Returns a Matplotlib figure.
+
+For readability the network panel shows the 200 strongest edges, and
+incidence shows the first 80 hyperedges. All numerical exports are complete.
+</code></pre>
+<p>源码：<code>src/brainfc/network/visualization.py</code>，第 12 行。</p>
+<h3 id="write_html">write_html</h3>
+<pre><code class="language-python">write_html(result, path)
+</code></pre>
+<pre><code class="language-text">Write a self-contained HTML report with inline images and exact parameters.
+</code></pre>
+<p>源码：<code>src/brainfc/network/visualization.py</code>，第 71 行。</p>
+<h2 id="brainfcnetworkatlas">brainfc.network.atlas</h2>
+<h3 id="atlasspec">AtlasSpec</h3>
+<pre><code class="language-python">AtlasSpec(id: 'str', name: 'str', version: 'str', space: 'str', labels: 'list[dict]', sources: 'list[str]', license: 'str', affine: 'list[list[float]]', shape: 'list[int]', sha256: 'dict[str, str]', custom: 'bool' = True, schema_version: 'int' = 1) -&gt; None
+</code></pre>
+<pre><code class="language-text">Versioned atlas record produced by AtlasRegistry, rather than inferred from R.
+
+id/name/version/space identify the atlas; labels contains ordered ROI records
+including label_value and RAS+ coordinates. sources and license retain terms.
+affine/shape describe the source grid; sha256 records content and asset hashes.
+custom identifies a user atlas; schema_version is 1. This record alone does not
+verify spatial alignment or bind a matrix to its labels.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 59 行。</p>
+<h3 id="atlasspecto_dict">AtlasSpec.to_dict</h3>
+<pre><code class="language-python">AtlasSpec.to_dict(self)
+</code></pre>
+<pre><code class="language-text">Return atlas fields plus n_rois and installed=True for the local registry.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 81 行。</p>
+<h3 id="atlasregistry">AtlasRegistry</h3>
+<pre><code class="language-python">AtlasRegistry(root=None)
+</code></pre>
+<pre><code class="language-text">Versioned local cache of parcellations, matched references and display meshes.
+
+root is an optional writable directory; None retains the legacy hicbrain
+platform-data atlas cache for compatibility. The unified GUI uses its own
+workspace/networks/atlases directory. Construction does not download assets.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 208 行。</p>
+<h3 id="atlasregistrylist">AtlasRegistry.list</h3>
+<pre><code class="language-python">AtlasRegistry.list(self)
+</code></pre>
+<pre><code class="language-text">List builtin and imported atlas descriptors, including installation status.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 228 行。</p>
+<h3 id="atlasregistryget">AtlasRegistry.get</h3>
+<pre><code class="language-python">AtlasRegistry.get(self, atlas_id)
+</code></pre>
+<pre><code class="language-text">Read an installed atlas descriptor; invalid/missing IDs raise ValidationError.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 236 行。</p>
+<h3 id="atlasregistryasset">AtlasRegistry.asset</h3>
+<pre><code class="language-python">AtlasRegistry.asset(self, atlas_id, name)
+</code></pre>
+<pre><code class="language-text">Return an installed asset path, restricted to the five supported filenames.
+
+name: geometry.json, parcellation.nii.gz, reference.nii.gz, labels.tsv or
+atlas.json. Invalid atlas IDs/asset names raise ValidationError.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 243 行。</p>
+<h3 id="atlasregistryimport_atlas">AtlasRegistry.import_atlas</h3>
+<pre><code class="language-python">AtlasRegistry.import_atlas(self, parcellation, labels, *, name, space, reference, version='custom-1', sources=None, license='User supplied; retain original terms', atlas_id=None, custom=True, space_confirmed=False)
+</code></pre>
+<pre><code class="language-text">Validate and copy a custom parcellation with a matching reference.
+
+parcellation/reference are 3D NIfTI paths (&lt;=128 MiB each); labels is a
+CSV/TSV path or DataFrame with roi_id, label_value, name, hemisphere,
+abbreviation and optional network/color. Positive integer label values must
+match the image exactly. name, exact space and reference are required.
+Caller must set space_confirmed=True after verifying alignment; resampling
+here only checks coverage and never registers anatomy. version, sources
+(HTTP(S) list), license and optional stable atlas_id describe provenance.
+custom=False is reserved for builtin installers. Returns a descriptor dict.
+Invalid labels/space/overlap or conflicting existing IDs raise ValidationError.
+Original files are preserved; equivalent cached content is reused.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 260 行。</p>
+<h3 id="atlasregistrybind">AtlasRegistry.bind</h3>
+<pre><code class="language-python">AtlasRegistry.bind(self, result, atlas_id, ordered_roi_ids, *, confirmed=False)
+</code></pre>
+<pre><code class="language-text">Copy a result with an explicitly confirmed, ordered atlas mapping.
+
+result is AnalysisResult or its serialized dictionary; atlas_id must be
+installed. ordered_roi_ids supplies exactly one distinct known atlas ID
+per matrix row; confirmed=True is mandatory. Returns AnalysisResult with
+ROI metadata, coordinates and atlas hashes. No reparcellation or matrix
+reordering occurs. Changing an existing binding raises ValidationError.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 406 行。</p>
+<h3 id="atlasregistryinstall">AtlasRegistry.install</h3>
+<pre><code class="language-python">AtlasRegistry.install(self, atlas_id)
+</code></pre>
+<pre><code class="language-text">Fetch official assets explicitly, preserving their source terms locally.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas.py</code>，第 457 行。</p>
+<h2 id="brainfcnetworkatlas_sources">brainfc.network.atlas_sources</h2>
+<h3 id="reference_brain">reference_brain</h3>
+<pre><code class="language-python">reference_brain(root, space)
+</code></pre>
+<pre><code class="language-text">Install named TemplateFlow T1w and brain mask as a matched reference.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas_sources.py</code>，第 86 行。</p>
+<h3 id="install_builtin">install_builtin</h3>
+<pre><code class="language-python">install_builtin(registry, atlas_id)
+</code></pre>
+<pre><code class="language-text">Download a supported builtin and import it into the supplied AtlasRegistry.
+
+atlas_id selects AAL SPM12 90/116 or Schaefer 100/200/400 with matched named
+reference space. Returns the installed descriptor. First use requires network
+access; provider licenses apply. Unknown IDs raise ValidationError; network
+and input-validation failures propagate. This does not register subject data.
+</code></pre>
+<p>源码：<code>src/brainfc/network/atlas_sources.py</code>，第 111 行。</p>
+<h2 id="brainfcnetworkview">brainfc.network.view</h2>
+<h3 id="viewconfig">ViewConfig</h3>
+<pre><code class="language-python">ViewConfig(style: str = 'ballstick', theme: str = 'paper', layer: str = 'graph', opacity: float = 0.2, labels: bool = False, only_selected: bool = False, selection: dict | None = None, camera: dict = &lt;factory&gt;, schema_version: int = 1) -&gt; None
+</code></pre>
+<pre><code class="language-text">Validated display settings, separate from numerical analysis.
+
+style: ballstick/envelope/parcels (legacy skeleton maps to ballstick).
+theme: paper/midnight. layer: graph/hypergraph/both. opacity is in [0,1].
+labels and only_selected are booleans. selection is None or a dictionary
+with kind node/edge/hyperedge and a stable string id. camera holds optional
+position/target/up 3-vectors. schema_version must be 1. Invalid settings
+raise ValidationError; defaults are listed in the generated signature.
+</code></pre>
+<p>源码：<code>src/brainfc/network/view.py</code>，第 9 行。</p>
+<h3 id="viewconfigto_dict">ViewConfig.to_dict</h3>
+<pre><code class="language-python">ViewConfig.to_dict(self)
+</code></pre>
+<pre><code class="language-text">Return a new serializable display-state dictionary.
+</code></pre>
+<p>源码：<code>src/brainfc/network/view.py</code>，第 75 行。</p>
+<h3 id="viewconfigfrom_dict">ViewConfig.from_dict</h3>
+<pre><code class="language-python">ViewConfig.from_dict(value)
+</code></pre>
+<pre><code class="language-text">Construct validated display state; unknown fields/settings raise ValidationError.
+</code></pre>
+<p>源码：<code>src/brainfc/network/view.py</code>，第 80 行。</p>
+<h2 id="brainfcnetworkcli">brainfc.network.cli</h2>
+<h3 id="main_1">main</h3>
+<pre><code class="language-python">main(argv=None)
+</code></pre>
+<pre><code class="language-text">Run legacy hicbrain commands through the integrated BrainFC implementation.
+
+argv is an argument list or None for sys.argv. Retains inspect/analyze flags
+and port 8765 for serve, which now starts the unified BrainFC app. argparse
+uses SystemExit for help/invalid arguments; analysis failures propagate.
+New scripts should use brainfc network and brainfc serve.
+</code></pre>
+<p>源码：<code>src/brainfc/network/cli.py</code>，第 12 行。</p></main></html>

@@ -1,0 +1,82 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>third-party · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="third-party-components">Third-party components</h1>
+<p>Hyper-Brain original source is Apache-2.0. This does not relicense external software or datasets.</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Main license</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NumPy, SciPy, pandas</td>
+<td>BSD-3-Clause</td>
+<td>numerical arrays, computation, tables</td>
+</tr>
+<tr>
+<td>Nilearn, scikit-learn</td>
+<td>BSD-3-Clause</td>
+<td>connectivity and neuroimaging resources</td>
+</tr>
+<tr>
+<td>NiBabel</td>
+<td>MIT</td>
+<td>neuroimaging file IO</td>
+</tr>
+<tr>
+<td>scikit-image</td>
+<td>BSD-3-Clause</td>
+<td>surfaces from validated label volumes</td>
+</tr>
+<tr>
+<td>NetworkX, XGI</td>
+<td>BSD-3-Clause</td>
+<td>graph and native hypergraph structures</td>
+</tr>
+<tr>
+<td>Matplotlib</td>
+<td>Matplotlib license</td>
+<td>export figures</td>
+</tr>
+<tr>
+<td>statsmodels</td>
+<td>BSD-3-Clause</td>
+<td>statistical estimation</td>
+</tr>
+<tr>
+<td>FastAPI, Starlette, Uvicorn, python-multipart</td>
+<td>MIT/BSD/Apache terms per distribution</td>
+<td>optional local HTTP</td>
+</tr>
+<tr>
+<td>React, React DOM, Plotly.js, lucide-react</td>
+<td>MIT / ISC per component</td>
+<td>bundled frontend</td>
+</tr>
+<tr>
+<td>NiiVue</td>
+<td>BSD-2-Clause</td>
+<td>local anatomy display</td>
+</tr>
+<tr>
+<td>Three.js</td>
+<td>MIT</td>
+<td>unified 3D scene, camera, picking and hyperedge geometry</td>
+</tr>
+<tr>
+<td>Vite / TypeScript</td>
+<td>MIT / Apache-2.0</td>
+<td>frontend build tools</td>
+</tr>
+</tbody>
+</table>
+<p>Exact installed Python dependency notices are retained by their distributions.</p>
+<h2 id="bundled-frontend-notices">Bundled frontend notices</h2>
+<p>Every <code>npm run build</code> ends with <code>npm run licenses</code>, which generates <code>src/hicbrain/web/static/THIRD_PARTY_NOTICES.txt</code> for inclusion in the Python wheel. Generation is offline and records the lockfile SHA-256, package versions, registry integrity, declared SPDX license, full license texts and original copyright notices.</p>
+<p>The generator checks each installed non-development runtime package against <code>frontend/package-lock.json</code> and fails if a version, license declaration, required text or supplemental-source checksum differs. The 0.2 inventory has 21 runtime packages, including Three.js, React, React DOM, scheduler, Plotly.js, NiiVue, lucide-react, Papa Parse and the NiiVue/Zarr/compression dependency chain. NiiVue's optional native Rollup compiler is explicitly excluded because it is not shipped in the browser bundle. Tree-shaking may omit parts of the conservatively included runtime inventory.</p>
+<p>Prebundled dependencies require more than top-level npm metadata: original Plotly embedded notices, MapLibre's BSD terms and embedded attributions, NiiVue's author-attributed utility code, Roboto/Apache portions, and the Blosc/LZ4/Zstandard libraries compiled by numcodecs are also retained. <code>frontend/licenses/sources.json</code> records the supplemental source URLs and SHA-256 hashes. NiiVue 0.67.0 omits its root LICENSE from its npm tarball, so its BSD-2-Clause license was retrieved at the exact npm <code>gitHead</code> commit <code>7021c439133ea9f63836f48cbdbbddea26e411ef</code>.</p>
+<p>Maintainers may refresh supplemental texts with <code>node frontend/scripts/fetch-license-sources.mjs</code>, then review the changed content and checksums before building. Normal users and ordinary builds make no license-download network requests. These notices preserve third-party terms; they do not relicense those components as Apache-2.0.</p>
+<p>The compatibility <code>/api/v1/template</code> endpoint retains Nilearn's installed MNI152 reference. The 0.2 atlas viewer instead uses exact matched MNIColin27 or MNI152NLin6Asym assets from TemplateFlow. Downloaded T1w, brain mask and template metadata remain under the local atlas source cache. Colin27's upstream LICENSE is retained; the FSL template's source manifest refers to upstream terms and the S3 inventory does not provide a LICENSE object. This project does not assign those assets an Apache license or redistribute them in its package.</p>
+<p>AAL SPM12 assets retain upstream GPL terms. Schaefer2018 / CBIG retains MIT terms and source attribution. AAL published abbreviation/name facts are taken from the linked Table S9; the paper's figure or layout is not copied. See <a href="viewer-atlases.html">exact atlas sources and version</a>. No BrainNet Viewer, Surf Ice, BRAPH or HyperNetX-Widget code or surface is copied into Hyper-Brain; those projects are visual references only.</p>
+<p>ABIDE, ADHD-200, REST-meta-MDD, ADNI and other user-provided research datasets retain their own access/use agreements. They are not distributed with this project. Optional GPL/AGPL/noncommercial tools in the catalogue are research references, not copied into the core.</p></main></html>

@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>visual-media · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="rotating-hero">Rotating hero / 旋转主图</h1>
+<p>The README animation and website video use actual frames from the local viewer.
+Hyperedge <strong>H06</strong> and its six members stay selected while the camera completes
+one orbit. The brain, ROI coordinates, membership links and labels are rendered
+by the application. The input is the same synthetic AAL SPM12 / 116 ROI fixture
+used by the screenshot gallery; it is not a patient scan or an inferred biological system.</p>
+<p>README 动图和网站视频来自实际本地查看器。相机环绕一周时，<strong>H06</strong> 超边及其六个
+成员持续高亮。脑表面、脑区坐标、成员连线和标签均由应用渲染。输入与截图图集
+相同，为 AAL SPM12 / 116 ROI 合成示例，不代表患者扫描或生物学结论。</p>
+<table>
+<thead>
+<tr>
+<th>Asset</th>
+<th>Purpose</th>
+<th>Format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>website/public/media/hyperedge-orbit.gif</code></td>
+<td>English and Chinese README</td>
+<td>Original 1600 × 1000, 5.04 s loop</td>
+</tr>
+<tr>
+<td><code>website/public/media/hyperedge-orbit.mp4</code></td>
+<td>English and Chinese website hero</td>
+<td>1044 × 728, silent H.264, 5.04 s loop</td>
+</tr>
+<tr>
+<td><code>website/public/media/manifest.json</code></td>
+<td>Provenance</td>
+<td>Input hash, member IDs, frame hashes and encoded asset hashes</td>
+</tr>
+</tbody>
+</table>
+<p>The website offers play/pause and respects <code>prefers-reduced-motion</code> at load and
+when the setting changes. The README picture supplies a still image for reduced
+motion. The static <code>gallery/hero.png</code> remains the social-preview image.
+The README image has no fixed HTML width or height: GitHub can fit it to the
+content column while preserving its native 8:5 aspect ratio.</p>
+<p>网站支持播放、暂停，并在加载和设置变化时响应减少动态效果偏好。README 为该
+偏好提供静态图；社交分享预览继续使用 <code>gallery/hero.png</code>。
+README 主图保留原始 1600 × 1000 像素，不设置固定显示宽高，适应页面时保持 8:5 比例。</p>
+<h2 id="reproduce">Reproduce / 复现</h2>
+<p>Use the synthetic fixtures from <a href="https://github.com/hanxiangmin/Hyper-Brain/blob/ded30680e600ecbe79c2ef67a1ffaae02e3d7c33/docs/../examples/prepare_gallery.py">prepare_gallery.py</a>
+with the local server and installed atlas resources. The capture script requires
+Node.js, Playwright and Chromium. Encoding requires Python, Pillow and FFmpeg.
+These are documentation-generation tools, not application runtime dependencies.</p>
+<pre><code class="language-bash">python examples/prepare_gallery.py --url http://127.0.0.1:8765
+node frontend/scripts/capture-orbit.cjs
+python website/scripts/build-orbit.py --captures .work/orbit-frames --ffmpeg ffmpeg
+</code></pre>
+<p>Set <code>HYPERBRAIN_URL</code> for a different local server. Captures stay under <code>.work</code> and
+are not published as source data. The encoder excludes duplicate revolution
+endpoints. It retains the complete workbench at source resolution for the README and crops the scene
+for the website; it does not generate intermediate geometry or alter data values.
+Use <code>--readme-only</code> to rebuild the GIF without re-encoding the existing website video.</p></main></html>

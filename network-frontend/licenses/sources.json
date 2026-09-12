@@ -1,0 +1,109 @@
+[
+  {
+    "file": "niivue-0.67.0.txt",
+    "name": "NiiVue 0.67.0",
+    "spdx": "BSD-2-Clause",
+    "url": "https://raw.githubusercontent.com/niivue/niivue/7021c439133ea9f63836f48cbdbbddea26e411ef/LICENSE",
+    "note": "Exact npm gitHead for @niivue/niivue@0.67.0; npm tarball omits the root LICENSE.",
+    "sha256": "604be23eceeef93996165e2cd46eefd4d713f98f1b4a5414ab109516dc1b30bf"
+  },
+  {
+    "file": "maplibre-4.7.1.txt",
+    "name": "MapLibre GL JS 4.7.1 and its embedded notices",
+    "spdx": "BSD-3-Clause AND MIT",
+    "url": "https://raw.githubusercontent.com/maplibre/maplibre-gl-js/v4.7.1/LICENSE.txt",
+    "note": "Version explicitly named by Plotly 3.7.0 bundled license footer; includes Mapbox, glfx.js and d3-color notices.",
+    "sha256": "ee5fc05a0677eaf69601d2c7db0d9ecd6cc27c3abc1d0733bc9ed34707cf8ef2"
+  },
+  {
+    "file": "ieee754.txt",
+    "name": "ieee754",
+    "spdx": "BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/feross/ieee754/v1.2.1/LICENSE",
+    "note": "Supplement for ieee754 copyright/license notice embedded in Plotly.",
+    "sha256": "18d45466ba3253deae04667e267a91ea8de8548f18c1125264d1c9db28194cc1"
+  },
+  {
+    "file": "apache-2.0-roboto.txt",
+    "name": "Roboto-Regular font atlas in NiiVue; Apache-2.0 portions",
+    "spdx": "Apache-2.0",
+    "url": "https://raw.githubusercontent.com/googlefonts/roboto/main/LICENSE",
+    "note": "NiiVue distributes src/fonts/Roboto-Regular.{png,json}; upstream font license. Also supplies Apache-2.0 terms for NiiVue's attributed shader/FastSurfer portions.",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  {
+    "file": "fastsurfer-attribution.txt",
+    "name": "FastSurfer conform.py attribution retained by NiiVue",
+    "spdx": "Apache-2.0",
+    "url": "https://raw.githubusercontent.com/Deep-MI/FastSurfer/4e76bed7b11fd7e6403ddac729059ad3842b56de/FastSurferCNN/data_loader/conform.py",
+    "headerOnly": true,
+    "note": "Exact source revision cited by NiiVue; copyright and license header only, no algorithm copied into this project.",
+    "sha256": "b43546ebafeb277a58c48c104909600c9aeeaa677ef23ec06d3abef813eecb91"
+  },
+  {
+    "file": "lz4-1.9.2.txt",
+    "name": "LZ4 1.9.2 library compiled into numcodecs",
+    "spdx": "BSD-2-Clause",
+    "url": "https://raw.githubusercontent.com/lz4/lz4/v1.9.2/lib/LICENSE",
+    "note": "Version from numcodecs 0.3.2 gitHead fa8a86065ce42ca024ecee8d376a440bdd304ac1/codecs/lz4/build.sh.",
+    "sha256": "d15d99c8dc6b0ec22174c0e563a95bc40f9363ca7f9d9d793bb5c5a8e8d0af71"
+  },
+  {
+    "file": "zstd-1.5.5.txt",
+    "name": "Zstandard 1.5.5 library compiled into numcodecs",
+    "spdx": "BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/facebook/zstd/v1.5.5/LICENSE",
+    "note": "BSD option; version from numcodecs 0.3.2 codecs/zstd/build.sh at its npm gitHead.",
+    "sha256": "7055266497633c9025b777c78eb7235af13922117480ed5c674677adc381c9d8"
+  },
+  {
+    "file": "blosc-1.18.1.txt",
+    "name": "c-blosc 1.18.1",
+    "spdx": "BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/BLOSC.txt",
+    "note": "Version from numcodecs 0.3.2 codecs/blosc/build.sh at its npm gitHead; vendor notices below retained together.",
+    "sha256": "05cc09a42b9ec8ba3e8b33b605f940a302d171df103753d5809791ce3cef3271"
+  },
+  {
+    "file": "blosc-bitshuffle.txt",
+    "name": "c-blosc bundled Bitshuffle",
+    "spdx": "MIT",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/BITSHUFFLE.txt",
+    "sha256": "ef357c2061cf67db298f9f1565572ee229ad9263582a9f9d0ebff5094f5d10ac"
+  },
+  {
+    "file": "blosc-fastlz.txt",
+    "name": "c-blosc bundled FastLZ",
+    "spdx": "MIT",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/FASTLZ.txt",
+    "sha256": "a453a7a272fbd24105b39959f76996d50dad80b22d1c310f6c67f74f62ae4054"
+  },
+  {
+    "file": "blosc-lz4.txt",
+    "name": "c-blosc bundled LZ4",
+    "spdx": "BSD-2-Clause",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/LZ4.txt",
+    "sha256": "0dcd2b0db9e9e8371436f3cf9147c767e83777d0290958286902b31549ef0946"
+  },
+  {
+    "file": "blosc-snappy.txt",
+    "name": "c-blosc bundled Snappy",
+    "spdx": "BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/SNAPPY.txt",
+    "sha256": "5221a36a801b981fbdfda7b87db64cff231a3b88223a066c325411b539df796f"
+  },
+  {
+    "file": "blosc-stdint.txt",
+    "name": "c-blosc bundled stdint compatibility header",
+    "spdx": "BSD-3-Clause",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/STDINT.txt",
+    "sha256": "f2af03db562e88539f019b1ab0881878ee82d0c80f3bce68c650064652e25d7b"
+  },
+  {
+    "file": "blosc-zlib.txt",
+    "name": "c-blosc bundled zlib",
+    "spdx": "Zlib",
+    "url": "https://raw.githubusercontent.com/Blosc/c-blosc/v1.18.1/LICENSES/ZLIB.txt",
+    "sha256": "fe9e40f351c2347e9550eed6839d88e565fffb3f09559af5546c7c3b4ee2e4bd"
+  }
+]

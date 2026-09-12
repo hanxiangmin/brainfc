@@ -6,6 +6,8 @@
 
 ## Install
 
+**Source version 0.4.0 integrates Hyper-Brain.** PyPI remains at 0.3.0 until the next release. Install the current source with `pip install "brainfc @ git+https://github.com/hanxiangmin/brainfc.git"` for integrated graph/hypergraph analysis. Remove any old `hic-brain` distribution first when reusing the same environment.
+
 Python **3.11+**. The default installation includes the local GUI and offline manual.
 
 ```bash
@@ -88,6 +90,26 @@ result.save("results/sub-01")
 `save()` requires a new directory. It exports arrays, tables, ROI order, original frame indices, quality/provenance records, figures, and a self-contained HTML report.
 
 [Runnable example](examples/quickstart.py) · [Batch example](examples/batch_derivatives.py) · [Python guide](docs/python-api.md) · [Complete API](docs/api-reference.md) · [CLI](docs/cli-reference.md) · [HTTP API](docs/http-api.md)
+
+## Graphs and native hypergraphs
+
+Hyper-Brain is now part of the same distribution and local service. Extraction prepares connectivity; `brainfc.network` builds descriptive network structures. Existing `hicbrain` imports delegate to the integrated implementation.
+
+```python
+from brainfc.network import AnalysisConfig
+from brainfc.network.export import export_result
+
+# result is the Connectome returned by extract_connectome above.
+network = result.analyze_network(AnalysisConfig(
+    graph_method="density", density=0.1,
+    hypergraph_method="multiscale", hypergraph_ks=[5, 10],
+))
+export_result(network, "network-result.zip")
+```
+
+Choose **进入网络分析** after extraction to transfer the complete matrix, ROI order, coordinates and provenance without another upload or temporal processing. Open `/networks/` directly for existing matrices/time series, native hyperedge visualization and participant-level statistics. Constructed hyperedges do not establish irreducible physiological interactions.
+
+[Network guide](docs/network-analysis.md) · [Migration and compatibility](docs/hyper-brain-migration.md) · [Runnable example](examples/network_analysis.py)
 
 ## Features
 

@@ -7,13 +7,15 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache--2.0-c18a49" alt="Apache-2.0"></a>
 </p>
 
-<p align="center"><b>把脑影像变成可计算、可检查、可交互的功能连接。</b><br>一个 Python 库，同时提供本地图形界面、命令行与完整 API。</p>
+<p align="center"><b>把脑影像变成可计算、可检查、可交互的功能连接。</b><br>一个 Python 库，贯通功能连接、普通图、原生超图与网络统计；提供本地图形界面、命令行与完整 API。</p>
 
 <p align="center"><b>中文</b> · <a href="README.en.md">English</a> · <a href="docs/index.md">使用文档</a> · <a href="docs/api-reference.md">全部 API</a> · <a href="docs/datasets.md">数据下载指南</a></p>
 
 ## 安装
 
 需要 **Python 3.11+**。一次安装即包含计算核心、网页界面和离线手册。
+
+**当前源码 0.4.0 已合并 Hyper-Brain。** PyPI 仍是 0.3.0；使用下方源码安装命令可立即体验网络与超图分析，迁移说明见[合并指南](docs/hyper-brain-migration.md)。
 
 ```bash
 pip install brainfc
@@ -107,6 +109,25 @@ quality = result.qc
 
 [可直接运行的完整示例](examples/quickstart.py) · [批处理示例](examples/batch_derivatives.py) · [Python 使用指南](docs/python-api.md) · [CLI](docs/cli-reference.md) · [HTTP API](docs/http-api.md)
 
+### 4. 继续构建图与原生超图
+
+Hyper-Brain 已集成到 `brainfc.network`，无需安装第二个库。接上文的 `result`：
+
+```python
+from brainfc.network import AnalysisConfig
+from brainfc.network.export import export_result
+
+network = result.analyze_network(AnalysisConfig(
+    graph_method="density", density=0.1,
+    hypergraph_method="multiscale", hypergraph_ks=[5, 10],
+))
+export_result(network, "network-result.zip")
+```
+
+界面中点击 **进入网络分析**，即可沿用矩阵、脑区坐标与处理记录；已有矩阵也可直接进入页面顶部的 **网络与超图分析**。支持节点连线、透明包络、分区表面、完整超边成员表与组间统计。仅有参考脑壳时不提供分区表面或图谱切片。
+
+[网络分析完整指南](docs/network-analysis.md) · [可运行示例](examples/network_analysis.py) · [旧接口迁移](docs/hyper-brain-migration.md)
+
 ## 关键功能
 
 | 功能 | 可以做什么 |
@@ -116,6 +137,8 @@ quality = result.qc
 | **引导操作** | 按数据类别选择处理路径，自动读取可确认的元数据；数据集预设附官方来源。 |
 | **同步探索** | 矩阵定位脑区；三维与八视图共享阈值、连接上限及脑区/连接选择；前方脑区悬停名称。 |
 | **可追溯导出** | 原始帧号、ROI 顺序、参数、质量记录、软件版本与输入 SHA-256；保留完整正负连接。 |
+| **图与原生超图** | 有符号图、密度/阈值/kNN/生成森林；FC-profile、多尺度、模板与自定义超边，保留原始 ID 和完整成员。 |
+| **网络指标与统计** | 正连接路径指标、原生关联矩阵、独立被试两组比较、协变量 OLS/HC3 和 BH-FDR。 |
 | **本地运行** | Python、CLI、网页共用核心；数据在本机处理，报告可离线打开。 |
 
 ### 实际界面
@@ -131,7 +154,7 @@ quality = result.qc
 
 早期 README 使用合成信号，重复的信号分组在交错的 ROI 顺序下形成周期性斜纹；现已替换为真实计算结果。可用 `python scripts/render_example_matrix.py --output matrix-demo` 复现矩阵图；[核查范围](docs/privacy-review.md)与[图像来源记录](docs/assets/matrix-provenance.json)可供检查。本例是单被试软件演示，未进行切片时序和磁敏感畸变校正。
 
-## 详细处理流程
+## 影像到功能连接的处理流程
 
 ![BrainFC 完整处理流程：格式与空间检查、时序提取、联合清理、连接计算、导出与同步视图；使用 archify skill 绘制](docs/assets/processing.png)
 
@@ -151,4 +174,4 @@ ROI 时序文件可从“统一 ROI 时序”进入；原始影像先走外部 *
 
 Copyright © 2026 BrainFC contributors. 代码采用 [Apache License 2.0](LICENSE)，引用信息见 [CITATION.cff](CITATION.cff)。
 
-计算核心基于 NumPy、SciPy、NiBabel、Nilearn 和 scikit-learn；可视化使用 Matplotlib、React 和 Three.js。三维组件改编自 [Hyper-Brain](https://github.com/hanxiangmin/Hyper-Brain)，BrainFC 可独立安装运行。流程图使用 [archify skill](https://github.com/tt-a1i/archify) 绘制；第三方许可见 [NOTICE](NOTICE) 和 [完整声明](src/brainfc/web/static/THIRD_PARTY_NOTICES.txt)。图谱与数据集遵循各自提供方的许可，本仓库不分发受试者数据。
+计算核心基于 NumPy、SciPy、NiBabel、Nilearn 和 scikit-learn；可视化使用 Matplotlib、React 和 Three.js。网络与超图分析由 [Hyper-Brain](https://github.com/hanxiangmin/Hyper-Brain) 合入，源码及第三方许可保留；详见[来源和迁移说明](docs/hyper-brain-migration.md)。流程图使用 [archify skill](https://github.com/tt-a1i/archify) 绘制；第三方许可见 [NOTICE](NOTICE) 和 [完整声明](src/brainfc/web/static/THIRD_PARTY_NOTICES.txt)。图谱与数据集遵循各自提供方的许可，本仓库仅提供经授权并核查的 rest01 衍生样例，不分发原始 DICOM 或个体 T1/BOLD 强度图像。

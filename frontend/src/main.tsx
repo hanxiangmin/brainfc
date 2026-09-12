@@ -276,6 +276,7 @@ function App() {
           </div>
         </a>
         <div className="top-meta">
+          {!offline && <a href="/networks/">网络与超图分析</a>}
           <span className="local-dot" />
           {offline ? "离线分析报告" : "本地工作台"}
           <span className="version">v{__FMRI_VERSION__}</span>
@@ -337,6 +338,12 @@ function App() {
                   查看日志
                 </a>
               )}
+            </div>
+          )}
+          {!offline && result && resultJob && (
+            <div className="network-next">
+              <div><strong>继续分析脑网络</strong><p>矩阵、脑区顺序、坐标与处理记录会自动带入。选择图或超图方法，即可计算网络指标。</p></div>
+              <a href={`/networks/?source_job=${resultJob.id}`} className="primary">进入网络分析 →</a>
             </div>
           )}
           {!result ? (

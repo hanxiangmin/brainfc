@@ -50,3 +50,12 @@ Raw DICOM/BIDS spatial preprocessing requires external dcm2niix/fMRIPrep. BrainF
 - [Source code and issues](https://github.com/hanxiangmin/brainfc)
 
 Licensed under Apache-2.0. The 3D viewer is adapted from Hyper-Brain; BrainFC runs independently. Dataset and atlas licenses remain with their original providers.
+
+## Integrated network analysis (0.4.0)
+
+Hyper-Brain's graph, native-hypergraph, atlas, statistics and network workbench
+are included in BrainFC. Use `result.analyze_network(AnalysisConfig(...))`,
+`brainfc network result-folder --output network.zip`, or the **进入网络分析**
+button after extraction. Existing `hicbrain` imports are compatibility aliases.
+Remove an old `hic-brain` distribution before upgrading in the same environment.
+See the [network guide](https://github.com/hanxiangmin/brainfc/blob/main/docs/network-analysis.md).

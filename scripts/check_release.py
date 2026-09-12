@@ -64,6 +64,11 @@ def check_archives(directory, version):
             "brainfc/web/static/app.css",
             "brainfc/web/static/reference/index.html",
             "brainfc/web/static/reference/api-reference.html",
+            "brainfc/network/web/static/index.html",
+            "brainfc/network/web/static/THIRD_PARTY_NOTICES.txt",
+            "brainfc/network/graph.py",
+            "brainfc/network/hypergraph.py",
+            "hicbrain/__init__.py",
         ):
             assert required in names, required
         metadata = BytesParser().parsebytes(
@@ -83,6 +88,7 @@ def check_archives(directory, version):
             "README.md",
             "docs/api-reference.md",
             "scripts/generate_reference.py",
+            "network-frontend/package-lock.json",
             ".github/workflows/ci.yml",
             ".github/workflows/publish.yml",
         ):
@@ -99,9 +105,10 @@ def main():
     version = runpy.run_path(str(ROOT / "src/brainfc/_version.py"))["__version__"]
     project = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
     assert project["project"]["dynamic"] == ["version"]
-    for name in ("package.json", "package-lock.json"):
-        content = json.loads((ROOT / "frontend" / name).read_text(encoding="utf-8"))
-        assert content["version"] == version, f"Version differs in frontend/{name}"
+    for frontend in ("frontend", "network-frontend"):
+        for name in ("package.json", "package-lock.json"):
+            content = json.loads((ROOT / frontend / name).read_text(encoding="utf-8"))
+            assert content["version"] == version, f"Version differs in {frontend}/{name}"
     citation = yaml.safe_load((ROOT / "CITATION.cff").read_text(encoding="utf-8"))
     assert str(citation["version"]) == version
     for path in (ROOT / ".github/workflows").glob("*.yml"):
@@ -111,13 +118,14 @@ def main():
     inventory = json.loads((ROOT / "docs/api-inventory.json").read_text(encoding="utf-8"))
     covered = {entry["name"] for entry in inventory if entry["documented"]}
     missing = []
-    for path in (ROOT / "src/brainfc").glob("*.py"):
+    for path in [*(ROOT / "src/brainfc").glob("*.py"), *(ROOT / "src/brainfc/network").glob("*.py")]:
         if path.name.startswith("_"):
             continue
         tree = ast.parse(path.read_text(encoding="utf-8"))
         for node in tree.body:
             if isinstance(node, (ast.ClassDef, ast.FunctionDef)) and not node.name.startswith("_"):
-                name = f"brainfc.{path.stem}.{node.name}"
+                module = ".".join(path.relative_to(ROOT / "src").with_suffix("").parts)
+                name = f"{module}.{node.name}"
                 if name not in covered:
                     missing.append(name)
     assert not missing, f"Undocumented public API: {missing}"

@@ -18,7 +18,7 @@ export type ViewConfig = {
 };
 export const defaultView: ViewConfig = {
   style: "ballstick",
-  theme: "midnight",
+  theme: "paper",
   layer: "graph",
   opacity: 0.28,
   labels: true,

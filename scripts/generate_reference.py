@@ -33,6 +33,10 @@ MODULES = [
     "workflow",
     "cli",
     "web.app",
+    "network.types", "network.bridge", "network.analysis", "network.io",
+    "network.connectivity", "network.graph", "network.hypergraph",
+    "network.statistics", "network.export", "network.visualization",
+    "network.atlas", "network.atlas_sources", "network.view", "network.cli",
 ]
 PAGES = [
     ("index", "文档导航"),
@@ -41,6 +45,9 @@ PAGES = [
     ("privacy-review", "样例隐私核查"),
     ("uih-metadata", "UIH 参数核验"),
     ("python-api", "Python 使用指南"),
+    ("network-analysis", "网络与超图分析"),
+    ("hyper-brain-migration", "Hyper-Brain 合并说明"),
+    ("network-http-reference", "网络分析 HTTP 接口"),
     ("api-reference", "全部函数与参数"),
     ("processing", "处理顺序与方法"),
     ("formats", "输入格式与空间"),
@@ -50,7 +57,7 @@ PAGES = [
     ("cli-reference", "命令行完整参数"),
     ("presets-and-workflow", "数据集预设"),
     ("release", "开源与发布"),
-    ("validation-v0.3.0", "本次验证范围"),
+    ("validation-v0.4.0", "本次验证范围"),
 ]
 
 
@@ -101,7 +108,7 @@ def generate(check=False):
                 documented = public or local_name == "_confounds"
                 doc = inspect.getdoc(obj) or ""
                 signature = ""
-                if not (inspect.isclass(obj) and issubclass(obj, Exception)):
+                if not isinstance(obj, property) and not (inspect.isclass(obj) and issubclass(obj, Exception)):
                     signature = str(inspect.signature(obj))
                 record = {
                     "name": f"brainfc.{name}.{local_name}",
@@ -182,18 +189,35 @@ def generate(check=False):
     for name, model in schema.get("components", {}).get("schemas", {}).items():
         http.extend([f"### {name}", "```json\n" + json.dumps(model, ensure_ascii=False, indent=2) + "\n```"])
     _write(DOCS / "http-reference.md", "\n\n".join(http), check)
-    return count, len(schema["paths"])
+    from brainfc.network.web.app import create_app as create_network_app
+    with tempfile.TemporaryDirectory() as directory:
+        network_schema = create_network_app(directory).openapi()
+    _write(DOCS / "network-openapi.json", json.dumps(network_schema, ensure_ascii=False, indent=2, sort_keys=True), check)
+    network_http = ["# 网络分析 HTTP 完整接口", "运行 `brainfc serve` 后，以下路由位于 `/networks` 下。交互说明在 `/networks/docs`，实际 OpenAPI 在 `/networks/openapi.json`。",
+                    "提取结果转入接口 `POST /api/jobs/{job_id}/network-input` 见主 HTTP 参考。矩阵上传、任务、图谱、统计请求示例见 [网络分析指南](network-analysis.md)。以下签名来自实际网络服务的 OpenAPI。",
+                    "机器可读定义：[network-openapi.json](network-openapi.json)。"]
+    for path, operations in network_schema['paths'].items():
+        for method, operation in operations.items():
+            if method not in {'get', 'post', 'put', 'delete', 'patch'}:
+                continue
+            network_http.extend([f"## {method.upper()} /networks{path}",
+                                 "```json\n"+json.dumps(operation, ensure_ascii=False, indent=2)+"\n```"])
+    network_http.extend(["## 数据模型", "```json\n"+json.dumps(network_schema.get('components', {}), ensure_ascii=False, indent=2)+"\n```"])
+    _write(DOCS / 'network-http-reference.md', '\n\n'.join(network_http), check)
+    return count, len(schema["paths"]) + len(network_schema['paths'])
 
 
 def site(check=False):
     import markdown
 
     destination = ROOT / "src/brainfc/web/static/reference"
-    links = "".join(f'<a href="{name}.html">{title}</a>' for name, title in PAGES)
     # Also render linked legacy evidence/dataset pages so the offline guide is self-contained.
     pages = list(PAGES) + [(p.stem, p.stem) for p in DOCS.glob("*.md") if p.stem not in dict(PAGES)]
-    style = "body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}"
+    pages += [(p.relative_to(DOCS).with_suffix('').as_posix(), p.stem) for p in (DOCS / "network").glob("*.md")]
+    style = "body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}"
     for name, title in pages:
+        prefix = "../" * name.count("/")
+        links = "".join(f'<a href="{prefix}{key}.html">{label}</a>' for key, label in PAGES)
         source = DOCS / (name + ".md")
         body = markdown.markdown(
             source.read_text(encoding="utf-8"), extensions=["tables", "fenced_code", "toc"]
@@ -203,13 +227,14 @@ def site(check=False):
         )
         page = f'<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>{html.escape(title)} · BrainFC</title><style>{style}</style><aside><b>BrainFC · 开发与使用文档</b>{links}</aside><main>{body}</main></html>'
         _write(destination / (name + ".html"), page, check)
-    for filename in ("openapi.json", "api-inventory.json", "interface-preview.png", "eight-views-v02.png"):
+    for filename in ("openapi.json", "network-openapi.json", "api-inventory.json", "interface-preview.png", "eight-views-v02.png", "network/upstream.json"):
         source = DOCS / filename
         target = destination / filename
         if check:
             if not target.is_file() or target.read_bytes() != source.read_bytes():
                 raise SystemExit(f"Stale manual asset: {filename}")
         else:
+            target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(source.read_bytes())
 
 

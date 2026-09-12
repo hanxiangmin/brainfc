@@ -2,7 +2,7 @@
 
 `brainfc-hero.png` is conceptual product artwork generated with the built-in imagegen tool, revised to a warm ivory/sage background. It is not a screenshot or measured scientific result. The final editing prompt is preserved in `hero-prompt.txt`.
 
-`viewer.png`, `matrix.png` and `eight-views.png` are actual BrainFC outputs using a Schaefer 100 atlas, a reference brain and synthetic fMRI signals. The viewer and eight projections use the same 200 displayed edges at |r| ≥ 0.30. The complete matrix is not thresholded. No participant data or source paths are embedded in these images.
+`viewer.png`, `matrix.png` and `eight-views.png` are actual BrainFC outputs from the reviewed, authorized rest01 resting-state example (one participant, Schaefer 100, 145 retained frames). The viewer and eight projections use the same 200 displayed edges at |r| ≥ 0.30. The complete matrix retains original ROI order and is not thresholded. No direct identifiers or source paths were found in these images; the underlying functional patterns retain individual information. See [privacy review](../privacy-review.md) and `matrix-provenance.json`.
 
 ## Detailed pipeline
 

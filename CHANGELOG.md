@@ -1,6 +1,11 @@
 # 更新记录
 
-## 未发布
+## 0.4.0 — 源码合并版，尚未发布到 PyPI
+
+- 合入 Hyper-Brain 的普通图、原生超图、结构指标、组间统计、图谱管理和完整网络工作台。
+- 新增 `brainfc.network`、`Connectome.to_network()` / `analyze_network()` 和 `brainfc network`。
+- `brainfc serve` 同时提供提取和 `/networks/` 网络分析；提取结果自动携带矩阵、ROI 顺序、坐标和处理记录，免重新上传。
+- 保留 `hicbrain` 导入与命令兼容层；升级已有环境前请移除旧 `hic-brain` distribution，避免共享文件冲突。
 
 - 新增经授权、去除直接身份标识的静息态样例 `rest01`，可通过 Python 或 `brainfc demo --kind rest01` 运行。
 - 记录像素文字、文件头、公开文件与发行物的隐私核查范围；原始 DICOM、个体 T1/BOLD 和本地影像压缩包不公开。

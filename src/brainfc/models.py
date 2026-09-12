@@ -305,31 +305,57 @@ class Connectome:
             webbrowser.open(target.as_uri())
         return target
 
-    def to_hicbrain(self):
-        """Create a connectivity BrainDataset in separately installed Hyper-Brain.
+    def to_network(self):
+        """Copy this result into the integrated brainfc.network BrainDataset.
 
         Returns
         -------
-        hicbrain.BrainDataset
-            A copy of the signed matrix with ROI IDs, names, optional coordinates and
-            brainfc provenance in metadata. No hyperedges are inferred.
+        brainfc.network.BrainDataset
+            Complete signed connectivity, original ROI order, coordinates, frame
+            indices, QC and provenance. No temporal reprocessing is performed.
 
         Raises
         ------
-        ImportError
-            The independent hicbrain import is unavailable. Hyper-Brain is optional."""
-        try:
-            from hicbrain import BrainDataset
-        except ImportError as exc:
-            raise ImportError("Install Hyper-Brain separately to use to_hicbrain().") from exc
-        coordinates = (
-            [r["coordinates"] for r in self.rois] if all(r.get("coordinates") for r in self.rois) else None
-        )
-        return BrainDataset(
-            self.connectivity.copy(),
-            "connectivity",
-            roi_ids=[r["roi_id"] for r in self.rois],
-            labels=[r["name"] for r in self.rois],
-            coordinates=coordinates,
-            metadata={"brainfc": self.provenance},
-        )
+        brainfc.network.ValidationError
+            Invalid matrix, ROI identities/order, or coordinates. All processing
+            and display metadata is copied. No separate installation is needed.
+        """
+        from .network import from_connectome
+
+        return from_connectome(self)
+
+    def analyze_network(self, config=None, progress=None):
+        """Analyze graphs/hypergraphs directly from this run's full matrix.
+
+        Parameters
+        ----------
+        config : brainfc.network.AnalysisConfig, dict or None
+            None uses density=0.1 graph and k=5 FC-profile hypergraph defaults.
+            Prefer an explicit configuration for reproducible research.
+        progress : callable or None
+            Optional callback receiving (percent, message).
+
+        Returns
+        -------
+        brainfc.network.AnalysisResult
+            Signed graph edges, native hyperedges, metrics and source metadata.
+            The original Connectome is unchanged. Constructed hyperedges are
+            descriptive structures, not evidence of higher-order interactions.
+
+        Raises
+        ------
+        brainfc.network.ValidationError
+            Invalid connectome or analysis configuration.
+        """
+        from .network import analyze
+
+        return analyze(self.to_network(), config, progress=progress)
+
+    def to_hicbrain(self):
+        """Compatibility alias for to_network, retained for existing scripts.
+
+        Returns brainfc.network.BrainDataset (also exposed as hicbrain.BrainDataset).
+        No separate Hyper-Brain installation is needed; new code should use
+        to_network or analyze_network. Validation and copying match to_network.
+        """
+        return self.to_network()

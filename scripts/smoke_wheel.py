@@ -33,6 +33,14 @@ result = extract_connectome(**spec, config=cfg)
 assert result.connectivity.shape == (12, 12)
 assert result.provenance['version'] == brainfc.__version__
 assert np.all(np.diag(result.fisher_z) == 0)
+import hicbrain
+from brainfc.network import AnalysisConfig, BrainDataset
+assert hicbrain.BrainDataset is BrainDataset
+network = result.analyze_network(AnalysisConfig(k=2))
+assert np.array_equal(network.connectivity, result.connectivity)
+assert network.roi_ids == [r['roi_id'] for r in result.rois]
+assert network.hypergraph['edges']
+assert Path(hicbrain.__file__).resolve().is_relative_to(prefix)
 target = result.save('result', figures=False)
 assert (target / 'report.html').is_file()
 manual = module.parent / 'web/static/reference'
@@ -61,6 +69,10 @@ with open('gui.log', 'w', encoding='utf-8') as log:
                     raise RuntimeError('Installed GUI failed to start: ' + Path('gui.log').read_text())
                 time.sleep(0.2)
         assert health['version'] == brainfc.__version__, health
+        with urlopen(f'http://127.0.0.1:{port}/networks/api/v1/health', timeout=5) as response:
+            assert json.load(response)['version'] == brainfc.__version__
+        with urlopen(f'http://127.0.0.1:{port}/networks/', timeout=5) as response:
+            assert 'BrainFC' in response.read().decode('utf-8')
         with urlopen(f'http://127.0.0.1:{port}/reference/', timeout=5) as response:
             assert 'BrainFC' in response.read().decode('utf-8')
     finally:

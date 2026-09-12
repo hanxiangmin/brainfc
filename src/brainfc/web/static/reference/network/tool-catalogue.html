@@ -1,0 +1,573 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>tool-catalogue · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="../index.html">文档导航</a><a href="../quickstart.html">安装与上手</a><a href="../real-example.html">真实静息态样例</a><a href="../privacy-review.html">样例隐私核查</a><a href="../uih-metadata.html">UIH 参数核验</a><a href="../python-api.html">Python 使用指南</a><a href="../network-analysis.html">网络与超图分析</a><a href="../hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="../network-http-reference.html">网络分析 HTTP 接口</a><a href="../api-reference.html">全部函数与参数</a><a href="../processing.html">处理顺序与方法</a><a href="../formats.html">输入格式与空间</a><a href="../outputs.html">结果文件与质控</a><a href="../http-api.html">HTTP 使用指南</a><a href="../http-reference.html">HTTP 完整接口</a><a href="../cli-reference.html">命令行完整参数</a><a href="../presets-and-workflow.html">数据集预设</a><a href="../release.html">开源与发布</a><a href="../validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="_1">脑网络工具目录</h1>
+<p>检索日期：2026-09-10。按官方页面和作者仓库整理；此表不代表所有工具均已安装验证。许可字段以锁定版本的实际 LICENSE 为准，附带组件、图谱、数据分别核查。仅 phase 标为核心的组件进入首版依赖。</p>
+<h2 id="_2">分析界面</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用途</th>
+<th>许可核查</th>
+<th>接入安排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://web.conn-toolbox.org/">CONN</a></td>
+<td>fMRI连接完整流程</td>
+<td>MIT</td>
+<td>参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Chaogan-Yan/DPABI">DPABI / DPARSF / DPABISurf</a></td>
+<td>体积与表面处理、统计</td>
+<td>LGPL-2.1; bundled modules separately</td>
+<td>格式兼容</td>
+</tr>
+<tr>
+<td><a href="https://www.nitrc.org/projects/gretna/">GRETNA</a></td>
+<td>脑图构建及指标</td>
+<td>GPL; version verify</td>
+<td>参考</td>
+</tr>
+<tr>
+<td><a href="https://www.nitrc.org/projects/graphvar/">GraphVar</a></td>
+<td>图统计与机器学习GUI</td>
+<td>GPL; version verify</td>
+<td>参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/braph-software/BRAPH-2">BRAPH 2</a></td>
+<td>图、多层网络、学习GUI</td>
+<td>Custom; redistribution/integration restricted</td>
+<td>仅功能参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/zzstefan/BrainNetClass">BrainNetClass</a></td>
+<td>脑网络构建分类</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/trendscenter/gift">GIFT</a></td>
+<td>ICA与动态功能连接</td>
+<td>Distribution license requires verification</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://brainvoyager.com/bv/doc/UsersGuide/GeneralInfo/Overview.html">BrainVoyager</a></td>
+<td>商业影像分析GUI</td>
+<td>Proprietary</td>
+<td>仅功能参考</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_3">可视化与平台</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用途</th>
+<th>许可核查</th>
+<th>接入安排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/mingruixia/BrainNet-Viewer">BrainNet Viewer</a></td>
+<td>脑表面节点和连接</td>
+<td>GPL-3.0</td>
+<td>导出兼容</td>
+</tr>
+<tr>
+<td><a href="https://www.nitrc.org/projects/surfice/">Surf Ice</a></td>
+<td>脑表面绘图</td>
+<td>BSD style</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/rschurade/braingl">brainGL</a></td>
+<td>桌面脑图形</td>
+<td>MIT</td>
+<td>参考</td>
+</tr>
+<tr>
+<td><a href="https://ccf.humanconnectome.org/software/connectome-workbench">Workbench</a></td>
+<td>CIfTI/GIfTI表面与体积</td>
+<td>GPL-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pauldmccarthy/fsleyes">FSLeyes</a></td>
+<td>MRI本地查看</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://www.slicer.org/">3D Slicer</a></td>
+<td>医学影像桌面</td>
+<td>Slicer BSD style</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MRtrix3/mrtrix3">MRtrix3</a></td>
+<td>扩散和结构连接</td>
+<td>MPL-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/niivue/niivue">NiiVue</a></td>
+<td>网页解剖查看</td>
+<td>BSD-2-Clause</td>
+<td>核心网页</td>
+</tr>
+<tr>
+<td><a href="https://github.com/aces/brainbrowser">BrainBrowser</a></td>
+<td>网页脑影像</td>
+<td>AGPL-3.0</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/rii-mango/Papaya">Papaya</a></td>
+<td>网页切片查看</td>
+<td>BSD style; nonclinical notice</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Kitware/vtk-js">vtk.js</a></td>
+<td>通用三维浏览器渲染</td>
+<td>BSD-3-Clause</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/cytoscape/cytoscape.js">Cytoscape.js</a></td>
+<td>普通图交互与布局</td>
+<td>MIT</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/plotly/plotly.js">Plotly.js</a></td>
+<td>FC热图与统计图</td>
+<td>MIT</td>
+<td>核心网页</td>
+</tr>
+<tr>
+<td><a href="https://brainlife.io/docs/user/started/">brainlife</a></td>
+<td>网页上传、计算、溯源</td>
+<td>Warehouse MIT; Apps separate</td>
+<td>架构参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/aces/cbrain">CBRAIN</a></td>
+<td>机构HPC网页平台</td>
+<td>GPL-3.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NeuroDesk/neurodesktop">Neurodesk</a></td>
+<td>容器神经影像桌面</td>
+<td>MIT; tools separate</td>
+<td>部署参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/NeuroVault/NeuroVault">NeuroVault</a></td>
+<td>统计图分享</td>
+<td>MIT; datasets separate</td>
+<td>后续</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_4">图与超图</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用途</th>
+<th>许可核查</th>
+<th>接入安排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/nilearn/nilearn">Nilearn</a></td>
+<td>时序/连接/脑图</td>
+<td>BSD-3-Clause</td>
+<td>核心</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nipy/nibabel">NiBabel</a></td>
+<td>影像格式</td>
+<td>MIT</td>
+<td>核心依赖</td>
+</tr>
+<tr>
+<td><a href="https://github.com/networkx/networkx">NetworkX</a></td>
+<td>普通图</td>
+<td>BSD-3-Clause</td>
+<td>核心</td>
+</tr>
+<tr>
+<td><a href="https://github.com/igraph/python-igraph">python-igraph</a></td>
+<td>高性能图计算</td>
+<td>GPL-2.0</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/aestrivex/bctpy">bctpy</a></td>
+<td>BCT脑图指标</td>
+<td>GPL-3.0+</td>
+<td>参考/可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/fiuneuro/brainconn">brainconn</a></td>
+<td>脑图指标</td>
+<td>GPL-3.0+; no longer actively maintained</td>
+<td>历史参考</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netneurolab/netneurotools">netneurotools</a></td>
+<td>脑网络统计和零模型</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://www.nitrc.org/projects/nbs/">NBS</a></td>
+<td>队列连接成分置换检验</td>
+<td>GPL; version verify</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MICA-MNI/BrainSpace">BrainSpace</a></td>
+<td>连接梯度</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/MICA-MNI/BrainStat">BrainStat</a></td>
+<td>脑空间统计</td>
+<td>BSD-3-Clause; bundled terms separate</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/netneurolab/neuromaps">neuromaps</a></td>
+<td>空间映射与注释</td>
+<td>CC-BY-NC-SA-4.0</td>
+<td>许可受限可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/xgi-org/xgi">XGI</a></td>
+<td>原生超图结构/统计</td>
+<td>BSD-3-Clause</td>
+<td>核心</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pnnl/HyperNetX">HyperNetX</a></td>
+<td>属性超图与HIF</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/HGX-Team/hypergraphx">Hypergraphx</a></td>
+<td>高阶模体/时间多层超图</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pyt-team/TopoNetX">TopoNetX</a></td>
+<td>单纯/胞腔/组合复形</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pyt-team/TopoEmbedX">TopoEmbedX</a></td>
+<td>高阶结构嵌入</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/GUDHI/gudhi-devel">GUDHI</a></td>
+<td>持久同调</td>
+<td>Current master MIT; pin release/submodules</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/scikit-tda/ripser.py">ripser.py</a></td>
+<td>持久同调</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/giotto-ai/giotto-tda">giotto-tda</a></td>
+<td>拓扑学习流程</td>
+<td>AGPL-3.0</td>
+<td>可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/brainets/hoi">hoi</a></td>
+<td>高阶信息估计</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Laouen/THOI">THOI</a></td>
+<td>Gaussian-copula高阶信息</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pwollstadt/IDTxl">IDTxl</a></td>
+<td>信息流网络估计</td>
+<td>GPL-3.0</td>
+<td>可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jlizier/jidt">JIDT</a></td>
+<td>信息动力学</td>
+<td>GPL-3.0</td>
+<td>可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nplresearch/HOI_lenses_analysis">HOI-Lenses</a></td>
+<td>多框架高阶脑功能比较作者代码</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_5">后续学习模型</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用途</th>
+<th>许可核查</th>
+<th>接入安排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/pyg-team/pytorch_geometric">PyG</a></td>
+<td>图与HypergraphConv</td>
+<td>MIT</td>
+<td>后续优先</td>
+</tr>
+<tr>
+<td><a href="https://github.com/dmlc/dgl">DGL</a></td>
+<td>图学习框架</td>
+<td>Apache-2.0</td>
+<td>备选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/iMoonLab/DeepHypergraph">DeepHypergraph</a></td>
+<td>HGNN/HGNN+/HyperGCN/UniGNN</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/pyt-team/TopoModelX">TopoModelX</a></td>
+<td>拓扑神经网络</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/HennyJie/BrainGB">BrainGB</a></td>
+<td>脑网络学习基准；BrainNN是内部模块</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Anwar-Said/NeuroGraph">NeuroGraph</a></td>
+<td>静态/动态图基准</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/CUHK-AIM-Group/NeuroSTORM">NeuroSTORM</a></td>
+<td>多类脑影像学习输入</td>
+<td>Apache-2.0 LICENSE; README discrepancy</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/xxlya/BrainGNN_Pytorch">BrainGNN</a></td>
+<td>ROI-aware图模型</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Wayfear/BrainNetworkTransformer">Brain Network Transformer</a></td>
+<td>脑网络Transformer</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/Wayfear/FBNetGen">FBNetGen</a></td>
+<td>时序可学习构图</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/jeremykawahara/ann4brains">BrainNetCNN</a></td>
+<td>矩阵卷积</td>
+<td>CC-BY-NC-SA-4.0</td>
+<td>许可受限可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/LearningKeqi/RethinkingBCA">RethinkingBCA</a></td>
+<td>传统及图模型比较</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/iMoonLab/HGST">HGST</a></td>
+<td>ROI超图；ADHD/MDD</td>
+<td>Research/education only</td>
+<td>许可受限可选</td>
+</tr>
+<tr>
+<td><a href="https://github.com/basiralab/HUNet">HUNet</a></td>
+<td>受试者群体超图</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/basiralab/HCAE">HCAE</a></td>
+<td>形态ROI多视图超图</td>
+<td>MIT per README</td>
+<td>研究目录</td>
+</tr>
+<tr>
+<td><a href="https://github.com/juaml/junifer">junifer</a></td>
+<td>预处理影像特征提取</td>
+<td>Verify pinned release</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/juaml/julearn">julearn</a></td>
+<td>规范机器学习</td>
+<td>Verify pinned release</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/wwu-mmll/photonai">PHOTONAI</a></td>
+<td>机器学习流程</td>
+<td>Verify pinned release</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/YaleMRRC/CPM">CPM</a></td>
+<td>连接组预测</td>
+<td>Not confirmed</td>
+<td>研究目录</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_6">原始影像处理</h2>
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>用途</th>
+<th>许可核查</th>
+<th>接入安排</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="https://github.com/bids-standard/bids-validator">BIDS Validator</a></td>
+<td>数据规范校验</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/bids-standard/pybids">PyBIDS</a></td>
+<td>BIDS索引</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/rordenlab/dcm2niix">dcm2niix</a></td>
+<td>DICOM转NIfTI</td>
+<td>BSD/MIT/public-domain components</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/aramis-lab/clinica">Clinica</a></td>
+<td>ADNI/OASIS转换</td>
+<td>MIT</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nipreps/mriqc">MRIQC</a></td>
+<td>影像质量控制</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nipreps/fmriprep">fMRIPrep</a></td>
+<td>BIDS预处理</td>
+<td>Apache-2.0; dependencies separate</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/PennLINC/xcp_d">XCP-D</a></td>
+<td>去噪和ROI/FC衍生物</td>
+<td>BSD-3-Clause</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/FCP-INDI/C-PAC">C-PAC</a></td>
+<td>连接组处理</td>
+<td>LGPL-3.0-or-later</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/afni/afni">AFNI</a></td>
+<td>EPI处理及QC</td>
+<td>Mixed public-domain/CC-BY/third-party</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://fsl.fmrib.ox.ac.uk/fsl/docs/license.html">FSL</a></td>
+<td>影像分析组件</td>
+<td>Noncommercial/custom; components differ</td>
+<td>许可分别处理</td>
+</tr>
+<tr>
+<td><a href="https://surfer.nmr.mgh.harvard.edu/fswiki/FreeSurferSoftwareLicense">FreeSurfer</a></td>
+<td>皮层重建</td>
+<td>Custom</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/ANTsX/ANTs">ANTs</a></td>
+<td>配准</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nipy/nipype">Nipype</a></td>
+<td>工作流接口</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/nipype/pydra">Pydra</a></td>
+<td>工作流执行</td>
+<td>Apache-2.0</td>
+<td>后续</td>
+</tr>
+<tr>
+<td><a href="https://github.com/STATMINDlab/ADNI_fMRI_protocol">ADNI_fMRI_protocol</a></td>
+<td>ADNI GO/2/3处理流程</td>
+<td>GPL-3.0</td>
+<td>研究目录</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_7">四病数据来源</h2>
+<ul>
+<li>ASD：<a href="https://fcon_1000.projects.nitrc.org/indi/abide/abide_I.html">ABIDE I</a>、<a href="https://fcon_1000.projects.nitrc.org/indi/abide/abide_II.html">ABIDE II</a>。</li>
+<li>ADHD：<a href="https://fcon_1000.projects.nitrc.org/indi/adhd200/index.html">ADHD-200</a>。</li>
+<li>MDD：<a href="https://rfmri.org/REST-meta-MDD-V1">REST-meta-MDD</a>、<a href="https://www.synapse.org/Synapse%3Asyn22317076/metadata/">SRPBS</a>。</li>
+<li>AD/认知障碍：<a href="https://adni.loni.usc.edu/">ADNI</a>、<a href="https://sites.wustl.edu/oasisbrains/">OASIS-3</a>。</li>
+</ul>
+<p>ADNI 是队列名称。个体级数据和衍生物依各自协议使用，不随工具再分发。ROI超图、受试者群体超图、形态网络与fMRI网络须分别记录；超图表征不自动证明不可约高阶关系。</p></main></html>

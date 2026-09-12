@@ -1,0 +1,130 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>网络与超图分析 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="_1">网络与超图分析</h1>
+<p>从 0.4.0 源码版起，Hyper-Brain 的计算和界面已合入 BrainFC；一次安装即可使用。<code>brainfc</code> 完成影像/时序到功能连接，<code>brainfc.network</code> 在矩阵上构建图、原生超图、计算指标和组间统计。矩阵、ROI 顺序和信号清理记录通过明确的数据接口连接。</p>
+<h2 id="_2">在界面中操作</h2>
+<ol>
+<li>启动 <code>brainfc serve</code>，在提取工作台完成一个 run。</li>
+<li>点击结果上方的 <strong>进入网络分析</strong>。已有矩阵、ROI 顺序、坐标、参考表面和处理记录自动带入，直接进入方法确认。</li>
+<li>选择普通图、超图或两者；确认方法后运行。默认普通图为绝对强度前 10%（保留截断处并列），超图为 FC 连接轮廓 kNN、k=5。这是可调整的演示默认值，不是适用于所有数据集的官方参数。</li>
+<li>在结果中切换节点连线、透明包络、矩阵和完整成员表。没有分区表面数据时，“脑区分区表面”不可选；原始图谱切片需要另有已安装的图谱数据。</li>
+</ol>
+<p>已有连接矩阵或完成清理的 ROI 时序，可从页面顶部 <strong>网络与超图分析</strong> 直接进入 <code>/networks/</code>，上传 CSV/TSV/TXT/1D/NPY/NPZ/MAT。选择数据种类和矩阵含义；MAT/NPZ 有多变量时明确选择。矩阵大小不用于推断图谱。</p>
+<p>网络界面处理时序不执行混杂回归、滤波和删帧。需要这些处理时，先在 BrainFC 提取流程中完成，再传入完整矩阵。显示阈值不改变数值矩阵；图构建密度/阈值属于分析参数，应与显示设置区分。</p>
+<h2 id="_3">从提取结果继续</h2>
+<pre><code class="language-python">from brainfc import Config, extract_connectome
+from brainfc.network import AnalysisConfig
+from brainfc.network.export import export_result
+
+connectome = extract_connectome(
+    &quot;roi_timeseries.tsv&quot;,
+    config=Config(detrend=False, standardize=False),
+)
+network = connectome.analyze_network(AnalysisConfig(
+    graph_method=&quot;density&quot;, density=0.1,
+    hypergraph_method=&quot;multiscale&quot;, hypergraph_ks=[5, 10],
+))
+export_result(network, &quot;network-result.zip&quot;)
+</code></pre>
+<p><code>analyze_network</code> 使用已经计算好的相关矩阵，不重复清理或估计相关性。<code>connectome.to_network()</code> 返回独立的 <code>BrainDataset</code> 副本，可供高级调用。原始 ROI ID、名称、坐标、保留帧号、QC 和来源保留在 <code>network.metadata</code>，可用参考表面也一并保留。</p>
+<h2 id="_4">已保存的结果或独立矩阵</h2>
+<pre><code class="language-python">from brainfc.network import AnalysisConfig, analyze, load_connectome, load_data
+
+data = load_connectome(&quot;results/sub-01&quot;)  # Connectome.save 输出目录
+result = analyze(data, AnalysisConfig(compute_hypergraph=False))
+
+# 独立矩阵有明确含义和行顺序；这里的 ID 应换成自己对应的真实 ROI ID。
+data = load_data(
+    &quot;connectivity.npy&quot;, kind=&quot;connectivity&quot;, matrix_kind=&quot;correlation&quot;,
+    roi_ids=[&quot;roi_a&quot;, &quot;roi_b&quot;, &quot;roi_c&quot;],
+)
+result = analyze(data, AnalysisConfig(
+    graph_method=&quot;weighted&quot;, hypergraph_method=&quot;custom&quot;,
+    custom_edges=[{&quot;id&quot;: &quot;H1&quot;, &quot;members&quot;: [&quot;roi_a&quot;, &quot;roi_b&quot;, &quot;roi_c&quot;]}],
+))
+</code></pre>
+<p><code>matrix_kind="fisher_z"</code> 显式反变换为相关系数；<code>covariance</code> 根据正的方差对角线标准化。不得把 Fisher-z 数值当成相关系数阈值化。</p>
+<h2 id="_5">图和超图的底层接口</h2>
+<pre><code class="language-python">from brainfc.network.graph import build_graph, analyze_graph
+from brainfc.network.hypergraph import build_hypergraph, to_payload
+
+graph = build_graph(data.data, roi_ids=data.roi_ids, method=&quot;threshold&quot;, threshold=0.4)
+metrics = analyze_graph(graph)  # NetworkX Graph -&gt; 指标字典
+hypergraph = build_hypergraph(data.data, roi_ids=data.roi_ids, method=&quot;knn&quot;, ks=[5])
+payload = to_payload(hypergraph)  # XGI Hypergraph -&gt; 原生超边与稀疏关联矩阵
+</code></pre>
+<p>低层 <code>build_graph</code>/<code>build_hypergraph</code> 的矩阵应已转换为预期权重；含 Fisher-z/协方差时优先通过 <code>analyze</code> 的完整校验与转换入口。</p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>普通图</td>
+<td>weighted、threshold、density、kNN、最大绝对强度生成森林；保留连接正负号，去除自环和零边。</td>
+</tr>
+<tr>
+<td>路径指标</td>
+<td>正连接权重对应长度 1/w；不可达点对的效率贡献为 0。完整定义随结果导出。</td>
+</tr>
+<tr>
+<td>FC-profile 超图</td>
+<td>将完整有符号 FC 的对角线置零后计算行间余弦相似度；中心节点加选中的 k 个邻居形成超边，边界并列全部保留。</td>
+</tr>
+<tr>
+<td>自定义/模板超图</td>
+<td>保留原始 ID 和成员集合；成员相同但 ID 不同的超边仍分别保留。绘制包络不能增加成员。</td>
+</tr>
+<tr>
+<td>范围</td>
+<td>描述性结构分析；由 FC 构建超边不能证明不可约高阶生理相互作用。</td>
+</tr>
+</tbody>
+</table>
+<p>详尽方法见<a href="network/methods.html">迁入的算法说明</a>。</p>
+<h2 id="_6">组间统计</h2>
+<pre><code class="language-python">import pandas as pd
+from brainfc.network.statistics import compare_groups
+
+table = pd.read_csv(&quot;subject_metrics.csv&quot;)
+comparison = compare_groups(
+    table, group_column=&quot;group&quot;, subject_column=&quot;subject_id&quot;,
+    feature_columns=[&quot;global_efficiency&quot;, &quot;mean_clustering&quot;],
+    covariates=[&quot;age&quot;],
+)
+</code></pre>
+<p>每行必须是独立且唯一的被试。两组无协变量时用 Welch；有协变量时用 OLS 和 HC3 标准误；输出完整病例排除记录、效应与置信区间，并对指定特征族做 BH-FDR。单被试样例不能运行组间推断。没有诊断预测模型。</p>
+<h2 id="_7">命令行</h2>
+<pre><code class="language-bash">brainfc network results/sub-01 --output network-result.zip
+brainfc network connectivity.npy --kind connectivity --matrix-kind correlation --output network.json
+brainfc network connectivity.npy --config network-config.json --metadata roi-metadata.json --output network.zip
+</code></pre>
+<p>JSON 配置字段来自 <code>AnalysisConfig</code>。新命令拒绝覆盖已有输出。Python <code>export_result</code> 保留旧 API 行为，会覆盖指定文件；调用者应选择新目标。ZIP 内含完整矩阵、ROI/边/超边成员表、图指标、GraphML、原生超边 JSON、来源和静态报告。来源可含本地输入路径，公开前需要审核。</p>
+<h2 id="http">HTTP</h2>
+<p>统一服务器中，提取接口为 <code>/api/...</code>，网络分析接口为 <code>/networks/api/v1/...</code>。</p>
+<pre><code class="language-python">import time
+import requests
+
+base = &quot;http://127.0.0.1:8766&quot;
+# extraction_job_id 来自已完成的提取任务。
+handoff = requests.post(f&quot;{base}/api/jobs/{extraction_job_id}/network-input&quot;)
+handoff.raise_for_status()
+job = requests.post(f&quot;{base}/networks/api/v1/jobs&quot;, json={
+    &quot;file_ids&quot;: [handoff.json()[&quot;file&quot;][&quot;id&quot;]],
+    &quot;analysis&quot;: {&quot;graph_method&quot;: &quot;density&quot;, &quot;density&quot;: 0.1, &quot;k&quot;: 5},
+})
+job.raise_for_status()
+state = job.json()
+while state[&quot;status&quot;] in {&quot;queued&quot;, &quot;running&quot;}:
+    time.sleep(0.5)
+    response = requests.get(f&quot;{base}/networks/api/v1/jobs/{state['id']}&quot;)
+    response.raise_for_status()
+    state = response.json()
+if state[&quot;errors&quot;] or state[&quot;status&quot;] != &quot;completed&quot;:
+    raise RuntimeError(state)
+response = requests.get(f&quot;{base}/networks/api/v1/results/{state['results'][0]['id']}&quot;)
+response.raise_for_status()
+network = response.json()
+</code></pre>
+<p>自动传入的矩阵语义和 ROI 元数据由服务器保存，界面默认值不会覆盖。独立输入用上传接口后提交 <code>input</code>/<code>analysis</code>，参见运行中的 <code>/networks/docs</code>。<a href="network-http-reference.html">完整 HTTP 参考</a> · <a href="api-reference.html">全部 Python API</a>。</p></main></html>
