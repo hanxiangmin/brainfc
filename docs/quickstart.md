@@ -39,7 +39,7 @@ wheel 内含网页和离线手册。普通使用不需要 Node.js；首次安装
 
 ## 第一次运行
 
-服务默认打开 `http://127.0.0.1:8766`。点击“试用演示”可生成合成 NIfTI、提取 12 个人工脑区、计算矩阵并导出图像。演示不下载患者数据。
+服务默认打开 `http://127.0.0.1:8766`。点击“打开真实样例”使用包内经脱敏核查的 rest01 静息态 ROI 时序、混杂变量和脑组织参考掩膜，实际运行去噪、矩阵计算和图像导出。无需下载或手填参数；100 个脑区、TR 2 秒，处理后保留 145 帧。
 
 自己的数据按 **选择数据 → 确认处理方案 → 开始处理** 操作。可一次选择主文件和配套 JSON/confounds/mask。TR、空间及配套文件能明确识别时自动填入；剩余高级参数可展开调整。不能确定空间或预处理状态的影像须先核对。
 
@@ -54,12 +54,12 @@ brainfc serve --port 8767 --workspace ./workspace --no-browser
 ## 不用界面的最短演示
 
 ```shell
-brainfc demo --output ./demo-001
+brainfc demo --kind rest01 --output ./demo-001
 ```
 
-`demo-001` 必须不存在。`input/` 是合成输入，`result/` 包含数组、CSV/TSV、PNG/SVG/PDF、质控、来源和离线 `report.html`。
+`demo-001` 必须不存在。`input/` 是包内真实样例的副本，`result/` 包含数组、CSV/TSV、PNG/SVG/PDF、质控、来源和离线 `report.html`。
 
-当前源码版还提供脱敏真实样例：`brainfc demo --kind rest01 --output ./rest01-demo`。它直接使用包内的 100 脑区时间序列，不需要手填扫描参数。详见[真实样例与处理范围](real-example.md)。
+详见[真实样例与处理范围](real-example.md)。开发者仍可显式运行 `brainfc demo --kind synthetic --output ./synthetic-demo`。为兼容已有脚本，Python `create_demo()` 和 CLI 省略 `--kind` 时仍返回合成夹具；网页默认使用 rest01。
 
 Python 可执行例子在源码的 `examples/quickstart.py` 和 `examples/roi_timeseries.py`，两者均不需要网络。完整函数说明见 [API 参考](api-reference.md)。
 

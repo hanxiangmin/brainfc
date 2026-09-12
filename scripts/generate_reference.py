@@ -215,6 +215,8 @@ def site(check=False):
     pages = list(PAGES) + [(p.stem, p.stem) for p in DOCS.glob("*.md") if p.stem not in dict(PAGES)]
     pages += [(p.relative_to(DOCS).with_suffix('').as_posix(), p.stem) for p in (DOCS / "network").glob("*.md")]
     style = "body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}"
+    # Long qualified Python names must wrap with every platform's system font.
+    style += "body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}"
     for name, title in pages:
         prefix = "../" * name.count("/")
         links = "".join(f'<a href="{prefix}{key}.html">{label}</a>' for key, label in PAGES)

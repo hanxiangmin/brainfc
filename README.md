@@ -22,7 +22,7 @@ pip install brainfc
 brainfc serve
 ```
 
-浏览器打开 `http://127.0.0.1:8766`，点击 **试用演示** 即可体验完整流程。演示使用合成信号，不需要准备数据；日常使用不需要 Node.js。
+浏览器打开 `http://127.0.0.1:8766`，点击 **打开真实样例**，使用包内经脱敏核查的 rest01 静息态数据完成去噪、矩阵计算和可视化。100 个脑区、TR 2 秒，处理后保留 145 帧；无需另找数据或手填参数，日常使用不需要 Node.js。
 
 <details>
 <summary>从 GitHub 源码安装 / 命令行演示</summary>
@@ -31,7 +31,7 @@ brainfc serve
 git clone https://github.com/hanxiangmin/brainfc.git
 cd brainfc
 pip install .
-brainfc demo --output demo-001
+brainfc demo --kind rest01 --output demo-001
 ```
 
 源码安装适用于开发版，以及尚未上传到 PyPI 的版本。离线手册位于本地服务的 `/reference/`，HTTP 接口说明位于 `/docs`。更多环境与批处理说明见 [快速上手](docs/quickstart.md)。

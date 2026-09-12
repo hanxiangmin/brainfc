@@ -143,6 +143,9 @@ class JobState(BaseModel):
     status: Literal["queued", "running", "complete", "failed", "interrupted"]
     message: str
     kind: Literal["extract", "demo", "atlas", "dicom", "preprocess"]
+    example_kind: Literal["rest01", "synthetic"] | None = Field(
+        default=None, description="Example identity for demo jobs; old jobs may omit this field."
+    )
     error_type: str | None = None
     result_dir: str | None = None
     qc: dict[str, Any] | None = None

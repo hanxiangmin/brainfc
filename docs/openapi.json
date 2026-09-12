@@ -820,6 +820,22 @@
             ],
             "title": "Error Type"
           },
+          "example_kind": {
+            "anyOf": [
+              {
+                "enum": [
+                  "rest01",
+                  "synthetic"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Example identity for demo jobs; old jobs may omit this field.",
+            "title": "Example Kind"
+          },
           "id": {
             "title": "Id",
             "type": "string"
@@ -1449,7 +1465,24 @@
     },
     "/api/demo": {
       "post": {
+        "description": "Run packaged example inputs locally; no participant data are downloaded.\n\nThe default rest01 uses the reviewed ROI signals, confounds and brain-only\nreference mask. Its acquisition/processing record is included in provenance.\nkind=synthetic explicitly selects the artificial 12-ROI developer fixture.",
         "operationId": "demo_api_demo_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "default": "rest01",
+              "enum": [
+                "rest01",
+                "synthetic"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -1460,9 +1493,19 @@
               }
             },
             "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         },
-        "summary": "Queue a deterministic synthetic end-to-end demo",
+        "summary": "Process the bundled de-identified rest01 example (synthetic data only on explicit request)",
         "tags": [
           "Jobs"
         ]

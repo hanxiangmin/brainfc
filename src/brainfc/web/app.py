@@ -6,6 +6,7 @@ from pathlib import Path
 import re
 import shutil
 import threading
+from typing import Literal
 from urllib.parse import urlsplit
 import uuid
 from fastapi import FastAPI, HTTPException, Request, UploadFile, File, Form, Query
@@ -117,6 +118,8 @@ def create_app(workspace=None):
         dest = jobs_dir / job_id
         dest.mkdir()
         state = {"id": job_id, "status": "queued", "message": "Waiting", "kind": kind}
+        if kind == "demo":
+            state["example_kind"] = payload.get("example_kind", "rest01")
         set_state(dest, state)
         (dest / "request.json").write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
 
@@ -130,7 +133,7 @@ def create_app(workspace=None):
                 if kind == "demo":
                     from ..demo import create_demo
 
-                    payload.update(create_demo(dest / "demo-input"))
+                    payload.update(create_demo(dest / "demo-input", kind=state["example_kind"]))
                 if kind == "dicom":
                     from ..preprocessing import convert_dicom
 
@@ -169,7 +172,11 @@ def create_app(workspace=None):
                         },
                     )
                     if kind == "demo":
-                        result.provenance["synthetic"] = True
+                        result.provenance["synthetic"] = state["example_kind"] == "synthetic"
+                        if state["example_kind"] == "rest01":
+                            example = json.loads((dest / "demo-input/example.json").read_text(encoding="utf-8"))
+                            result.provenance["example"] = example
+                            result.qc["warnings"].extend(example["limitations"])
                     if payload.get("guidance"):
                         from ..presets import dataset_preset
 
@@ -389,10 +396,16 @@ def create_app(workspace=None):
         tags=["Jobs"],
         response_model=JobState,
         response_model_exclude_unset=True,
-        summary="Queue a deterministic synthetic end-to-end demo",
+        summary="Process the bundled de-identified rest01 example (synthetic data only on explicit request)",
     )
-    def demo():
-        return submit({}, "demo")
+    def demo(kind: Literal["rest01", "synthetic"] = "rest01"):
+        """Run packaged example inputs locally; no participant data are downloaded.
+
+        The default rest01 uses the reviewed ROI signals, confounds and brain-only
+        reference mask. Its acquisition/processing record is included in provenance.
+        kind=synthetic explicitly selects the artificial 12-ROI developer fixture.
+        """
+        return submit({"example_kind": kind}, "demo")
 
     @app.post(
         "/api/atlas",

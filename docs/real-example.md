@@ -4,7 +4,7 @@
 
 ## 一条命令运行
 
-以下功能需要包含 rest01 数据的当前源码版本；可在仓库根目录先执行 `pip install .`。原有 `brainfc demo` 默认仍使用合成数据。
+以下功能需要包含 rest01 数据的当前源码版本；可在仓库根目录先执行 `pip install .`。网页点击“打开真实样例”直接运行本例，自动附上方法与来源记录。原有 `brainfc demo` / `create_demo()` 保留合成默认值以兼容已有脚本；命令行选择本例时传入 `--kind rest01`。
 
 ```shell
 brainfc demo --kind rest01 --output rest01-demo

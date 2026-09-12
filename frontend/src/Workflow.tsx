@@ -713,7 +713,7 @@ export default function Workflow({ job, busy, onJob, onError }: Props) {
             action(async () => onJob(await request("/api/demo", {})))
           }
         >
-          试用演示 ↗
+          真实样例 ↗
         </button>
       </div>
       <p className="muted">

@@ -13,7 +13,7 @@ pip install brainfc
 brainfc serve
 ```
 
-The interface opens at `http://127.0.0.1:8766`. Choose the built-in demo to generate synthetic NIfTI inputs and a complete report without downloading participant data. The offline manual is available at `/reference/` and the HTTP API schema at `/docs`.
+The interface opens at `http://127.0.0.1:8766`. Choose the real example to process the bundled, privacy-reviewed rest01 ROI signals and confounds, generating a 100-ROI matrix and complete report without extra downloads or parameter entry. The offline manual is available at `/reference/` and the HTTP API schema at `/docs`.
 
 ## Python API
 

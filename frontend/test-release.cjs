@@ -42,19 +42,24 @@ async function main() {
   assert.equal(await page.locator(".primary").first().evaluate(el => getComputedStyle(el).backgroundColor), "rgb(0, 125, 163)");
   await page.screenshot({ path: path.join(output, "extraction-home.png"), fullPage: true });
   assert.ok(await page.getByRole("navigation", { name: "处理步骤" }).getByRole("button").nth(1).isDisabled());
-  await page.getByRole("button", { name: /演示/ }).first().click();
+  await page.getByRole("button", { name: "打开真实样例" }).click();
   await page.getByTestId("brain-scene").waitFor({ timeout: 120000 });
   await page.waitForFunction(() => document.querySelector('[data-testid="brain-scene"]')?.dataset.renderMs);
   const jobs = await (await page.request.get("/api/jobs")).json();
   const demo = jobs.find((job) => job.kind === "demo" && job.status === "complete");
   assert.ok(demo);
   const result = await (await page.request.get(`/api/jobs/${demo.id}/files/result.json`)).json();
-  assert.equal(result.qc.n_rois, 12);
+  assert.equal(demo.example_kind, "rest01");
+  assert.equal(result.qc.n_rois, 100);
+  assert.equal(result.sample_indices.length, 145);
+  assert.equal(result.provenance.synthetic, false);
+  assert.equal(result.provenance.example.sample_id, "rest01");
+  await page.getByText("真实静息态样例 · rest01 · 已脱敏", { exact: false }).waitFor();
   await page.locator(".viewer-card").screenshot({ path: path.join(output, "brain.png") });
   await page.getByRole("button", { name: "功能连接矩阵", exact: true }).click();
   const matrix = page.locator(".matrix-wrap canvas");
   const box = await matrix.boundingBox();
-  await matrix.click({ position: { x: box.width * .5 / 12, y: box.height * .5 / 12 } });
+  await matrix.click({ position: { x: box.width * .5 / 100, y: box.height * .5 / 100 } });
   await page.getByTestId("brain-scene").waitFor();
   const threshold = page.getByRole("slider", { name: "显示连接阈值" });
   await threshold.fill("0.2");
@@ -134,7 +139,11 @@ async function main() {
   await page.getByRole("link", { name: "全部函数与参数", exact: true }).first().click();
   await page.getByRole("heading", { name: "extract_connectome", exact: true }).waitFor();
   await page.setViewportSize({ width: 390, height: 900 });
-  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 2));
+  const mobile = await page.evaluate(() => ({
+    fits: document.documentElement.scrollWidth <= innerWidth + 2,
+    overflow: Array.from(document.querySelectorAll("main h1,main h2,main h3,main p,main pre,main table")).filter(el => el.getBoundingClientRect().right > innerWidth + 2).map(el => ({tag: el.tagName, text: el.textContent.slice(0, 100)})),
+  }));
+  assert.ok(mobile.fits, JSON.stringify(mobile));
   assert.deepEqual(errors, []);
   fs.writeFileSync(path.join(output, "validation.json"), JSON.stringify({ status: "passed", demo: demo.id, table: table.id, network: networkId, checks: ["isolated server", "demo extraction", "matrix selection", "3D/eight exact edge synchronization", "SVG", "extraction to network handoff", "unchanged matrix and ROI order", "inherited geometry without downloads", "hypergraph envelope", "network export", "offline HTML", "headerless upload wizard", "bundled manual navigation", "mobile manual"], errors }, null, 2));
   console.log(JSON.stringify({ status: "passed", evidence: output }));

@@ -15,7 +15,7 @@ pip install brainfc
 brainfc serve
 ```
 
-Open `http://127.0.0.1:8766` and choose the built-in demo to try the pipeline with synthetic signals. No participant download or Node.js installation is needed. The current GUI and full reference manual are in Chinese; Python API docstrings are in English.
+Open `http://127.0.0.1:8766` and choose **打开真实样例** to process the bundled, privacy-reviewed rest01 resting-state example: 100 ROIs, TR 2 seconds and 145 retained frames after cleaning. No extra download, parameter entry or Node.js installation is needed. The current GUI and full reference manual are in Chinese; Python API docstrings are in English.
 
 <details>
 <summary>Install from source / run a command-line demo</summary>
@@ -24,7 +24,7 @@ Open `http://127.0.0.1:8766` and choose the built-in demo to try the pipeline wi
  git clone https://github.com/hanxiangmin/brainfc.git
  cd brainfc
  pip install .
- brainfc demo --output demo-001
+ brainfc demo --kind rest01 --output demo-001
 ```
 
 Use the source installation for development or a version not yet uploaded to PyPI. The local manual is at `/reference/`; the HTTP schema is at `/docs`.

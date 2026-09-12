@@ -36,6 +36,7 @@ type Job = {
   status: string;
   message: string;
   kind: string;
+  example_kind?: "rest01" | "synthetic";
   atlas?: any;
   result_dir?: string;
 };
@@ -300,7 +301,7 @@ function App() {
                     className="run-item"
                     onClick={() => loadJob(j.id)}
                   >
-                    {j.kind === "demo" ? "合成演示" : j.kind} · {j.status}
+                    {j.kind === "demo" ? (j.example_kind === "rest01" ? "真实样例 rest01" : "合成演示") : j.kind} · {j.status}
                     <small>{j.id.slice(0, 10)}</small>
                   </button>
                 ))}
@@ -377,9 +378,9 @@ function App() {
                 disabled={busy || !!busyJob}
                 onClick={() => start("/api/demo")}
               >
-                打开合成演示 <span>↗</span>
+                打开真实样例 <span>↗</span>
               </button>
-              <small>无需下载数据。演示为固定种子的合成信号。</small>
+              <small>rest01 · 已脱敏的真实静息态数据 · 100 个脑区 · TR 2 秒。数据随库提供，点击后在本机处理。</small>
               <div className="data-notes">
                 <b>你的数据可以来自</b>
                 <p>ABIDE · ADHD-200 · ADNI · REST-meta-MDD · HCP · 自有队列</p>
@@ -397,7 +398,9 @@ function App() {
                   <p>
                     {result.provenance.synthetic
                       ? "合成演示 · 无受试者数据"
-                      : result.provenance.inputs?.source?.path
+                      : result.provenance.example?.sample_id === "rest01"
+                        ? "真实静息态样例 · rest01 · 已脱敏"
+                        : result.provenance.inputs?.source?.path
                           ?.split(/[\\/]/)
                           .pop() || "导出的连接结果"}{" "}
                     <span>· {result.provenance.method}</span>

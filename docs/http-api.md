@@ -20,7 +20,7 @@ def request(path, body=None):
     with urlopen(req, timeout=30) as response:
         return json.load(response)
 
-job = request("/api/demo", {})  # 合成示例；真实数据见下一节
+job = request("/api/demo", {})  # 默认：包内已脱敏的真实静息态样例 rest01
 deadline = time.monotonic() + 300
 while job["status"] in {"queued", "running"}:
     if time.monotonic() > deadline:
@@ -68,7 +68,7 @@ print(result["qc"]["n_rois"])
 | POST `/api/preflight` | 提取请求；可选 stage | 输入/空间/复核检查，默认 review |
 | POST `/api/upload` | multipart file、session | 保存路径和字节数；不覆盖 |
 | POST `/api/jobs` | 提取请求 | 入队，返回 JobState |
-| POST `/api/demo` | 空 | 合成数据入队，返回 JobState |
+| POST `/api/demo` | 可选查询 `kind=rest01`（默认）或 `kind=synthetic` | 包内样例入队，返回含 example_kind 的 JobState；真实样例携带原有方法与质控记录 |
 | POST `/api/atlas` | name | 图谱下载入队，结束在 job.atlas 取路径 |
 | POST `/api/dicom/plan` | source、output | 命令 argv 和两种 shell 表达，无执行 |
 | POST `/api/dicom/run` | 同上 | 外部转换入队 |

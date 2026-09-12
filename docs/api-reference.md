@@ -1281,7 +1281,7 @@ The app uses one worker with at most eight active/queued jobs. /docs, /redoc
 and /openapi.json describe HTTP contracts; see docs/http-api.md.
 ```
 
-源码：`src/brainfc/web/app.py`，第 37 行。
+源码：`src/brainfc/web/app.py`，第 38 行。
 
 ## brainfc.network.types
 

@@ -344,10 +344,26 @@ Queue one extraction; does not wait for completion
 
 ## POST /api/demo
 
-Queue a deterministic synthetic end-to-end demo
+Process the bundled de-identified rest01 example (synthetic data only on explicit request)
 
 ```json
 {
+  "parameters": [
+    {
+      "name": "kind",
+      "in": "query",
+      "required": false,
+      "schema": {
+        "enum": [
+          "rest01",
+          "synthetic"
+        ],
+        "type": "string",
+        "default": "rest01",
+        "title": "Kind"
+      }
+    }
+  ],
   "responses": {
     "200": {
       "description": "Successful Response",
@@ -355,6 +371,16 @@ Queue a deterministic synthetic end-to-end demo
         "application/json": {
           "schema": {
             "$ref": "#/components/schemas/JobState"
+          }
+        }
+      }
+    },
+    "422": {
+      "description": "Validation Error",
+      "content": {
+        "application/json": {
+          "schema": {
+            "$ref": "#/components/schemas/HTTPValidationError"
           }
         }
       }
@@ -1704,6 +1730,22 @@ Transfer a completed extraction to network analysis with its ROI mapping
         "preprocess"
       ],
       "title": "Kind"
+    },
+    "example_kind": {
+      "anyOf": [
+        {
+          "type": "string",
+          "enum": [
+            "rest01",
+            "synthetic"
+          ]
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Example Kind",
+      "description": "Example identity for demo jobs; old jobs may omit this field."
     },
     "error_type": {
       "anyOf": [
