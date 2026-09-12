@@ -15,7 +15,7 @@ from brainfc.network.types import AnalysisResult, ValidationError
 from brainfc.network.view import ViewConfig
 
 
-def atlas_router(store):
+def atlas_router(store, *, brainfc_workspace=None):
     router = APIRouter(prefix="/api/v1")
     registry = AtlasRegistry(store.root / "atlases")
     viewroot = store.root / "views"
@@ -136,6 +136,10 @@ def atlas_router(store):
             return registry.bind(
                 original, binding["atlas_id"], binding["ordered_roi_ids"], confirmed=True
             ).to_dict()
+        if brainfc_workspace is not None:
+            from .source_geometry import restore_source_parcels
+            with viewlock:
+                original = restore_source_parcels(store, brainfc_workspace, result_id, original)
         return original
 
     @router.get("/results/{result_id}/view")

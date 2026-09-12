@@ -38,6 +38,13 @@ export type ROI = {
   color?: string;
   coordinates: number[];
 };
+export function shortRoiName(roi: ROI): string {
+  const label = (roi.abbreviation || roi.name || roi.roi_id)
+    .replace(/^\d+Networks_/, "")
+    .replace(/^LH_/, "L · ").replace(/^RH_/, "R · ")
+    .replaceAll("_", " ");
+  return label.length > 30 ? `${label.slice(0, 27)}…` : label;
+}
 export type Atlas = {
   id: string;
   name: string;

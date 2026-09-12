@@ -34,6 +34,7 @@ import {
   hyperedgesOf,
   related,
   roiColor,
+  shortRoiName,
   selectionMembers,
   styles,
   type Atlas,
@@ -95,6 +96,9 @@ export default function Results({
     | undefined;
   const inheritedGeometry = result.metadata.brainfc_geometry as AtlasGeometry | undefined;
   const inherited = !bind && atlasId === "brainfc-result" && !!inheritedGeometry;
+  const hasParcels = Object.keys(geometry?.parcels || {}).length > 0;
+  const parcelReason = String(result.metadata.parcel_surface_unavailable ||
+    "当前结果仅含脑轮廓与坐标；请导入对应的 NIfTI 图谱以显示脑区分区。");
   const mapped = (!!bind && bind.atlas_id === atlasId) || inherited;
   const allEdges = useMemo(() => edgesOf(result), [result]),
     allHypers = useMemo(() => hyperedgesOf(result), [result]);
@@ -386,7 +390,10 @@ export default function Results({
   const matrixIndices = [...members]
     .map((id) => result.roi_ids.indexOf(id))
     .filter((i) => i >= 0);
-  const nodeName = (id: string) => roiById.get(id)?.abbreviation || id;
+  const nodeName = (id: string) => {
+    const roi = roiById.get(id);
+    return roi ? shortRoiName(roi) : id;
+  };
   const nodeRow = (id: string) => {
     const r = roiById.get(id);
     return (
@@ -562,8 +569,8 @@ export default function Results({
           {styles.map(([id, label, description], i) => (
             <button
               key={id}
-              title={description}
-              disabled={inherited && id === "parcels" && !Object.keys(geometry?.parcels || {}).length}
+              title={id === "parcels" && !hasParcels ? parcelReason : description}
+              disabled={id === "parcels" && !hasParcels}
               className={view.style === id ? "active" : ""}
               onClick={() => patch({ style: id })}
             >
@@ -777,8 +784,10 @@ export default function Results({
                   checked={view.labels}
                   onChange={(e) => patch({ labels: e.target.checked })}
                 />
-                显示全部英文缩写
+                显示前侧脑区名称
               </label>
+              <p className="muted">选中脑区或连接后自动显示成员名称；悬停查看完整名称。</p>
+              {inherited && !hasParcels && <p className="muted">{parcelReason}</p>}
               <label className="check-row">
                 <input
                   type="checkbox"

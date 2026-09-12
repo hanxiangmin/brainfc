@@ -8,6 +8,13 @@ const context = { exports: {} }; vm.runInNewContext(code, context);
 const { edgesOf, hyperedgesOf, selectionMembers, related } = context.exports;
 const plain = value => JSON.parse(JSON.stringify(value));
 
+test('compact atlas names preserve hemisphere and parcel number without changing originals',()=>{
+ const roi={roi_id:'7',abbreviation:'7Networks_LH_Vis_7',name:'7Networks_LH_Vis_7'};
+ assert.equal(context.exports.shortRoiName(roi),'L · Vis 7');
+ assert.equal(context.exports.shortRoiName({...roi,abbreviation:'7Networks_RH_Vis_7'}),'R · Vis 7');
+ assert.equal(roi.name,'7Networks_LH_Vis_7');
+});
+
 test('legacy ordinary edge identifiers are invariant under endpoint order', () => {
  const one = edgesOf({graph:{edges:[{source:'left',target:'right',weight:-.3}]}});
  const two = edgesOf({graph:{edges:[{source:'right',target:'left',weight:-.3}]}});

@@ -327,7 +327,7 @@ def extract_connectome(
     if not any(r.get("coordinates") is None for r in regions):
         if not config.data_space:
             raise InputError("ROI coordinates require a declared data_space.")
-        geometry = brain_geometry(atlas_img, reference, space=config.data_space)
+        geometry = brain_geometry(atlas_img, reference, space=config.data_space, rois=regions)
     else:
         geometry = None
         messages.append(

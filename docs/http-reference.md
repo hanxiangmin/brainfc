@@ -1,4 +1,4 @@
-# HTTP 完整接口 · 0.5.0
+# HTTP 完整接口 · 0.5.1
 
 从实际 FastAPI OpenAPI 生成。运行服务后可在 `/docs`、`/redoc` 查看交互说明；机器可读定义在 `/openapi.json`，离线副本为 [openapi.json](openapi.json)。
 

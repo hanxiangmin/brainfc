@@ -13,6 +13,7 @@ import {
   categoryColor,
   related,
   roiColor,
+  shortRoiName,
   type AtlasGeometry,
   type CameraState,
   type Edge,
@@ -384,10 +385,15 @@ const BrainScene = forwardRef<SceneHandle, Props>(
             labelAlpha[labelLevel(b.source_roi_id || b.roi_id)] -
             labelAlpha[labelLevel(a.source_roi_id || a.roi_id)],
         );
-        if (p.view.labels)
-          for (const roi of ordered) {
+        const nearDirection = camera.position.clone().sub(center).normalize();
+        for (const roi of ordered) {
             const id = roi.source_roi_id || roi.roi_id,
               level = labelLevel(id);
+            // Selected nodes / edge or hyperedge members and hovered nodes are
+            // always named. Extra labels are restricted to the camera-facing half.
+            if (level !== "primary" && (!p.view.labels || level === "context")) continue;
+            if (level !== "primary" && new T.Vector3().fromArray(roi.coordinates)
+              .sub(center).dot(nearDirection) < 0) continue;
             if (
               p.view.only_selected &&
               p.view.selection &&
@@ -397,11 +403,12 @@ const BrainScene = forwardRef<SceneHandle, Props>(
             const v = project(roi.coordinates);
             if (v.z < -1 || v.z > 1) continue;
             ctx.font = `${level === "primary" ? "600 11" : p.rois.length > 200 ? "8.5" : "10"}px Inter,Segoe UI,sans-serif`;
-            const tw = ctx.measureText(roi.abbreviation).width + 7;
+            const text = shortRoiName(roi);
+            const tw = ctx.measureText(text).width + 7;
             let x = Math.max(4, Math.min(w - tw - 4, v.x + 7)),
               y = Math.max(20, Math.min(h - 50, v.y - 5));
             // Screen-space displacement only; the underlying anatomical coordinates never move.
-            for (let attempt = 0; attempt < 400; attempt++) {
+            for (let attempt = 0; attempt < 32; attempt++) {
               if (!collides(x, y, tw)) break;
               const angle = attempt * 2.39996323,
                 radius = Math.sqrt(attempt + 1) * 18;
@@ -414,18 +421,14 @@ const BrainScene = forwardRef<SceneHandle, Props>(
                 Math.min(h - 50, v.y + Math.sin(angle) * radius),
               );
             }
+            if (collides(x, y, tw)) continue;
             for (const key of cellsFor(x, y, tw)) {
               const cell = occupied.get(key) || [];
               cell.push({ x, y, w: tw });
               occupied.set(key, cell);
             }
             ctx.globalAlpha = labelAlpha[level];
-            const accent =
-              p.view.selection?.kind === "hyperedge"
-                ? categoryColor(p.view.selection.id)
-                : dark
-                  ? "#9ce3d2"
-                  : "#257b72";
+            const accent = dark ? "#78c6df" : "#007da3";
             ctx.strokeStyle =
               level === "primary" ? accent : dark ? "#50647e" : "#a2afbe";
             ctx.lineWidth = level === "primary" ? 0.85 : 0.4;
@@ -453,7 +456,7 @@ const BrainScene = forwardRef<SceneHandle, Props>(
                 : dark
                   ? "#deebf7"
                   : "#23364b";
-            ctx.fillText(roi.abbreviation, x, y);
+            ctx.fillText(text, x, y);
             if (r.hovered === id) {
               ctx.strokeStyle = dark ? "#ffffff" : "#163850";
               ctx.lineWidth = 2;
@@ -676,7 +679,7 @@ const BrainScene = forwardRef<SceneHandle, Props>(
         const text =
           s.kind === "node"
             ? p.rois.find((r) => (r.source_roi_id || r.roi_id) === s.id)
-                ?.abbreviation || s.id
+                ?.name || s.id
             : s.kind === "hyperedge"
               ? `超边 ${p.hypers.find((h) => h.id === s.id)?.display_id}`
               : `普通边 · ${p.edges.find((a) => a.id === s.id)?.weight.toFixed(4)}`;

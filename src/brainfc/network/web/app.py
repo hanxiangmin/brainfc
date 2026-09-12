@@ -24,7 +24,13 @@ MAX_FILE_BYTES = 128 * 1024 * 1024
 _ARTIFACT_LOCK = threading.RLock()
 
 
-def create_app(workspace=None):
+def create_app(workspace=None, *, brainfc_workspace=None):
+    """Create the local network API; optional brainfc_workspace links local extraction jobs.
+
+    The unified service supplies its own workspace to recover missing display
+    parcels for older results from verified atlas inputs. Standalone services
+    leave it None and never follow paths stored in imported result metadata.
+    """
     from platformdirs import user_data_path
     store = Store(workspace or user_data_path("brainfc", appauthor=False) / "networks")
     manager = JobManager(store)
@@ -46,7 +52,7 @@ def create_app(workspace=None):
     app.state.manager = manager
     from .atlases import atlas_router
     from starlette.middleware.gzip import GZipMiddleware
-    app.include_router(atlas_router(store))
+    app.include_router(atlas_router(store, brainfc_workspace=brainfc_workspace))
     app.add_middleware(GZipMiddleware, minimum_size=2000)
     app.add_middleware(TrustedHostMiddleware, allowed_hosts=["127.0.0.1", "localhost", "[::1]", "testserver"])
     app.add_middleware(RequestBodyLimitMiddleware, max_bytes=MAX_FILE_BYTES * 4)

@@ -1,8 +1,8 @@
-# API 完整参考 · 0.5.0
+# API 完整参考 · 0.5.1
 
 由实际 Python 签名和源码 docstring 自动生成。修改接口后运行 `python scripts/generate_reference.py`；CI 检查文档是否同步。
 
-共 **105 个类、函数和方法条目**；包括所有模块公开处理函数及 `_confounds` 的行为契约。HTTP 数据模型另见 [HTTP 完整接口](http-reference.md)。
+共 **106 个类、函数和方法条目**；包括所有模块公开处理函数及 `_confounds` 的行为契约。HTTP 数据模型另见 [HTTP 完整接口](http-reference.md)。
 
 推荐入口见 [Python 使用指南](python-api.md)。底层函数面向高级用户，完整校验仍由 `extract_connectome` 执行。
 
@@ -807,10 +807,30 @@ signals. The caller must establish same hemisphere/template/vertex ordering.
 
 源码：`src/brainfc/imaging.py`，第 274 行。
 
+### parcel_geometry
+
+```python
+parcel_geometry(atlas_img, rois)
+```
+
+```text
+Build display surfaces from a 3D integer atlas and its explicit ROI mapping.
+
+atlas_img is a loaded NIfTI-like image in the declared result space. rois is
+a sequence of records with unique roi_id and positive integer label_value.
+Returns {roi_id: {positions, indices}} in RAS+ millimetres. Every requested
+value must exist; matrix size or ROI names are never used to guess a mapping.
+Meshes use padded marching cubes and gentle display-only smoothing. Neither
+the atlas voxels nor connectivity are changed. These are atlas parcel
+boundaries, not individually reconstructed cortical/pial surfaces.
+```
+
+源码：`src/brainfc/imaging.py`，第 322 行。
+
 ### brain_geometry
 
 ```python
-brain_geometry(atlas_img=None, reference=None, *, space='unknown')
+brain_geometry(atlas_img=None, reference=None, *, space='unknown', rois=None)
 ```
 
 ```text
@@ -819,16 +839,18 @@ Build a display mesh from atlas coverage or an explicit reference.
 atlas_img is an optional loaded 3D spatial image; reference is an optional
 3D brain-mask/skull-stripped-reference filename taking precedence. space labels
 the output; this function does not prove alignment to that named space.
+rois optionally supplies explicit roi_id/label_value records for atlas parcel
+surfaces. Without both atlas_img and rois, parcels remains empty.
 
 Returns a dict with space, units='mm', orientation='RAS+', brain (flat positions/
-indices), parcels={} and source. With no image returns an empty mesh, preserving
+indices), parcels and source. With no image returns an empty mesh, preserving
 coordinate-only visualization. Positive voxels undergo closing/hole filling,
 Gaussian interpolation (sigma=0.65 voxel), marching cubes and RAS+ transform.
 Only display geometry changes; no ROI extraction data are modified.
 InputError reports invalid/empty references. Atlas coverage is not a pial surface.
 ```
 
-源码：`src/brainfc/imaging.py`，第 322 行。
+源码：`src/brainfc/imaging.py`，第 351 行。
 
 ## brainfc.atlases
 
@@ -1687,7 +1709,7 @@ Validate keyword fields and construct a configuration; reject unknown keys.
 ### AnalysisResult
 
 ```python
-AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.0', layouts: 'dict[str, Any]' = <factory>) -> None
+AnalysisResult(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.1', layouts: 'dict[str, Any]' = <factory>) -> None
 ```
 
 ```text

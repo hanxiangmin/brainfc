@@ -319,15 +319,46 @@ def gifti_timeseries(img, atlas_path, table=None):
     )
 
 
-def brain_geometry(atlas_img=None, reference=None, *, space="unknown"):
+def parcel_geometry(atlas_img, rois):
+    """Build display surfaces from a 3D integer atlas and its explicit ROI mapping.
+
+    atlas_img is a loaded NIfTI-like image in the declared result space. rois is
+    a sequence of records with unique roi_id and positive integer label_value.
+    Returns {roi_id: {positions, indices}} in RAS+ millimetres. Every requested
+    value must exist; matrix size or ROI names are never used to guess a mapping.
+    Meshes use padded marching cubes and gentle display-only smoothing. Neither
+    the atlas voxels nor connectivity are changed. These are atlas parcel
+    boundaries, not individually reconstructed cortical/pial surfaces.
+    """
+    from .network.atlas import _surface
+
+    validate_volume(atlas_img, ndim=3)
+    data = np.asarray(atlas_img.dataobj)
+    values = set(label_values(data).tolist())
+    ids, requested = set(), set()
+    parcels = {}
+    for roi in rois:
+        rid, value = str(roi["roi_id"]), roi["label_value"]
+        if (not rid or rid in ids or isinstance(value, bool) or value not in values
+                or value in requested):
+            raise InputError("Parcel surfaces require distinct ROI IDs and existing atlas label values.")
+        ids.add(rid)
+        requested.add(value)
+        parcels[rid] = _surface(data == value, atlas_img.affine)
+    return parcels
+
+
+def brain_geometry(atlas_img=None, reference=None, *, space="unknown", rois=None):
     """Build a display mesh from atlas coverage or an explicit reference.
 
     atlas_img is an optional loaded 3D spatial image; reference is an optional
     3D brain-mask/skull-stripped-reference filename taking precedence. space labels
     the output; this function does not prove alignment to that named space.
+    rois optionally supplies explicit roi_id/label_value records for atlas parcel
+    surfaces. Without both atlas_img and rois, parcels remains empty.
 
     Returns a dict with space, units='mm', orientation='RAS+', brain (flat positions/
-    indices), parcels={} and source. With no image returns an empty mesh, preserving
+    indices), parcels and source. With no image returns an empty mesh, preserving
     coordinate-only visualization. Positive voxels undergo closing/hole filling,
     Gaussian interpolation (sigma=0.65 voxel), marching cubes and RAS+ transform.
     Only display geometry changes; no ROI extraction data are modified.
@@ -368,7 +399,7 @@ def brain_geometry(atlas_img=None, reference=None, *, space="unknown"):
         "units": "mm",
         "orientation": "RAS+",
         "brain": {"positions": verts.round(3).ravel().tolist(), "indices": faces.ravel().tolist()},
-        "parcels": {},
+        "parcels": parcel_geometry(atlas_img, rois) if atlas_img is not None and rois is not None else {},
         "display_surface": "Gaussian mask interpolation (0.65 voxel); display only, ROI coordinates unchanged",
         "source": "Supplied brain mask / skull-stripped reference"
         if reference

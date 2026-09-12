@@ -216,12 +216,20 @@
     "line": 274
   },
   {
-    "name": "brainfc.imaging.brain_geometry",
-    "signature": "(atlas_img=None, reference=None, *, space='unknown')",
+    "name": "brainfc.imaging.parcel_geometry",
+    "signature": "(atlas_img, rois)",
     "public": true,
     "documented": true,
     "source": "src/brainfc/imaging.py",
     "line": 322
+  },
+  {
+    "name": "brainfc.imaging.brain_geometry",
+    "signature": "(atlas_img=None, reference=None, *, space='unknown', rois=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 351
   },
   {
     "name": "brainfc.atlases.fetch_atlas",
@@ -681,7 +689,7 @@
   },
   {
     "name": "brainfc.network.types.AnalysisResult",
-    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.0', layouts: 'dict[str, Any]' = <factory>) -> None",
+    "signature": "(connectivity: 'np.ndarray', roi_ids: 'list[str]', labels: 'list[str]', coordinates: 'np.ndarray | None', graph: 'dict[str, Any]', hypergraph: 'dict[str, Any]', config: 'dict[str, Any]', metadata: 'dict[str, Any]', warnings: 'list[str]', version: 'str' = '0.5.1', layouts: 'dict[str, Any]' = <factory>) -> None",
     "public": true,
     "documented": true,
     "source": "src/brainfc/network/types.py",

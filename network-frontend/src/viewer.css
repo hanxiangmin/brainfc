@@ -413,6 +413,8 @@
   pointer-events: none;
 }
 .brain-hover {
+  max-width: min(420px, 80%);
+  overflow-wrap: anywhere;
   position: absolute;
   z-index: 5;
   pointer-events: none;

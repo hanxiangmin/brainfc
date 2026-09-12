@@ -35,7 +35,7 @@ brainfc serve
 本地 wheel 安装：
 
 ```shell
-python -m pip install "brainfc-0.5.0-py3-none-any.whl"
+python -m pip install "brainfc-0.5.1-py3-none-any.whl"
 brainfc --version
 brainfc serve
 ```

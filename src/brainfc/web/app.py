@@ -56,7 +56,7 @@ def create_app(workspace=None):
     active = set()
     from ..network.web.app import create_app as create_network_app
 
-    network_app = create_network_app(root / "networks")
+    network_app = create_network_app(root / "networks", brainfc_workspace=root)
     # A prior process cannot still be running a job owned by this server instance.
     for state in jobs_dir.glob("*/status.json"):
         old = json.loads(state.read_text(encoding="utf-8"))
