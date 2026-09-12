@@ -1,0 +1,10 @@
+{
+  "preprocessed": true,
+  "data_space": "MNI152NLin6Asym",
+  "atlas_space": "MNI152NLin6Asym",
+  "method": "pearson",
+  "detrend": true,
+  "standardize": true,
+  "high_pass": null,
+  "low_pass": null
+}

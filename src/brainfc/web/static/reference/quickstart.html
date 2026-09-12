@@ -1,0 +1,85 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>安装与上手 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="_1">安装与上手</h1>
+<h2 id="_2">包名与安装方式</h2>
+<p>分发名为 <code>brainfc</code>，Python 导入名为 <code>brainfc</code>，命令行为 <code>brainfc</code>。正式上传 PyPI 后，只需：</p>
+<pre><code class="language-shell">pip install brainfc
+brainfc serve
+</code></pre>
+<p>目前发行包已准备，本次未取得 PyPI 发布授权配置，因而还不能把该命令当作已上线的安装方式。当前按下方本地方式安装。</p>
+<h2 id="_3">从源码或本地安装包安装</h2>
+<p>需要 Python 3.11 或更高版本。完整验证环境是 Windows / Python 3.12；其他平台由新增 CI 配置覆盖，远程 CI 实际结果需发布后查看。</p>
+<p>在解压后的源码根目录执行：</p>
+<pre><code class="language-shell">python -m venv .venv
+# Windows
+.venv\Scripts\python -m pip install .
+.venv\Scripts\brainfc serve
+# macOS / Linux：改用 .venv/bin/python 和 .venv/bin/brainfc
+</code></pre>
+<p>已激活自己的虚拟环境时，只需 <code>python -m pip install .</code> 和 <code>brainfc serve</code>。默认安装已包含全部 Python API 和本地网页依赖，不需要另外选择 extras。</p>
+<p>本地 wheel 安装：</p>
+<pre><code class="language-shell">python -m pip install &quot;brainfc-0.3.0-py3-none-any.whl&quot;
+brainfc --version
+brainfc serve
+</code></pre>
+<p>wheel 内含网页和离线手册。普通使用不需要 Node.js；首次安装仍需获取 Python 依赖。完全断网安装需提前准备依赖 wheel 或已有依赖环境。项目在本次准备阶段尚未上传 PyPI，不能把 <code>pip install brainfc</code> 当作已经上线的安装方式。</p>
+<h2 id="_4">第一次运行</h2>
+<p>服务默认打开 <code>http://127.0.0.1:8766</code>。点击“试用演示”可生成合成 NIfTI、提取 12 个人工脑区、计算矩阵并导出图像。演示不下载患者数据。</p>
+<p>自己的数据按 <strong>选择数据 → 确认处理方案 → 开始处理</strong> 操作。可一次选择主文件和配套 JSON/confounds/mask。TR、空间及配套文件能明确识别时自动填入；剩余高级参数可展开调整。不能确定空间或预处理状态的影像须先核对。</p>
+<p>默认工作目录是 <code>~/brainfc-workspace</code>。自定义端口/目录：</p>
+<pre><code class="language-shell">brainfc serve --port 8767 --workspace ./workspace --no-browser
+</code></pre>
+<p>同一工作目录只使用一个服务进程。关闭服务可能中断正在处理的任务；下次启动时遗留任务标为 <code>interrupted</code>，需要新建任务重新运行。</p>
+<h2 id="_5">不用界面的最短演示</h2>
+<pre><code class="language-shell">brainfc demo --output ./demo-001
+</code></pre>
+<p><code>demo-001</code> 必须不存在。<code>input/</code> 是合成输入，<code>result/</code> 包含数组、CSV/TSV、PNG/SVG/PDF、质控、来源和离线 <code>report.html</code>。</p>
+<p>Python 可执行例子在源码的 <code>examples/quickstart.py</code> 和 <code>examples/roi_timeseries.py</code>，两者均不需要网络。完整函数说明见 <a href="api-reference.html">API 参考</a>。</p>
+<h2 id="_6">原始扫描入口</h2>
+<pre><code class="language-shell">brainfc dicom ./dicom --output ./converted
+# 加 --run 才执行；需预先安装 dcm2niix。
+brainfc preprocess ./bids --output ./derivatives --license ./license.txt --participant 01
+# 核对命令后加 --run；需 Docker Linux 容器。
+</code></pre>
+<p>转换完成后需要按采集信息组织 BIDS。fMRIPrep 完成并检查报告后，将 <code>desc-preproc_bold</code> 输入本库。具体输入责任见 <a href="formats.html">格式说明</a>，处理边界见 <a href="processing.html">方法说明</a>。</p>
+<h2 id="_7">常见错误</h2>
+<table>
+<thead>
+<tr>
+<th>错误</th>
+<th>处理方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>preprocessed=True</code></td>
+<td>确认已完成运动校正/空间配准，再设置声明；原始扫描走预处理入口</td>
+</tr>
+<tr>
+<td>空间不一致</td>
+<td>核对完整模板名称；重采样不能替代配准</td>
+</tr>
+<tr>
+<td>TR 冲突</td>
+<td>比对本次扫描 JSON/影像头，不用数据集参考值覆盖真实扫描</td>
+</tr>
+<tr>
+<td>ROI absent / mapping mismatch</td>
+<td>核对真实标签值、覆盖范围、mask 与 ROI 表</td>
+</tr>
+<tr>
+<td>零方差或保留帧过少</td>
+<td>检查信号、混杂和删帧；库不伪造零相关结果</td>
+</tr>
+<tr>
+<td>输出已存在</td>
+<td>为本次运行选择新目录/文件，旧结果保留</td>
+</tr>
+<tr>
+<td>没有三维或八视图</td>
+<td>为所有 ROI 提供同空间 RAS+ mm 坐标；时序表不会猜图谱</td>
+</tr>
+<tr>
+<td>缺少网页依赖</td>
+<td>在相同 Python 环境重新安装 BrainFC wheel 或源码，并让 pip 安装依赖；默认安装已包含界面</td>
+</tr>
+</tbody>
+</table></main></html>

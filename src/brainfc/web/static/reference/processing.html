@@ -1,0 +1,89 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>处理顺序与方法 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="_1">处理顺序与方法</h1>
+<p>这里描述本库当前实际执行的代码，方便复现和选择参数。</p>
+<h2 id="_2">总流程</h2>
+<pre><code class="language-text">原始 DICOM → 外部 dcm2niix → 核对序列并组织 BIDS → 外部 fMRIPrep → 检查报告
+                                                               ↓
+已预处理体积 / CIFTI / GIFTI → 验证空间与标签 → ROI 均值 ──────────┤
+已分区 ROI 时序 → 核对方向、表头与 ROI 顺序 ───────────────────────┘
+    → 删除开头帧 → 联合时序清理与删帧 → 有符号相关矩阵 → Fisher-z
+    → 质控与来源 → 保存 / 矩阵 / 八视图 / 交互 3D
+</code></pre>
+<h2 id="_3">空间处理和均值</h2>
+<p>体积输入要求 4D，整数标签图谱要求 3D。图谱与掩膜以最近邻插值到 BOLD 网格，只调整采样网格，不求配准变换。0 为背景；图谱的所有正标签必须在最终 BOLD/mask 内保留，否则停止。按原始标签数值升序生成 ROI。每个 ROI 是纳入体素的算术平均，不按概率加权。</p>
+<p>实现按 8 帧读取体积，BOLD 块转为 float32，均值累加为 float64。体积 ROI 的显示质心从原始图谱计算，提供 ROI 表坐标时优先使用表中坐标。mask 不会移动显示质心。</p>
+<p>CIFTI dense 要求完全相同 BrainModelAxis，按 16 帧读取并计算各标签灰坐标均值；ptseries 直接使用 ParcelsAxis 顺序。GIFTI 当前完整载入时间序列，按标签顶点均值分区。所有图谱只支持离散非负整数标签，至少 2、最多 2000 个非背景标签；已有分区时序没有同样的 2000 列上限。</p>
+<h2 id="fd">初始帧、非稳态和 FD</h2>
+<p>先根据原始帧构造统一保留掩码，再从信号/混杂中移除前 <code>discard</code> 帧。混杂表的行数必须等于删帧前总帧数。</p>
+<table>
+<thead>
+<tr>
+<th>条件</th>
+<th>行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始帧索引 <code>&lt; discard</code></td>
+<td>删除</td>
+</tr>
+<tr>
+<td>任一 <code>non_steady_state_outlier*</code> 列非零</td>
+<td>删除</td>
+</tr>
+<tr>
+<td>启用 FD 且 <code>FD &gt; fd_threshold</code></td>
+<td>删除；等于阈值保留</td>
+</tr>
+<tr>
+<td>启用 FD 且首帧 FD 缺失</td>
+<td>删除首帧</td>
+</tr>
+<tr>
+<td>除首帧之外 FD 缺失/非有限，或存在负 FD</td>
+<td>报错；即使未启用阈值，只要混杂表有 FD 列就检查</td>
+</tr>
+<tr>
+<td>未启用 FD</td>
+<td>不按 FD 数值删除，仍计算已提供 FD 的均值/最大值</td>
+</tr>
+</tbody>
+</table>
+<p><code>fd_censored</code> 与 <code>nonsteady_censored</code> 可能重叠，也可能与初始帧重叠。最终唯一删帧数看 <code>n_censored</code>，原始保留位置看 <code>sample_indices</code>。平均 FD 使用所有原始有限 FD 值，不是仅保留帧的平均值。连续保留时长不能用 <code>n_retained × TR</code> 推断，该值只是保留样本的时间总量。</p>
+<h2 id="_4">混杂回归</h2>
+<p>默认自动识别完整的 <code>trans_x/trans_y/trans_z/rot_x/rot_y/rot_z</code>，再加存在的 <code>white_matter</code>、<code>csf</code>。只出现部分 motion6 会报错；普通自定义混杂表需要明确列名。不会把文件中所有列自动回归。</p>
+<p>只有名称含 <code>derivative1</code> 的被选列允许首行 NaN 填 0，填充值逐项记录。其他选中值必须有限。检查纳入截距后的保留帧混杂设计秩；保留帧数减设计秩小于 3 则停止。这是数值可行性检查，不代表统计自由度的完整估计，也未计入滤波/自相关造成的有效样本量变化。</p>
+<h2 id="nilearn">Nilearn 联合清理</h2>
+<p>本库固定依赖 <code>nilearn&gt;=0.14,&lt;0.15</code>。调用 <code>signal.clean</code> 时显式传入 detrend、<code>standardize='zscore_sample'</code> 或 False、<code>standardize_confounds=True</code>、两个截止频率、TR、sample_mask、<code>extrapolate=True</code>；有截止频率则使用 Butterworth，无则关闭滤波。</p>
+<p>启用 Butterworth 和删帧时，被剔除位置参与插值/滤波安排，最后仅返回保留样本；不会把删帧后的不规则采样序列当成新的等间隔原始序列再次计算滤波。具体联合处理由 Nilearn 实现，参考 <a href="https://nilearn.github.io/stable/modules/generated/nilearn.signal.clean.html">signal.clean 官方说明</a>。结果保存实际 Nilearn 版本和处理提示。</p>
+<p>不额外提供插值、滤波阶数或滤波后残差自由度参数。保留点不足、短序列滤波失败、清理后 ROI 标准差 ≤1e−10 或非有限值均停止计算。</p>
+<h2 id="_5">矩阵</h2>
+<table>
+<thead>
+<tr>
+<th><code>method</code></th>
+<th>实际算法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pearson</code></td>
+<td>清理后 ROI 信号的 Pearson 相关（NumPy <code>corrcoef</code>）</td>
+</tr>
+<tr>
+<td><code>spearman</code></td>
+<td>每列进行平均并列秩变换，再 Pearson 相关</td>
+</tr>
+<tr>
+<td><code>partial</code></td>
+<td>scikit-learn <code>LedoitWolf</code> 估计精度矩阵 P；非对角线 <code>−Pij / sqrt(Pii × Pjj)</code></td>
+</tr>
+</tbody>
+</table>
+<p>结果对称化、截到 [−1,1]，对角线设为 1。Fisher-z 单独保存：<code>atanh(clip(r, −1+1e−7, 1−1e−7))</code>，对角线 0。该转换对三种方法都执行，是数值转换，不附带显著性或正态分布保证。</p>
+<p>没有 p 值、FDR、组间比较、疾病模型或随机图检验。球棍边表示功能相关，不表示结构纤维束或因果作用。</p>
+<h2 id="_6">可视化</h2>
+<p>只取上三角非零边；先按绝对值阈值和选中脑区/边过滤，再稳定地按绝对强度降序取前 <code>max_edges</code> 条。相同强度按矩阵上三角顺序稳定排列。3D 与八视图使用同一条目集合，完整矩阵始终保留全部正负权重。</p>
+<p>解剖参考的正值掩膜经过闭运算、填孔、0.65 体素 Gaussian 插值及 marching cubes；WebGL 继续平滑显示网格。这些操作只影响显示。没有参考时显示图谱覆盖包络；没有可用影像但有坐标时仅显示节点和边。静态 SVG/PDF 的脑壳是栅格层，线与点保持 Matplotlib 输出形式，不能宣称全部矢量化。</p>
+<h2 id="_7">原始预处理边界</h2>
+<p>适配器固定一个数字标签 fMRIPrep 镜像，默认 <code>nipreps/fmriprep:25.2.5</code>，输出一个命名模板的 res-2 体积，使用 <code>--fs-no-reconall</code>。Docker、FreeSurfer license、模板和计算资源由运行环境提供。完整参数与上游行为参见 <a href="https://fmriprep.org/en/25.2.5/usage.html">fMRIPrep 25.2.5 使用说明</a>。</p>
+<p>本库不自动生成 BIDS 采集身份、不代替上游质控、不估计畸变校正参数，也没有在本次本地验证中执行完整 fMRIPrep。能够生成并验证调用计划，与已经验证原始患者数据全链路是不同能力范围。</p></main></html>

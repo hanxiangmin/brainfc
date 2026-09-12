@@ -1,0 +1,276 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Python 使用指南 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="python">Python 使用指南</h1>
+<h2 id="_1">公共入口</h2>
+<pre><code class="language-python">from brainfc import (
+    Config, Connectome, InputError, extract_connectome,
+    inspect_input, discover_bids, fetch_atlas,
+    dataset_presets, dataset_preset,
+)
+</code></pre>
+<p>以上是顶层导出的 9 个公共对象。其余处理函数按模块导入；所有函数、方法的真实签名和 docstring 见 <a href="api-reference.html">完整参考</a>。本库采用 Python 包接口，依赖 NumPy/NiBabel/Nilearn 等科学计算库。</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>函数 / 对象</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>models</code></td>
+<td><code>Config</code>, <code>Connectome</code>, <code>InputError</code></td>
+<td>参数、结果、输入异常</td>
+</tr>
+<tr>
+<td><code>pipeline</code></td>
+<td><code>extract_connectome</code>, <code>fingerprint</code></td>
+<td>完整单 run 提取；文件哈希</td>
+</tr>
+<tr>
+<td><code>io</code></td>
+<td><code>inspect_input</code>, <code>discover_bids</code>, <code>numeric_table</code>, <code>metadata</code>, <code>sidecar_path</code></td>
+<td>读取与格式/配套信息</td>
+</tr>
+<tr>
+<td><code>imaging</code></td>
+<td><code>roi_table</code>, <code>make_rois</code>, <code>validate_volume</code>, <code>label_values</code></td>
+<td>标签、ROI 映射、空间图像检查</td>
+</tr>
+<tr>
+<td><code>imaging</code></td>
+<td><code>volume_timeseries</code>, <code>cifti_timeseries</code>, <code>gifti_timeseries</code>, <code>brain_geometry</code></td>
+<td>底层均值提取与显示表面</td>
+</tr>
+<tr>
+<td><code>atlases</code></td>
+<td><code>fetch_atlas</code></td>
+<td>显式下载/缓存图谱</td>
+</tr>
+<tr>
+<td><code>preprocessing</code></td>
+<td><code>CommandPlan</code>, <code>dicom_plan</code>, <code>convert_dicom</code>, <code>fmriprep_plan</code></td>
+<td>外部原始数据处理计划与执行</td>
+</tr>
+<tr>
+<td><code>workflow</code></td>
+<td><code>input_suggestions</code>, <code>check_input</code>, <code>preflight</code>, <code>check_raw_bids</code>, <code>validate_guidance</code></td>
+<td>输入识别、引导检查与流程记录</td>
+</tr>
+<tr>
+<td><code>presets</code></td>
+<td><code>dataset_presets</code>, <code>dataset_preset</code></td>
+<td>官方方案来源及采集提示</td>
+</tr>
+<tr>
+<td><code>plotting</code></td>
+<td><code>edges_of</code>, <code>plot_matrix</code>, <code>plot_views</code></td>
+<td>显示连接选择与图像</td>
+</tr>
+<tr>
+<td><code>export</code></td>
+<td><code>save_result</code>, <code>write_report</code></td>
+<td>完整文件导出 / 离线 HTML</td>
+</tr>
+<tr>
+<td><code>demo</code></td>
+<td><code>create_demo</code></td>
+<td>不联网的合成输入</td>
+</tr>
+<tr>
+<td><code>web.app</code></td>
+<td><code>create_app</code></td>
+<td>可选的 FastAPI 本地服务</td>
+</tr>
+<tr>
+<td><code>cli</code></td>
+<td><code>main</code></td>
+<td>命令行入口</td>
+</tr>
+</tbody>
+</table>
+<p><code>_</code> 开头的帮助函数是内部实现，不承诺兼容性。完整参考额外说明 <code>_confounds</code>，以便核对时序处理。直接调用底层影像函数会绕过主流程的部分校验，通常使用 <code>extract_connectome</code>。</p>
+<h2 id="1">1. 可直接运行的合成体积示例</h2>
+<pre><code class="language-python">from pathlib import Path
+from tempfile import TemporaryDirectory
+from brainfc import Config, extract_connectome
+from brainfc.demo import create_demo
+
+with TemporaryDirectory() as tmp:
+    spec = create_demo(Path(tmp) / &quot;input&quot;)
+    settings = Config(**spec.pop(&quot;config&quot;))
+    result = extract_connectome(**spec, config=settings)
+    assert result.connectivity.shape == (12, 12)
+    result.provenance[&quot;synthetic&quot;] = True
+    # 正式保存时使用临时目录之外的新目录：
+    # result.save(&quot;./demo-result-001&quot;)
+</code></pre>
+<p>保存及逐项读取结果的完整可执行脚本见 <code>examples/quickstart.py</code>。</p>
+<h2 id="2-nifti">2. 已预处理 NIfTI</h2>
+<p>以下替换为自己的实际文件；<code>confounds</code> 必须与原始帧逐行对应，空间必须已经配准。</p>
+<pre><code class="language-python">from brainfc import Config, extract_connectome, fetch_atlas
+
+atlas = fetch_atlas(&quot;schaefer100&quot;)
+result = extract_connectome(
+    &quot;sub-01_task-rest_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz&quot;,
+    atlas=atlas[&quot;atlas&quot;], rois=atlas[&quot;rois&quot;],
+    confounds=&quot;sub-01_task-rest_desc-confounds_timeseries.tsv&quot;,
+    mask=&quot;sub-01_task-rest_space-MNI152NLin6Asym_desc-brain_mask.nii.gz&quot;,
+    reference=&quot;sub-01_task-rest_space-MNI152NLin6Asym_desc-brain_mask.nii.gz&quot;,
+    config=Config(
+        preprocessed=True,
+        data_space=atlas[&quot;space&quot;], atlas_space=atlas[&quot;space&quot;],
+        high_pass=0.01, low_pass=0.08, fd_threshold=0.5,
+    ),
+    progress=print,
+)
+</code></pre>
+<p>这里的频段和 FD 值只用于展示设置方法，不是官方统一默认。<code>t_r=None</code> 会从 JSON/已知单位影像头推断；冲突会报错。<code>mask</code> 用于实际 ROI 均值，<code>reference</code> 只用于脑壳显示，二者角色独立。</p>
+<h2 id="3-roi">3. 已有 ROI 时序</h2>
+<pre><code class="language-python">from brainfc import Config, extract_connectome
+
+result = extract_connectome(
+    &quot;roi_signals.1D&quot;,
+    config=Config(table_header=False, detrend=False, standardize=False),
+)
+</code></pre>
+<p>不提供坐标时只生成矩阵。可用 <code>rois="rois.tsv"</code> 加入名称与坐标；有坐标必须声明 <code>data_space</code>。无表头和二进制数组的默认 ROI ID 是字符串 <code>"1"</code>、<code>"2"</code>…；文本表头是 ROI ID，映射表必须完全一致。</p>
+<p>多变量 MAT/NPZ 用 <code>Config(variable="ROISignals")</code>；ROI × time 文件用 <code>transpose=True</code>。本库不接受内存 ndarray 作为 <code>source</code>，需保存为 NPY 或表格文件。<code>extract_connectome</code> 不识别时序的科学来源；GUI 的 <code>check_input</code> 额外拒绝疑似对称连接矩阵。</p>
+<h2 id="4-cifti-gifti">4. CIFTI 与 GIFTI</h2>
+<pre><code class="language-python"># dense CIFTI：先确保两个文件的 BrainModelAxis 完全一致。
+dense = extract_connectome(
+    &quot;run.dtseries.nii&quot;, atlas=&quot;atlas.dlabel.nii&quot;, rois=&quot;cifti_rois.tsv&quot;,
+    config=Config(preprocessed=True, data_space=&quot;fsLR&quot;, atlas_space=&quot;fsLR&quot;),
+)
+
+# 已分区 CIFTI：按 ParcelsAxis 名称保留 ROI 顺序。
+parcel = extract_connectome(
+    &quot;run.ptseries.nii&quot;,
+    config=Config(preprocessed=True, data_space=&quot;fsLR&quot;),
+)
+
+# 单半球 GIFTI：同模板、半球、顶点顺序由调用者确认。
+surface = extract_connectome(
+    &quot;left.func.gii&quot;, atlas=&quot;left.label.gii&quot;, rois=&quot;left_rois.tsv&quot;,
+    config=Config(preprocessed=True, data_space=&quot;fsaverage-L&quot;,
+                  atlas_space=&quot;fsaverage-L&quot;, t_r=2.0),
+)
+</code></pre>
+<p>例子中的空间名称是调用约定，不能代替实际配准证据。CIFTI 自动读 SeriesAxis 的秒单位步长；GIFTI 本实现不读取 TR 元数据。表面格式不自动生成质心，3D 需要明确的坐标表；不自动合并左右半球。</p>
+<h2 id="5">5. 参数一览</h2>
+<table>
+<thead>
+<tr>
+<th>Config 字段</th>
+<th>默认</th>
+<th>单位/意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t_r</code></td>
+<td><code>None</code></td>
+<td>秒；读取实际元数据或手动声明</td>
+</tr>
+<tr>
+<td><code>high_pass</code>, <code>low_pass</code></td>
+<td><code>None</code></td>
+<td>Hz；不启用滤波</td>
+</tr>
+<tr>
+<td><code>detrend</code></td>
+<td><code>True</code></td>
+<td>去线性趋势</td>
+</tr>
+<tr>
+<td><code>standardize</code></td>
+<td><code>True</code></td>
+<td>样本 z-score</td>
+</tr>
+<tr>
+<td><code>discard</code></td>
+<td><code>0</code></td>
+<td>原始开头帧数</td>
+</tr>
+<tr>
+<td><code>fd_threshold</code></td>
+<td><code>None</code></td>
+<td>mm；不启用 FD 阈值删帧</td>
+</tr>
+<tr>
+<td><code>min_samples</code></td>
+<td><code>20</code></td>
+<td>最低保留时间点；≥3</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td><code>"pearson"</code></td>
+<td><code>pearson</code> / <code>spearman</code> / <code>partial</code></td>
+</tr>
+<tr>
+<td><code>data_space</code>, <code>atlas_space</code></td>
+<td><code>None</code></td>
+<td>完整且一致的模板名</td>
+</tr>
+<tr>
+<td><code>preprocessed</code></td>
+<td><code>False</code></td>
+<td>所有影像入口都要求确认</td>
+</tr>
+<tr>
+<td><code>confound_columns</code></td>
+<td><code>None</code></td>
+<td>自动 motion6 + 可用 WM/CSF；或非空列名序列</td>
+</tr>
+<tr>
+<td><code>table_header</code></td>
+<td><code>True</code></td>
+<td>文本首行是列名</td>
+</tr>
+<tr>
+<td><code>transpose</code></td>
+<td><code>False</code></td>
+<td>默认 time × ROI</td>
+</tr>
+<tr>
+<td><code>variable</code></td>
+<td><code>None</code></td>
+<td>MAT/NPZ 变量名</td>
+</tr>
+</tbody>
+</table>
+<p><code>Config</code> 禁止字段重新赋值；建议使用 <code>dataclasses.replace(config, method="partial")</code> 派生配置。字典用 <code>Config(**settings)</code> 转换。全部校验条件见 <a href="api-reference.html">函数参考</a>；构造 <code>Config</code> 不等于完成数据校验。</p>
+<p>上游已做完所需去噪且不打算再次处理时，明确使用 <code>detrend=False, standardize=False, high_pass=None, low_pass=None, discard=0</code>，不传混杂表。即使不回归头动，软件仍会记录缺少本次混杂回归的提醒；用户需结合上游记录判断。</p>
+<h2 id="6">6. 显式混杂模型</h2>
+<pre><code class="language-python">config = Config(confound_columns=(&quot;trans_x&quot;, &quot;trans_y&quot;, &quot;trans_z&quot;,
+                                  &quot;rot_x&quot;, &quot;rot_y&quot;, &quot;rot_z&quot;, &quot;csf&quot;))
+</code></pre>
+<p>库不自动构造 Friston-24、aCompCor 或全局信号模型；需要先在混杂表中存在对应列，再显式指定。<code>confound_columns=()</code> 不是“只删帧不回归”模式，会报错。非稳态列始终用于删帧；传入混杂表意味着同时提供可用回归设计。列名、FD 缺失和设计秩规则见 <a href="processing.html">方法说明</a>。</p>
+<h2 id="7">7. 保存与显示</h2>
+<pre><code class="language-python">result.save(&quot;./results/run-001&quot;)
+result.view(&quot;./report-001.html&quot;, open_browser=True)
+result.plot_matrix(&quot;./matrix.png&quot;)
+result.plot_views(&quot;./eight.pdf&quot;, threshold=0.4, max_edges=100,
+                  selection={&quot;kind&quot;: &quot;node&quot;, &quot;id&quot;: result.rois[0][&quot;roi_id&quot;]})
+
+from brainfc.plotting import edges_of
+edges = edges_of(result, threshold=0.4, max_edges=100)
+# [(零起始行号, 零起始列号, 有符号权重), ...]
+</code></pre>
+<p><code>save</code> 和 <code>view</code> 拒绝覆盖。<code>plot_matrix</code> / <code>plot_views</code> 的图片路径会按 Matplotlib 行为覆盖；<code>path=None</code> 返回 Figure，使用完应 <code>plt.close(fig)</code>。边 ID 用 <code>"i:j"</code>（i&lt;j 的零起始矩阵索引），脑区 ID 用字符串 <code>roi_id</code>，两者不要混淆。</p>
+<h2 id="8">8. 批处理、预检查和外部处理</h2>
+<p><code>discover_bids(root)</code> 返回每个 fMRIPrep run 及精确匹配的混杂/掩膜。逐条传给 <code>extract_connectome</code>，为每条使用新输出目录；不要直接拼接跨患者或跨扫描时序。可执行示例见 <code>examples/batch_derivatives.py</code>。</p>
+<pre><code class="language-python">from brainfc.workflow import preflight
+info = preflight({&quot;source&quot;: &quot;timeseries.npy&quot;, &quot;config&quot;: {}}, stage=&quot;review&quot;)
+
+from brainfc.preprocessing import dicom_plan, convert_dicom, fmriprep_plan
+plan = dicom_plan(&quot;./dicom&quot;, &quot;./converted&quot;)
+print(plan.to_dict()[&quot;powershell&quot;])
+# convert_dicom(&quot;./dicom&quot;, &quot;./converted&quot;)  # 实际执行
+plan = fmriprep_plan(&quot;./bids&quot;, &quot;./derivatives&quot;, &quot;./license.txt&quot;, participant=&quot;01&quot;)
+print(plan.to_dict()[&quot;argv&quot;])
+# plan.run(log=&quot;./fmriprep.log&quot;)  # 实际执行，日志必须是新文件
+</code></pre>
+<p><code>dicom_plan</code> 只计划；直接 <code>plan.run()</code> 不创建转换目录，推荐用 <code>convert_dicom</code>。fMRIPrep 输出允许已有目录以便上游工具恢复；本库没有内置完整 BIDS 整理器。</p>
+<h2 id="9">9. 异常和兼容性</h2>
+<p><code>InputError</code> 继承 <code>ValueError</code>，代表主动检测到的不兼容输入。文件权限、损坏的 JSON/表格和外部进程异常也可能以原始异常类型传播。推荐只捕获自己能处理的异常，记录文件名和参数；批处理可逐 run 捕获异常并保留成功结果。</p>
+<p>0.x 版本继续演进，推荐对可复现实验固定精确版本。<code>Connectome</code> 可变，直接实例化不会验证字段一致性；修改矩阵或 ROI 后，应自行维护一致性。可选 <code>result.to_hicbrain()</code> 需要另外安装提供 <code>hicbrain</code> 模块的 Hyper-Brain。</p></main></html>

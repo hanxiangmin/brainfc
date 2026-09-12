@@ -1,0 +1,210 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 使用指南 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="http-api">本地 HTTP API 使用指南</h1>
+<p>安装本库后运行 <code>brainfc serve</code>。基址默认 <code>http://127.0.0.1:8766</code>。浏览器访问 <code>/docs</code>（Swagger）、<code>/redoc</code> 或 <code>/reference/</code>；下载 <code>/openapi.json</code> 获取机器可读参数定义。</p>
+<p>路径始终是服务所在电脑的文件路径。POST JSON 使用 <code>Content-Type: application/json</code>；文件上传使用 multipart。无需先操作界面即可使用 API，不要求填写 <code>guidance</code>。</p>
+<p>Swagger/ReDoc 默认使用外部 CDN 资源；完全断网时使用随包的 <code>/reference/</code> 手册及 <code>/openapi.json</code>，它们不依赖外部页面资源。</p>
+<h2 id="_1">用标准库运行一个完整任务</h2>
+<pre><code class="language-python">import json
+import time
+from urllib.request import Request, urlopen
+
+base = &quot;http://127.0.0.1:8766&quot;
+def request(path, body=None):
+    data = None if body is None else json.dumps(body).encode(&quot;utf-8&quot;)
+    req = Request(base + path, data=data, headers={&quot;Content-Type&quot;: &quot;application/json&quot;})
+    with urlopen(req, timeout=30) as response:
+        return json.load(response)
+
+job = request(&quot;/api/demo&quot;, {})  # 合成示例；真实数据见下一节
+deadline = time.monotonic() + 300
+while job[&quot;status&quot;] in {&quot;queued&quot;, &quot;running&quot;}:
+    if time.monotonic() &gt; deadline:
+        raise TimeoutError(&quot;任务仍在服务端执行，可稍后按 id 查询&quot;)
+    time.sleep(1)
+    job = request(&quot;/api/jobs/&quot; + job[&quot;id&quot;])
+if job[&quot;status&quot;] != &quot;complete&quot;:
+    raise RuntimeError(job[&quot;message&quot;])
+result = request(f&quot;/api/jobs/{job['id']}/files/result.json&quot;)
+print(result[&quot;qc&quot;][&quot;n_rois&quot;])
+</code></pre>
+<p>完整可执行客户端：<code>examples/http_client.py</code>。轮询超时只结束客户端等待，不取消服务端任务。</p>
+<h2 id="_2">真实提取请求</h2>
+<pre><code class="language-json">{
+  &quot;source&quot;: &quot;D:/data/sub-01_task-rest_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz&quot;,
+  &quot;atlas&quot;: &quot;D:/atlas/schaefer100.nii.gz&quot;,
+  &quot;rois&quot;: &quot;D:/atlas/schaefer100_rois.tsv&quot;,
+  &quot;confounds&quot;: &quot;D:/data/sub-01_task-rest_desc-confounds_timeseries.tsv&quot;,
+  &quot;config&quot;: {
+    &quot;preprocessed&quot;: true,
+    &quot;data_space&quot;: &quot;MNI152NLin6Asym&quot;,
+    &quot;atlas_space&quot;: &quot;MNI152NLin6Asym&quot;
+  }
+}
+</code></pre>
+<p>先 POST 同一请求到 <code>/api/preflight</code>，通过后 POST <code>/api/jobs</code>。提交任务通常返回 <code>queued</code>，线程启动很快时也可能是 <code>running</code> 或终态，不能把 200 响应当作计算成功。没有 guidance 的提交不会同步执行所有输入校验，数值/文件错误可在任务中体现为 <code>failed</code>。</p>
+<p>配置字段与 Python <code>Config</code> 一致；HTTP 使用 JSON null / true / false / 列名数组。未知字段返回 422，避免拼写错误被忽略。Pydantic 可以对部分 JSON 数字/布尔类型进行转换，转换后仍运行 Config 的科学条件检查。<code>overrides</code> 只有明确提供的键参与覆盖，不补默认值去覆盖自动识别。</p>
+<h2 id="_3">端点用途与副作用</h2>
+<table>
+<thead>
+<tr>
+<th>方法 / 路径</th>
+<th>输入</th>
+<th>返回 / 行为</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>GET <code>/api/health</code></td>
+<td>无</td>
+<td>status、version、workspace</td>
+</tr>
+<tr>
+<td>GET <code>/api/setup</code></td>
+<td>无</td>
+<td>建议的新输出路径、可用 FS_LICENSE；不创建建议目录</td>
+</tr>
+<tr>
+<td>GET <code>/api/presets</code></td>
+<td>无</td>
+<td>数据集和协议来源、采集参数提示</td>
+</tr>
+<tr>
+<td>POST <code>/api/inspect</code></td>
+<td><code>{ "path": "..." }</code></td>
+<td>格式/维度/元数据，或目录 runs</td>
+</tr>
+<tr>
+<td>POST <code>/api/discover</code></td>
+<td>同上，目录</td>
+<td>fMRIPrep run 列表</td>
+</tr>
+<tr>
+<td>POST <code>/api/input-suggestions</code></td>
+<td>source、可选 overrides</td>
+<td>info/config/paths/notes；可按明确空间下载建议图谱到缓存</td>
+</tr>
+<tr>
+<td>POST <code>/api/preflight</code></td>
+<td>提取请求；可选 stage</td>
+<td>输入/空间/复核检查，默认 review</td>
+</tr>
+<tr>
+<td>POST <code>/api/upload</code></td>
+<td>multipart file、session</td>
+<td>保存路径和字节数；不覆盖</td>
+</tr>
+<tr>
+<td>POST <code>/api/jobs</code></td>
+<td>提取请求</td>
+<td>入队，返回 JobState</td>
+</tr>
+<tr>
+<td>POST <code>/api/demo</code></td>
+<td>空</td>
+<td>合成数据入队，返回 JobState</td>
+</tr>
+<tr>
+<td>POST <code>/api/atlas</code></td>
+<td>name</td>
+<td>图谱下载入队，结束在 job.atlas 取路径</td>
+</tr>
+<tr>
+<td>POST <code>/api/dicom/plan</code></td>
+<td>source、output</td>
+<td>命令 argv 和两种 shell 表达，无执行</td>
+</tr>
+<tr>
+<td>POST <code>/api/dicom/run</code></td>
+<td>同上</td>
+<td>外部转换入队</td>
+</tr>
+<tr>
+<td>POST <code>/api/preprocess/plan</code></td>
+<td>bids_dir、output_dir、license_file 等</td>
+<td>命令和最小 BOLD/T1 库存</td>
+</tr>
+<tr>
+<td>POST <code>/api/preprocess/run</code></td>
+<td>同上</td>
+<td>外部 fMRIPrep 入队</td>
+</tr>
+<tr>
+<td>GET <code>/api/jobs</code></td>
+<td>无</td>
+<td>最后修改排序，最多 100 个任务</td>
+</tr>
+<tr>
+<td>GET <code>/api/jobs/{job_id}</code></td>
+<td>id</td>
+<td>当前状态</td>
+</tr>
+<tr>
+<td>GET <code>/api/jobs/{job_id}/files/{name}</code></td>
+<td>id、文件名</td>
+<td>白名单结果文件，缺少时 404</td>
+</tr>
+<tr>
+<td>GET <code>/api/jobs/{job_id}/views</code></td>
+<td>id、筛选查询参数</td>
+<td>生成/缓存当前八视图文件</td>
+</tr>
+</tbody>
+</table>
+<p>所有请求和响应模型的完整字段、默认值及 schema 见 <a href="http-reference.html">自动生成接口参考</a>。<code>input-suggestions</code> 的 Python 同名函数没有 web 历史复用/下载功能；web 路由只对相同源路径且 SHA-256 一致的历史结果复用空间及指纹仍一致的配套文件。</p>
+<h2 id="_4">上传</h2>
+<pre><code class="language-shell">curl -F &quot;session=123456781234123412341234567890ab&quot; -F &quot;file=@timeseries.tsv&quot; http://127.0.0.1:8766/api/upload
+</code></pre>
+<p>session 要求 32–36 个小写十六进制数字/连字符，建议客户端使用 UUID；配套文件使用同一 session 以保留相邻关系。同文件名重复上传返回 409。单文件上限 4 GiB；大文件直接使用本地路径。文件被写入 <code>workspace/uploads/session/</code>。</p>
+<h2 id="_5">八视图参数与下载</h2>
+<p><code>threshold</code> 默认 0.3，范围 [0,1]；<code>max_edges</code> 默认 200，范围 0–10000；<code>opacity</code> 默认 0.28，范围 [0,1]；<code>theme</code> 为 <code>paper/midnight</code>；<code>format</code> 为 <code>svg/pdf/png</code>。</p>
+<p>可选 <code>selection_kind=node&amp;selection_id=ROI_A</code>，或 <code>selection_kind=edge&amp;selection_id=0:1</code>。边 ID 使用零起始矩阵行列，而非 ROI 名称。选中对象仍须通过显示阈值；未知节点/边返回 422。</p>
+<p>可下载文件：<code>result.zip</code>、<code>preprocessing.log</code>、<code>result.json</code>、<code>qc.json</code>、<code>provenance.json</code>、<code>manifest.json</code>、<code>report.html</code>、<code>rois.tsv</code>、<code>samples.tsv</code>、<code>connectivity.csv/.npy</code>、<code>fisher_z.csv/.npy</code>、<code>timeseries.tsv/.npy</code>、<code>matrix.png/.svg/.pdf</code>、<code>eight_views.png/.svg/.pdf</code>。并非每个任务都有这些文件：atlas/dicom/preprocess 不生成 result.json。</p>
+<h2 id="_6">状态与错误</h2>
+<p>JobState 必有 <code>id/status/message/kind</code>，按任务类型可能包含 <code>qc/result_dir/atlas/error_type</code>。状态为 <code>queued → running → complete/failed</code>；服务重启后遗留的活动任务标为 <code>interrupted</code>。单 worker，最多 8 个活动/排队任务；没有取消、删除或多用户认证接口。</p>
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>请求处理成功或任务已提交，任务结果需看 status</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Host 不在本地允许列表等</td>
+</tr>
+<tr>
+<td>403</td>
+<td>Origin 与当前本地服务不一致</td>
+</tr>
+<tr>
+<td>404</td>
+<td>未知任务/文件或结果尚未生成</td>
+</tr>
+<tr>
+<td>409</td>
+<td>上传同名文件已存在</td>
+</tr>
+<tr>
+<td>413</td>
+<td>上传超过限制</td>
+</tr>
+<tr>
+<td>422</td>
+<td>输入/配置/请求模型不合法</td>
+</tr>
+<tr>
+<td>429</td>
+<td>队列已满</td>
+</tr>
+<tr>
+<td>500</td>
+<td>未捕获的服务端异常，例如某些底层文件解析错误</td>
+</tr>
+</tbody>
+</table>
+<p>业务校验错误为 <code>{"detail":"说明"}</code>；请求模型错误的 <code>detail</code> 为带 loc/msg/type 的列表。异步计算错误记录在 JobState，而不是把轮询响应改成错误状态码。</p>
+<p>服务读取运行账号可访问的本地路径，应保持默认回环绑定。上传和结果属于本地工作目录；atlas/template 首次下载和原始外部工具联网行为见相应函数说明。</p></main></html>

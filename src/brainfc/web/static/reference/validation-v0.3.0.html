@@ -1,0 +1,18 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>本次验证范围 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="030">验证记录 · 0.3.0</h1>
+<p>发布准备日期：2026-09-12，Windows / Python 3.12.14。GitHub CI 与 PyPI 上传未执行。</p>
+<h2 id="_1">更名与安装范围</h2>
+<p>此版本将原 <code>fmri-connect</code> 分发及 <code>fmri_connect</code> 导入改名为 <code>brainfc</code> / <code>brainfc</code>。默认安装包含 GUI 依赖。旧目录中的发行物和运行结果未改写。</p>
+<h2 id="_2">本地验证范围</h2>
+<ul>
+<li>Python：<strong>56 项通过</strong>，包含原有 44 项及新 HTTP schema/错误请求、版本一致性、文件下载、MGZ 预检查、空间推断和文档代码运行测试。Ruff 通过。</li>
+<li>文档：48 个类/函数/方法条目，18 条 HTTP 路径，13 个主手册页面；实际签名、Config 默认值、CLI 帮助和 OpenAPI 与生成文件一致。Markdown 文件链接检查通过。</li>
+<li>前端：TypeScript 与 Vite 构建通过；版本取自 Python 版本文件。</li>
+<li>示例：合成体积 12 ROI/157 保留帧、表格 3 ROI 示例均完成矩阵、静态图和 HTML 导出；表格结果与独立 NumPy 参考一致。</li>
+<li>浏览器：<code>frontend/test-release.cjs</code> 在独立临时服务和新工作目录通过。覆盖演示提取、矩阵选择、3D/八视图逐边同步、SVG、离线 HTML、无表头表格上传的三步引导、随包手册跳转和 390 px 手册布局。无页面脚本错误；截图已查看。</li>
+<li>发行物：wheel/sdist 构建及 twine 检查通过；归档清单排除真实影像、下载缓存、虚拟环境和输出目录。全新、不继承站点包的 venv 安装 wheel 及依赖后，<code>pip check</code>、提取、HTML、CLI 和随包文档检查通过。</li>
+</ul>
+<p>第三方库仍有弃用提醒，未使本次测试失败。上述本地测试不等于所有声明兼容平台均已实测。发行文件的大小和 SHA-256 由 <code>dist/build-manifest-v0.3.0.json</code> 记录。</p>
+<h2 id="_3">与以前记录的关系</h2>
+<p>历史显示改进和 100 ROI 测试见 <a href="validation-v0.2.0.html">0.2.0 验证</a>，实际 ADHD 文件读取与早期格式覆盖见 <a href="validation.html">0.1.0 验证</a>。本次不新增真实患者样本，也不更改那些已保存的原始结果。</p>
+<h2 id="_4">尚未完成的外部验证</h2>
+<p>完整 DICOM→BIDS→fMRIPrep 全链路未实跑；没有新的跨站点科学验证。新增 Windows/Linux CI 是待远端执行的配置，不作为已通过证据。PyPI/独立 GitHub 仓库尚未发布。</p></main></html>

@@ -1,0 +1,60 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>文档导航 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="brainfc">BrainFC 文档</h1>
+<p>独立 Python 库、命令行和本地网页，共用同一个处理核心。适合从已经完成空间预处理的单次 fMRI 扫描，或已经分区的 ROI 时序生成有符号功能连接矩阵。</p>
+<table>
+<thead>
+<tr>
+<th>你要做什么</th>
+<th>阅读入口</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>安装、打开界面、运行演示</td>
+<td><a href="quickstart.html">安装与上手</a></td>
+</tr>
+<tr>
+<td>用 Python 处理自己的数据</td>
+<td><a href="python-api.html">Python 使用指南</a></td>
+</tr>
+<tr>
+<td>查每个函数的准确参数和返回值</td>
+<td><a href="api-reference.html">全部函数与参数</a></td>
+</tr>
+<tr>
+<td>了解计算顺序、头动剔除、偏相关</td>
+<td><a href="processing.html">处理流程与方法</a></td>
+</tr>
+<tr>
+<td>确认需要哪些文件和空间信息</td>
+<td><a href="formats.html">输入格式与空间</a></td>
+</tr>
+<tr>
+<td>读取导出数组、ROI 顺序和质控结果</td>
+<td><a href="outputs.html">输出文件与数据契约</a></td>
+</tr>
+<tr>
+<td>在另一个程序中调用本地服务</td>
+<td><a href="http-api.html">HTTP 使用指南</a> · <a href="http-reference.html">完整接口定义</a></td>
+</tr>
+<tr>
+<td>使用命令行和批处理</td>
+<td><a href="cli-reference.html">命令行完整参数</a></td>
+</tr>
+<tr>
+<td>使用公开数据集方案</td>
+<td><a href="presets-and-workflow.html">官方预设与自动填写</a> · <a href="datasets.html">数据下载入口</a></td>
+</tr>
+<tr>
+<td>开发、准备 GitHub 与 PyPI 发布</td>
+<td><a href="release.html">发布手册</a></td>
+</tr>
+<tr>
+<td>确认测试了哪些能力</td>
+<td><a href="validation-v0.3.0.html">0.3.0 验证范围</a></td>
+</tr>
+</tbody>
+</table>
+<p>函数参考、CLI 帮助和 OpenAPI 直接从源码生成；文档检查会发现新增接口或默认值更改后没有更新参考的情况。安装包内包含离线 HTML 手册，运行本地服务后访问 <code>/reference/</code>。</p>
+<h2 id="_1">范围</h2>
+<p>连接矩阵是一次扫描内 ROI 信号的相关性描述。库保留原始 ROI 顺序、有符号数值、原始帧索引及处理来源；显示筛选不修改矩阵。</p>
+<p>原始 DICOM/BIDS 由外部 dcm2niix/fMRIPrep 处理。库提供命令计划和调用接口，但完整外部预处理链路尚未在本项目验证环境中实跑。组间统计、疾病诊断、任务 GLM、超图构建不属于本库的计算范围。</p></main></html>

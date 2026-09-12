@@ -1,0 +1,2185 @@
+{
+  "components": {
+    "schemas": {
+      "AtlasRequest": {
+        "additionalProperties": false,
+        "description": "Queue an explicit supported-atlas download into the workspace cache.",
+        "properties": {
+          "name": {
+            "enum": [
+              "schaefer100",
+              "schaefer200",
+              "schaefer400",
+              "aal116"
+            ],
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "AtlasRequest",
+        "type": "object"
+      },
+      "Body_upload_api_upload_post": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          },
+          "session": {
+            "title": "Session",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file",
+          "session"
+        ],
+        "title": "Body_upload_api_upload_post",
+        "type": "object"
+      },
+      "CommandResponse": {
+        "description": "Inspectable command argv plus shell renderings; no execution on plan routes.",
+        "properties": {
+          "argv": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Argv",
+            "type": "array"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "inventory": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inventory"
+          },
+          "posix": {
+            "title": "Posix",
+            "type": "string"
+          },
+          "powershell": {
+            "title": "Powershell",
+            "type": "string"
+          }
+        },
+        "required": [
+          "argv",
+          "description",
+          "powershell",
+          "posix"
+        ],
+        "title": "CommandResponse",
+        "type": "object"
+      },
+      "ConfigRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "atlas_space": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Atlas template name, must match source when atlas is supplied.",
+            "title": "Atlas Space"
+          },
+          "confound_columns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Columns to regress; null selects complete motion6 + available WM/CSF.",
+            "title": "Confound Columns"
+          },
+          "data_space": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Exact source template name. All image inputs require a known space.",
+            "title": "Data Space"
+          },
+          "detrend": {
+            "default": true,
+            "description": "Remove linear trends through Nilearn signal.clean.",
+            "title": "Detrend",
+            "type": "boolean"
+          },
+          "discard": {
+            "default": 0,
+            "description": "Number of initial original frames to remove, integer >=0.",
+            "title": "Discard",
+            "type": "integer"
+          },
+          "fd_threshold": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Censor FD > cutoff in mm, also undefined first FD; null disables FD censoring.",
+            "title": "Fd Threshold"
+          },
+          "high_pass": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "High-pass cutoff in Hz; null disables. Requires TR and cutoff below Nyquist.",
+            "title": "High Pass"
+          },
+          "low_pass": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Low-pass cutoff in Hz; null disables. Must exceed high_pass when both are set.",
+            "title": "Low Pass"
+          },
+          "method": {
+            "default": "pearson",
+            "description": "pearson, spearman, or partial (Ledoit-Wolf shrinkage precision).",
+            "title": "Method",
+            "type": "string"
+          },
+          "min_samples": {
+            "default": 20,
+            "description": "Minimum retained frames (>=3), not a statistical power criterion.",
+            "title": "Min Samples",
+            "type": "integer"
+          },
+          "preprocessed": {
+            "default": false,
+            "description": "Explicit declaration that image motion correction/registration are complete.",
+            "title": "Preprocessed",
+            "type": "boolean"
+          },
+          "standardize": {
+            "default": true,
+            "description": "Sample z-score of cleaned ROI time series (ddof=1).",
+            "title": "Standardize",
+            "type": "boolean"
+          },
+          "t_r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Repetition time in seconds; null infers from scan JSON/header; conflicts are rejected.",
+            "title": "T R"
+          },
+          "table_header": {
+            "default": true,
+            "description": "Text first non-comment row contains ROI names; ignored for NPY/NPZ/MAT.",
+            "title": "Table Header",
+            "type": "boolean"
+          },
+          "transpose": {
+            "default": false,
+            "description": "Transpose table input to time x ROI, discarding text column names.",
+            "title": "Transpose",
+            "type": "boolean"
+          },
+          "variable": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "NPZ/MAT 2D numeric variable name; null requires one unambiguous variable.",
+            "title": "Variable"
+          }
+        },
+        "title": "ConfigRequest",
+        "type": "object"
+      },
+      "DatasetEntry": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "variants": {
+            "items": {
+              "$ref": "#/components/schemas/PresetVariant"
+            },
+            "title": "Variants",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "variants"
+        ],
+        "title": "DatasetEntry",
+        "type": "object"
+      },
+      "DicomRequest": {
+        "additionalProperties": false,
+        "description": "Plan/run external conversion; both paths are local directories.",
+        "properties": {
+          "output": {
+            "description": "New directory, outside and separate from source.",
+            "minLength": 1,
+            "title": "Output",
+            "type": "string"
+          },
+          "source": {
+            "description": "Existing DICOM source directory.",
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source",
+          "output"
+        ],
+        "title": "DicomRequest",
+        "type": "object"
+      },
+      "ExtractionRequest": {
+        "additionalProperties": false,
+        "description": "One source run, optional companion paths and scientific settings.",
+        "properties": {
+          "atlas": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Integer-label atlas in the source space.",
+            "title": "Atlas"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ConfigRequest"
+          },
+          "confounds": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Headered confounds TSV/CSV with all original frames.",
+            "title": "Confounds"
+          },
+          "guidance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Guidance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Same-space volume mask; positive voxels retained.",
+            "title": "Mask"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display-only same-space brain mask/skull-stripped T1.",
+            "title": "Reference"
+          },
+          "rois": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ROI mapping CSV/TSV; exact IDs and optional RAS+ coordinates.",
+            "title": "Rois"
+          },
+          "source": {
+            "description": "Absolute or server-relative path to one fMRI/ROI file.",
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "ExtractionRequest",
+        "type": "object"
+      },
+      "Guidance": {
+        "additionalProperties": true,
+        "description": "Optional GUI confirmation record; programmatic callers may omit it.",
+        "properties": {
+          "confounds_decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "upstream or skip when confounds absent.",
+            "title": "Confounds Decision"
+          },
+          "dataset": {
+            "description": "Catalog dataset id, e.g. custom or adni.",
+            "title": "Dataset",
+            "type": "string"
+          },
+          "denoise_confirmed": {
+            "default": false,
+            "title": "Denoise Confirmed",
+            "type": "boolean"
+          },
+          "input_kind": {
+            "default": "auto",
+            "description": "Original route, such as auto or raw-bids.",
+            "title": "Input Kind",
+            "type": "string"
+          },
+          "raw_qc_confirmed": {
+            "default": false,
+            "title": "Raw Qc Confirmed",
+            "type": "boolean"
+          },
+          "reference_decision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "skip when reference absent.",
+            "title": "Reference Decision"
+          },
+          "review_confirmed": {
+            "default": false,
+            "title": "Review Confirmed",
+            "type": "boolean"
+          },
+          "source_confirmed": {
+            "default": false,
+            "title": "Source Confirmed",
+            "type": "boolean"
+          },
+          "spatial_confirmed": {
+            "default": false,
+            "title": "Spatial Confirmed",
+            "type": "boolean"
+          },
+          "variant": {
+            "description": "Exact variant id returned by /api/presets.",
+            "title": "Variant",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset",
+          "variant"
+        ],
+        "title": "Guidance",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "const": "ok",
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          },
+          "workspace": {
+            "title": "Workspace",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version",
+          "workspace"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "InputInfo": {
+        "additionalProperties": true,
+        "description": "Format-dependent inspection/preflight fields; absent fields are omitted.",
+        "properties": {
+          "affine": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affine"
+          },
+          "arrays": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arrays"
+          },
+          "axes": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Axes"
+          },
+          "confound_columns": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confound Columns"
+          },
+          "effective_tr": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Effective Tr"
+          },
+          "format": {
+            "enum": [
+              "directory",
+              "volume",
+              "cifti",
+              "gifti",
+              "timeseries-table"
+            ],
+            "title": "Format",
+            "type": "string"
+          },
+          "header_t_r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Header T R"
+          },
+          "n_frames": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Frames"
+          },
+          "n_retained": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Retained"
+          },
+          "n_rois": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "N Rois"
+          },
+          "needs_atlas": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needs Atlas"
+          },
+          "orientation": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Orientation"
+          },
+          "path": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Path"
+          },
+          "runs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/RunRecord"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Runs"
+          },
+          "shape": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "integer"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shape"
+          },
+          "sidecar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sidecar"
+          },
+          "size_bytes": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size Bytes"
+          },
+          "space": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Space"
+          },
+          "t_r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T R"
+          },
+          "tr_source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tr Source"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units"
+          },
+          "validated": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Validated"
+          },
+          "variables": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "items": {
+                    "type": "integer"
+                  },
+                  "type": "array"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Variables"
+          }
+        },
+        "required": [
+          "format"
+        ],
+        "title": "InputInfo",
+        "type": "object"
+      },
+      "JobState": {
+        "additionalProperties": true,
+        "description": "Persistent job state, returned immediately on submission and during polling.",
+        "properties": {
+          "atlas": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Atlas"
+          },
+          "error_type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error Type"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "extract",
+              "demo",
+              "atlas",
+              "dicom",
+              "preprocess"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "qc": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Qc"
+          },
+          "result_dir": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Result Dir"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "running",
+              "complete",
+              "failed",
+              "interrupted"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "message",
+          "kind"
+        ],
+        "title": "JobState",
+        "type": "object"
+      },
+      "PathRequest": {
+        "additionalProperties": false,
+        "description": "A local source path, not a URL or uploaded byte array.",
+        "properties": {
+          "path": {
+            "description": "Local file for inspect; directory for discover.",
+            "minLength": 1,
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path"
+        ],
+        "title": "PathRequest",
+        "type": "object"
+      },
+      "PreflightRequest": {
+        "additionalProperties": false,
+        "description": "Progressive validation; does not calculate the connectivity matrix.",
+        "properties": {
+          "atlas": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Integer-label atlas in the source space.",
+            "title": "Atlas"
+          },
+          "config": {
+            "$ref": "#/components/schemas/ConfigRequest"
+          },
+          "confounds": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Headered confounds TSV/CSV with all original frames.",
+            "title": "Confounds"
+          },
+          "guidance": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Guidance"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "mask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Same-space volume mask; positive voxels retained.",
+            "title": "Mask"
+          },
+          "reference": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display-only same-space brain mask/skull-stripped T1.",
+            "title": "Reference"
+          },
+          "rois": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "ROI mapping CSV/TSV; exact IDs and optional RAS+ coordinates.",
+            "title": "Rois"
+          },
+          "source": {
+            "description": "Absolute or server-relative path to one fMRI/ROI file.",
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          },
+          "stage": {
+            "default": "review",
+            "enum": [
+              "input",
+              "spatial",
+              "review"
+            ],
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "PreflightRequest",
+        "type": "object"
+      },
+      "PreprocessRequest": {
+        "additionalProperties": false,
+        "description": "Pinned Docker fMRIPrep parameters; no patient data are uploaded by this API.",
+        "properties": {
+          "bids_dir": {
+            "description": "Existing raw BIDS directory with BOLD/T1.",
+            "minLength": 1,
+            "title": "Bids Dir",
+            "type": "string"
+          },
+          "image": {
+            "default": "nipreps/fmriprep:25.2.5",
+            "title": "Image",
+            "type": "string"
+          },
+          "license_file": {
+            "description": "Existing FreeSurfer license path.",
+            "minLength": 1,
+            "title": "License File",
+            "type": "string"
+          },
+          "output_dir": {
+            "description": "Separate derivatives directory; existing output may resume.",
+            "minLength": 1,
+            "title": "Output Dir",
+            "type": "string"
+          },
+          "participant": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "One subject label, with optional sub- prefix.",
+            "title": "Participant"
+          },
+          "space": {
+            "default": "MNI152NLin6Asym",
+            "title": "Space",
+            "type": "string"
+          }
+        },
+        "required": [
+          "bids_dir",
+          "output_dir",
+          "license_file"
+        ],
+        "title": "PreprocessRequest",
+        "type": "object"
+      },
+      "PresetVariant": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "input_kind": {
+            "title": "Input Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notes": {
+            "title": "Notes",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "t_r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T R"
+          },
+          "upstream": {
+            "title": "Upstream",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "source",
+          "t_r",
+          "notes",
+          "upstream",
+          "input_kind"
+        ],
+        "title": "PresetVariant",
+        "type": "object"
+      },
+      "PresetsResponse": {
+        "properties": {
+          "datasets": {
+            "items": {
+              "$ref": "#/components/schemas/DatasetEntry"
+            },
+            "title": "Datasets",
+            "type": "array"
+          },
+          "policy": {
+            "title": "Policy",
+            "type": "string"
+          },
+          "version": {
+            "description": "Catalog date, independent of software version.",
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "version",
+          "datasets",
+          "policy"
+        ],
+        "title": "PresetsResponse",
+        "type": "object"
+      },
+      "RunRecord": {
+        "properties": {
+          "bold": {
+            "title": "Bold",
+            "type": "string"
+          },
+          "confounds": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confounds"
+          },
+          "mask": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mask"
+          },
+          "run": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Run"
+          },
+          "session": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session"
+          },
+          "sidecar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sidecar"
+          },
+          "space": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Space"
+          },
+          "subject": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Subject"
+          },
+          "t_r": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "T R"
+          },
+          "task": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Task"
+          }
+        },
+        "required": [
+          "bold",
+          "confounds",
+          "mask",
+          "subject",
+          "session",
+          "task",
+          "run",
+          "sidecar",
+          "t_r",
+          "space"
+        ],
+        "title": "RunRecord",
+        "type": "object"
+      },
+      "SetupResponse": {
+        "properties": {
+          "conversion_output": {
+            "title": "Conversion Output",
+            "type": "string"
+          },
+          "license_file": {
+            "description": "Existing FS_LICENSE path or empty string.",
+            "title": "License File",
+            "type": "string"
+          },
+          "preprocessing_output": {
+            "title": "Preprocessing Output",
+            "type": "string"
+          }
+        },
+        "required": [
+          "conversion_output",
+          "preprocessing_output",
+          "license_file"
+        ],
+        "title": "SetupResponse",
+        "type": "object"
+      },
+      "SuggestionsRequest": {
+        "additionalProperties": false,
+        "description": "Inspect one file and infer conservative defaults.",
+        "properties": {
+          "overrides": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ConfigRequest"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Only explicitly supplied fields override inference."
+          },
+          "source": {
+            "minLength": 1,
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "source"
+        ],
+        "title": "SuggestionsRequest",
+        "type": "object"
+      },
+      "SuggestionsResponse": {
+        "properties": {
+          "config": {
+            "additionalProperties": true,
+            "description": "Only inferred/overridden Config fields, not a full default Config.",
+            "title": "Config",
+            "type": "object"
+          },
+          "info": {
+            "$ref": "#/components/schemas/InputInfo"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "paths": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Matched atlas/rois/confounds/mask/reference paths when available.",
+            "title": "Paths",
+            "type": "object"
+          }
+        },
+        "required": [
+          "info",
+          "config",
+          "paths",
+          "notes"
+        ],
+        "title": "SuggestionsResponse",
+        "type": "object"
+      },
+      "UploadResponse": {
+        "properties": {
+          "path": {
+            "description": "Server-local saved path; use as source or companion in later requests.",
+            "title": "Path",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "path",
+          "size_bytes"
+        ],
+        "title": "UploadResponse",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "description": "Local single-run fMRI connectivity API. Paths refer to this server's filesystem. Use /api/preflight before /api/jobs, then poll the returned id. Extraction shares the Python core. Bind to loopback and use one server per workspace. Responses and exports include local paths.",
+    "title": "BrainFC",
+    "version": "0.3.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/api/atlas": {
+      "post": {
+        "operationId": "atlas_api_atlas_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AtlasRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue a supported-atlas download",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/demo": {
+      "post": {
+        "operationId": "demo_api_demo_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Queue a deterministic synthetic end-to-end demo",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/dicom/plan": {
+      "post": {
+        "operationId": "dicom_command_api_dicom_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DicomRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect an external dcm2niix conversion command",
+        "tags": [
+          "Raw data"
+        ]
+      }
+    },
+    "/api/dicom/run": {
+      "post": {
+        "operationId": "dicom_run_api_dicom_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DicomRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue DICOM conversion to a new output directory",
+        "tags": [
+          "Raw data"
+        ]
+      }
+    },
+    "/api/discover": {
+      "post": {
+        "operationId": "discover_api_discover_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RunRecord"
+                  },
+                  "title": "Response Discover Api Discover Post",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Discover separate fMRIPrep preprocessed volume runs",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/health": {
+      "get": {
+        "operationId": "health_api_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read service version and workspace",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/api/input-suggestions": {
+      "post": {
+        "operationId": "suggest_input_api_input_suggestions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuggestionsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuggestionsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Infer metadata and companions; may download a suggested atlas",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/inspect": {
+      "post": {
+        "operationId": "inspect_api_inspect_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PathRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read file structure or list derivative runs",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/jobs": {
+      "get": {
+        "operationId": "jobs_api_jobs_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JobState"
+                  },
+                  "title": "Response Jobs Api Jobs Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "List up to 100 jobs, most recently modified first",
+        "tags": [
+          "Jobs"
+        ]
+      },
+      "post": {
+        "operationId": "create_job_api_jobs_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExtractionRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue one extraction; does not wait for completion",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/jobs/{job_id}": {
+      "get": {
+        "operationId": "job_api_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Poll persisted job state",
+        "tags": [
+          "Jobs"
+        ]
+      }
+    },
+    "/api/jobs/{job_id}/files/{name}": {
+      "get": {
+        "operationId": "artifact_api_jobs__job_id__files__name__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "name",
+            "required": true,
+            "schema": {
+              "title": "Name",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Download a named result artifact or preprocessing log",
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/jobs/{job_id}/views": {
+      "get": {
+        "operationId": "view_export_api_jobs__job_id__views_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Inclusive |coefficient| cutoff; zero edges excluded.",
+            "in": "query",
+            "name": "threshold",
+            "required": false,
+            "schema": {
+              "default": 0.3,
+              "description": "Inclusive |coefficient| cutoff; zero edges excluded.",
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Threshold",
+              "type": "number"
+            }
+          },
+          {
+            "description": "Cap after threshold and ROI/edge selection.",
+            "in": "query",
+            "name": "max_edges",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "description": "Cap after threshold and ROI/edge selection.",
+              "maximum": 10000,
+              "minimum": 0,
+              "title": "Max Edges",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "selection_kind",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Selection Kind"
+            }
+          },
+          {
+            "in": "query",
+            "name": "selection_id",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Selection Id"
+            }
+          },
+          {
+            "in": "query",
+            "name": "opacity",
+            "required": false,
+            "schema": {
+              "default": 0.28,
+              "maximum": 1,
+              "minimum": 0,
+              "title": "Opacity",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "theme",
+            "required": false,
+            "schema": {
+              "default": "paper",
+              "title": "Theme",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "format",
+            "required": false,
+            "schema": {
+              "default": "svg",
+              "title": "Format",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Export eight views for the current threshold/selection",
+        "tags": [
+          "Results"
+        ]
+      }
+    },
+    "/api/preflight": {
+      "post": {
+        "operationId": "workflow_check_api_preflight_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreflightRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InputInfo"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Validate one run at input, spatial or review stage",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/preprocess/plan": {
+      "post": {
+        "operationId": "plan_api_preprocess_plan_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreprocessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommandResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Inspect a pinned fMRIPrep command and minimum BOLD/T1 inventory",
+        "tags": [
+          "Raw data"
+        ]
+      }
+    },
+    "/api/preprocess/run": {
+      "post": {
+        "operationId": "preprocess_api_preprocess_run_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreprocessRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Queue external Docker fMRIPrep execution",
+        "tags": [
+          "Raw data"
+        ]
+      }
+    },
+    "/api/presets": {
+      "get": {
+        "operationId": "presets_api_presets_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PresetsResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Read source-attributed dataset/protocol hints",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    },
+    "/api/setup": {
+      "get": {
+        "operationId": "setup_defaults_api_setup_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetupResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Suggest new output paths and an existing FS_LICENSE",
+        "tags": [
+          "System"
+        ]
+      }
+    },
+    "/api/upload": {
+      "post": {
+        "operationId": "upload_api_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_api_upload_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload one file (4 GiB maximum), preserving existing files",
+        "tags": [
+          "Inputs"
+        ]
+      }
+    }
+  }
+}

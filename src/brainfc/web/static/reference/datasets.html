@@ -1,0 +1,55 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>datasets · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="abide-adni-rest-meta-mdd-adhd-200">ABIDE / ADNI / REST-meta-MDD / ADHD-200：下载什么</h1>
+<p>官方入口核查日期：2026-09-12。数据集名称不决定文件格式、图谱或诊断编码；下面按实际发布层级分别处理。</p>
+<table>
+<thead>
+<tr>
+<th>数据源</th>
+<th>能拿到哪类数据</th>
+<th>获取入口及条件</th>
+<th>交给本库的文件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ABIDE I / II</td>
+<td>静息 BOLD、结构像和表型；另有 PCP 预处理影像/ROI 时序</td>
+<td><a href="https://fcon_1000.projects.nitrc.org/indi/abide/databases.html">官方数据库入口</a>，NITRC/IDA 等路径可能需账号；<a href="https://fcon_1000.projects.nitrc.org/indi/abide/abide_I.html">ABIDE I</a> 和 <a href="https://fcon_1000.projects.nitrc.org/indi/abide/abide_II.html">ABIDE II</a> 有站点采集信息</td>
+<td>原始 BOLD/T1 先做预处理；PCP 时序可从表格入口提取；PCP 影像需确认 pipeline、滤波、GSR 与空间</td>
+</tr>
+<tr>
+<td>ADHD-200</td>
+<td>BIDS 格式原始 BOLD + T1 + 站点级 JSON；另有预处理发布</td>
+<td><a href="https://fcon_1000.projects.nitrc.org/indi/adhd200/download_scripts/Download_Instructions_ADHD200.pdf">官方 AWS 下载说明</a> 指向匿名 <code>s3://fcp-indi/data/Projects/ADHD200/RawDataBIDS</code>；<a href="https://fcon_1000.projects.nitrc.org/indi/adhd200/index.html">项目页</a> 有原有 NITRC 入口和使用说明</td>
+<td>原始 <code>*_bold.nii.gz</code> + <code>*_T1w.nii.gz</code> 及继承 JSON，整理/验证 BIDS 后跑 fMRIPrep</td>
+</tr>
+<tr>
+<td>ADNI</td>
+<td>纵向影像；fMRI 为静息扫描，原始发布可能是 DICOM</td>
+<td><a href="https://adni.loni.usc.edu/data-samples/adni-data/">数据申请入口</a> 需审批后从 LONI IDA 下载；<a href="https://adni.loni.usc.edu/help-faqs/faqs/">FAQ</a> 建议从 DICOM 头核查采集时序；<a href="https://adni.loni.usc.edu/support/experts-knowledge-base/question/?QID=444">MRI Core 原始 DICOM 说明</a> 为历史官方答复，具体下载选项以当前账户内为准</td>
+<td>完整 DICOM 序列 → dcm2niix → BIDS → fMRIPrep；保留 subject/visit/series 对应，不能把纵向访问当成独立患者</td>
+</tr>
+<tr>
+<td>REST-meta-MDD</td>
+<td>官方共享主要为 R-fMRI 指标和中间结果；不等同于原始4D影像开放发布</td>
+<td><a href="https://rfmri.org/REST-meta-MDD">官方共享说明</a>；<a href="https://doi.org/10.57760/sciencedb.o00115.00013">数据仓库 DOI</a>。需签署 DUA，按官方说明索取解压密码与表型</td>
+<td>若获授权包里含 ROI 时序（如 MAT），显式指定时序变量与图谱顺序；若只有指标图或已算好的连接矩阵，不能当作原始时序重新提取</td>
+</tr>
+</tbody>
+</table>
+<h2 id="_1">首次建议准备</h2>
+<ol>
+<li>先选一个 ADHD-200 或 ABIDE 受试者的一个静息 run，获取 BOLD、T1 和适用的采集 JSON。</li>
+<li>若要尽快验证“影像到连接”，提供同一 run 的已预处理 BOLD、空间说明、混杂表和掩膜。不能把 raw BOLD 标为 preprocessed 以跳过预处理。</li>
+<li>REST-meta-MDD 先确认实际压缩包内文件、MAT 变量以及 ROI 排序，再决定时序入口或已有矩阵分析入口。</li>
+<li>ADNI 先确认账号权限及 fMRI 序列，不需要为了验证本库下载完整纵向数据库。</li>
+</ol>
+<h2 id="_2">本次匿名目录实测</h2>
+<p>ADHD-200 官方 S3 目录可匿名列举。实测包含：</p>
+<ul>
+<li><code>Brown/sub-0026001/ses-1/func/sub-0026001_ses-1_task-rest_run-1_bold.nii.gz</code>：50,012,139 bytes。</li>
+<li><code>Brown/sub-0026001/ses-1/anat/sub-0026001_ses-1_run-1_T1w.nii.gz</code>：7,263,588 bytes。</li>
+<li>站点根目录 <code>dataset_description.json</code>、<code>T1w.json</code>、<code>participants.tsv</code>。采集 JSON 可位于站点层级，不能只找与 BOLD 同名的 JSON。</li>
+</ul>
+<p>当前库的目录发现器针对 <strong>fMRIPrep derivatives</strong>，不是完整的 BIDS 元数据继承实现。原始 BIDS 的继承规则由 fMRIPrep/BIDS validator 处理。接收预处理单文件时，应提供最终有效的 TR/JSON。</p>
+<h2 id="_3">数据保存与验证范围</h2>
+<p>所有真实样本保存在本库的忽略目录 <code>.work/</code>，不进入 wheel、源码包或 Git 发布。实际下载和读取结果以 <a href="validation.html">验证记录</a> 为准。未代签协议或访问 ADNI/MDD 受限数据。</p></main></html>

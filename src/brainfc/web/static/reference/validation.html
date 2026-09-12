@@ -1,0 +1,42 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>validation · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="010">验证记录 · 0.1.0</h1>
+<p>日期：2026-09-12；Windows，Python 3.12.14。只记录实际完成的验证。</p>
+<h2 id="_1">数值、格式和边界</h2>
+<p><code>pytest</code>：<strong>34 项通过</strong>。覆盖：</p>
+<ul>
+<li>有已知信号的 NIfTI，逐 ROI 均值与独立 NumPy 计算一致；非连续标签 3/17/91 及乱序 ROI 表仍保持正确映射。</li>
+<li>Pearson 与参考计算一致；Spearman / Ledoit–Wolf 偏相关的对称性、有限值、对角线和有符号结果。</li>
+<li>混杂回归删除共同干扰、FD 删帧保留原始时间索引、滤波与删帧组合。</li>
+<li>未预处理影像、空间冲突、TR 冲突、缺失脑区、非有限数据和零方差 ROI 被拒绝。</li>
+<li>NIfTI <code>.nii/.nii.gz</code>、NIfTI pair <code>.hdr/.img</code>、MGZ；CIFTI dense / parcel；GIFTI 配对功能/标签文件。</li>
+<li>CSV、TSV、TXT、1D、NPY、NPZ、MAT 的样本与相关计算；多变量选择；扩展名为 CSV 但实际 tab 分隔的 ADHD 混杂文件。</li>
+<li>CIFTI grayordinate 轴不一致被拒绝；表格缺坐标仅输出矩阵。</li>
+<li>Web 上传不覆盖已有文件、本机 Host/Origin 限制、导出避免覆盖、离线报告转义标签文本。</li>
+</ul>
+<p>AFNI HEAD/BRIK 与旧式 Analyze 由 NiBabel 后端读取，<strong>本次没有真实文件实测</strong>，不纳入上述已验证列表。GIFTI 检查顶点数；同一表面/半球/顺序依赖调用者提供正确配对文件。</p>
+<p><code>ruff check src tests examples</code> 通过。前端 TypeScript 检查与 Vite 构建通过。第三方库存在弃用警告，不影响本次测试；依赖快照见 requirements-tested-windows-py312.txt。</p>
+<h2 id="_2">实际浏览器</h2>
+<p>应用内 Browser 初始化被运行环境阻止（<code>node:process</code> 导入限制）。随后使用<strong>独立 Playwright + 本机 Chrome 的 headless 实例</strong>，不接入用户浏览器配置或登录态。</p>
+<p>实际完成：点击合成演示启动后台提取、WebGL 场景、相机切换、深浅主题、PNG 下载、矩阵页、八视图加载、质控页、ZIP 下载、本地 file:// HTML 离线展示。未出现页面脚本错误。八视图 PNG 与界面截图已人工查看。</p>
+<p>证据文件在 <code>.work/browser-qa/</code>：<code>validation.json</code>、界面截图、PNG 和 ZIP。其中发现并修复了后台任务完成与界面异步结果加载之间的竞态。</p>
+<p>另对 Schaefer 100 场景、带 job 参数的结果直达链接和390 px移动宽度进行检查，无页面脚本错误或水平溢出。截图见 <code>interface-preview.png</code>；独立证据见 <code>standard-atlas.json</code>。</p>
+<h2 id="_3">真实数据</h2>
+<h3 id="adhd-200">ADHD-200 原始样本：已下载并读取，未运行空间预处理</h3>
+<p>官方匿名 S3 下载 <code>Brown/sub-0026001</code> 的一个 BOLD、一个 T1 和适用 JSON：</p>
+<ul>
+<li>BOLD：<code>64 × 64 × 35 × 251</code>，3 mm，TR=2 s，LAS 方向。</li>
+<li>T1：<code>160 × 240 × 256</code>，1 mm，LAS 方向。</li>
+<li>下载清单、文件 SHA-256 与头信息在 <code>.work/public-data/adhd200-raw/</code>。</li>
+<li>官方 JSON 的 NumberofMeasurements=256，而下载 BOLD 有251帧；保持原文件，未据此补造帧。</li>
+</ul>
+<p>当前系统有 Docker 客户端，但 Docker Linux engine 未运行，dcm2niix 也未安装。故本次<strong>没有完成 DICOM 转换或完整 fMRIPrep 实跑</strong>。已实现可检查、可执行的外部命令适配器；命令参数与目录边界由测试检查。</p>
+<h3 id="adhd-fc">ADHD 预处理影像：完成真实文件到 FC 的技术验证</h3>
+<p>通过 Nilearn 官方 <code>fetch_adhd(n_subjects=1)</code> 下载 NITRC 预处理样本 <code>0010042</code>，影像为 <code>61 × 73 × 61 × 176</code>，TR=2 s。</p>
+<p>由于旧发布没有在现有说明中明确区分具体 MNI 模板版本，本次在影像自身网格定义<strong>三个人工测试分区</strong>，验证体素读取、均值提取、motion6 + WM/CSF 回归、矩阵与报告导出。176 帧全部保留。该结果是程序验证，<strong>不是标准解剖网络结果或疾病分析</strong>。</p>
+<p>脚本：<code>examples/validate_real_adhd.py</code>。记录和结果在 <code>.work/real-adhd-validation/</code>。没有将该样本未经确认地绑定到 AAL/Schaefer 研究图谱。</p>
+<h2 id="_4">标准图谱演示</h2>
+<p>成功下载并解析 Schaefer 100 / Yeo7 / 2 mm 图谱。生成该真实图谱上的合成 BOLD，并在4 mm网格提取120时间点、100脑区；使用现有 Hyper-Brain 缓存里匹配的 MNI152NLin6Asym 参考脑。八视图、完整矩阵和可旋转三维均已生成。</p>
+<p>演示影像与信号是合成数据，不能作为人群研究结果。图谱、T1参考和坐标来自已标明的资源。脚本：<code>examples/prepare_atlas_demo.py</code>。</p>
+<h2 id="_5">安装与发布</h2>
+<p>库在独立 <code>.venv</code> 中通过 pip 安装，依赖安装时默认 PyPI 文件源出现 TLS 错误，改用清华 PyPI 镜像后完成。此环境网络问题未通过关闭证书校验处理。</p>
+<p>构建 wheel / sdist 并执行 twine 元数据检查；再从 wheel 安装到独立目标目录，确认导入与静态资源不依赖父仓库。实际文件清单与 SHA-256 见 <code>dist/build-manifest.json</code>。</p>
+<p>本次未上传 PyPI、GitHub 或任何外部发布站点；原项目已跟踪文件无修改。</p></main></html>

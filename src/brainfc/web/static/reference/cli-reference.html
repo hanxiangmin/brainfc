@@ -1,0 +1,132 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>命令行完整参数 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="030">命令行完整参数 · 0.3.0</h1>
+<p>由 argparse 自动生成，与 <code>brainfc --help</code> 一致。<code>python -m brainfc</code> 与安装后的 <code>brainfc</code> 入口等价。</p>
+<p>详细使用例子见 <a href="quickstart.html">安装与上手</a>；退出码：成功 0，参数/常见输入错误 2，其他未捕获错误非零。</p>
+<pre><code class="language-text">usage: brainfc [-h] [--version]
+               {serve,inspect,atlas,demo,extract,batch,dicom,preprocess} ...
+
+fMRI → ROI time series → functional connectivity
+
+positional arguments:
+  {serve,inspect,atlas,demo,extract,batch,dicom,preprocess}
+    serve               Start the local graphical interface
+    inspect             Inspect an image or discover BIDS derivatives
+    atlas               Explicitly download a supported standard atlas
+    demo                Create synthetic NIfTI and extract a complete example
+                        report
+    extract             Extract one run
+    batch               Extract each fMRIPrep run separately; failed runs are
+                        recorded
+    dicom               Plan or run dcm2niix conversion
+    preprocess          Plan or run external fMRIPrep (requires Docker)
+
+options:
+  -h, --help            show this help message and exit
+  --version             show program's version number and exit
+</code></pre>
+<h2 id="serve">serve</h2>
+<pre><code class="language-text">usage: brainfc serve [-h] [--port PORT] [--workspace WORKSPACE] [--no-browser]
+
+options:
+  -h, --help            show this help message and exit
+  --port PORT
+  --workspace WORKSPACE
+  --no-browser
+</code></pre>
+<h2 id="inspect">inspect</h2>
+<pre><code class="language-text">usage: brainfc inspect [-h] source
+
+positional arguments:
+  source
+
+options:
+  -h, --help  show this help message and exit
+</code></pre>
+<h2 id="atlas">atlas</h2>
+<pre><code class="language-text">usage: brainfc atlas [-h] [--data-dir DATA_DIR]
+                     {schaefer100,schaefer200,schaefer400,aal116}
+
+positional arguments:
+  {schaefer100,schaefer200,schaefer400,aal116}
+
+options:
+  -h, --help            show this help message and exit
+  --data-dir DATA_DIR
+</code></pre>
+<h2 id="demo">demo</h2>
+<pre><code class="language-text">usage: brainfc demo [-h] --output OUTPUT
+
+options:
+  -h, --help       show this help message and exit
+  --output OUTPUT
+</code></pre>
+<h2 id="extract">extract</h2>
+<pre><code class="language-text">usage: brainfc extract [-h] [--atlas ATLAS] [--rois ROIS]
+                       [--confounds CONFOUNDS] [--mask MASK]
+                       [--reference REFERENCE] [--config CONFIG] --output
+                       OUTPUT [--preprocessed] [--data-space DATA_SPACE]
+                       [--atlas-space ATLAS_SPACE] [--tr TR] [--no-report]
+                       [--no-figures]
+                       source
+
+positional arguments:
+  source
+
+options:
+  -h, --help            show this help message and exit
+  --atlas ATLAS
+  --rois ROIS
+  --confounds CONFOUNDS
+  --mask MASK
+  --reference REFERENCE
+  --config CONFIG       Config JSON
+  --output OUTPUT
+  --preprocessed
+  --data-space DATA_SPACE
+  --atlas-space ATLAS_SPACE
+  --tr TR
+  --no-report
+  --no-figures
+</code></pre>
+<h2 id="batch">batch</h2>
+<pre><code class="language-text">usage: brainfc batch [-h] --atlas ATLAS [--rois ROIS] --config CONFIG --output
+                     OUTPUT
+                     bids_dir
+
+positional arguments:
+  bids_dir
+
+options:
+  -h, --help       show this help message and exit
+  --atlas ATLAS
+  --rois ROIS
+  --config CONFIG
+  --output OUTPUT
+</code></pre>
+<h2 id="dicom">dicom</h2>
+<pre><code class="language-text">usage: brainfc dicom [-h] --output OUTPUT [--run] source
+
+positional arguments:
+  source
+
+options:
+  -h, --help       show this help message and exit
+  --output OUTPUT
+  --run
+</code></pre>
+<h2 id="preprocess">preprocess</h2>
+<pre><code class="language-text">usage: brainfc preprocess [-h] --output OUTPUT --license LICENSE
+                          [--participant PARTICIPANT] [--space SPACE] [--run]
+                          bids_dir
+
+positional arguments:
+  bids_dir
+
+options:
+  -h, --help            show this help message and exit
+  --output OUTPUT
+  --license LICENSE
+  --participant PARTICIPANT
+  --space SPACE
+  --run
+</code></pre>
+<p><code>extract</code> 中显式的 <code>--tr</code> / 空间 / <code>--preprocessed</code> 覆盖 JSON 的同名字段；其余处理选项通过 <code>--config</code> 提供。<code>dicom</code> 与 <code>preprocess</code> 默认只显示命令，<code>--run</code> 才执行。<code>batch</code> 每个 run 单独处理，失败保留在 <code>batch.json</code> 中；已有输出目录拒绝覆盖。</p></main></html>

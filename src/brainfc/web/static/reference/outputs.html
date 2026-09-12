@@ -1,0 +1,219 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>结果文件与质控 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="_1">输出文件、质控与来源</h1>
+<h2 id="connectome">Connectome</h2>
+<p>设原始时间点数 N、保留点数 T、脑区数 R：</p>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>类型/形状</th>
+<th>约定</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timeseries</code></td>
+<td>float ndarray <code>(T,R)</code></td>
+<td>清理后的时间×脑区</td>
+</tr>
+<tr>
+<td><code>connectivity</code></td>
+<td>float ndarray <code>(R,R)</code></td>
+<td>对称有符号系数；对角线 1</td>
+</tr>
+<tr>
+<td><code>fisher_z</code></td>
+<td>float ndarray <code>(R,R)</code></td>
+<td>截断后 atanh；对角线 0</td>
+</tr>
+<tr>
+<td><code>rois</code></td>
+<td>长度 R 的 dict 列表</td>
+<td>决定所有矩阵行列顺序</td>
+</tr>
+<tr>
+<td><code>sample_indices</code></td>
+<td>int ndarray <code>(T,)</code></td>
+<td>在原始 N 帧中的零起始位置</td>
+</tr>
+<tr>
+<td><code>qc</code></td>
+<td>dict</td>
+<td>计数、参数、提醒</td>
+</tr>
+<tr>
+<td><code>provenance</code></td>
+<td>dict</td>
+<td>来源、实际参数、版本和 ROI 顺序</td>
+</tr>
+<tr>
+<td><code>geometry</code></td>
+<td>dict 或 None</td>
+<td>仅显示；原始解剖体积不会写入这里</td>
+</tr>
+</tbody>
+</table>
+<p>体积/标签图谱按正整数标签升序；表格保持列顺序；ptseries 保持 ParcelsAxis 名称顺序。不能根据其他项目图谱的行数猜这里的 ROI 顺序。</p>
+<h2 id="save">save() 写出的文件</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>connectivity.npy</code></td>
+<td>完整 R×R 数值，无标签行/列</td>
+</tr>
+<tr>
+<td><code>connectivity.csv</code></td>
+<td>同矩阵；首列标题 roi_id，行列都是 ROI ID</td>
+</tr>
+<tr>
+<td><code>fisher_z.npy/.csv</code></td>
+<td>独立 Fisher-z 数组/带标签 CSV</td>
+</tr>
+<tr>
+<td><code>timeseries.npy</code></td>
+<td>清理后的 T×R 数值</td>
+</tr>
+<tr>
+<td><code>timeseries.tsv</code></td>
+<td>首行 ROI ID；没有额外索引列</td>
+</tr>
+<tr>
+<td><code>rois.tsv</code></td>
+<td>ROI 元数据；coordinates 展开为 x/y/z</td>
+</tr>
+<tr>
+<td><code>samples.tsv</code></td>
+<td>一列 <code>original_volume_index</code>，从 0 开始</td>
+</tr>
+<tr>
+<td><code>qc.json</code></td>
+<td>完整 QC 字典</td>
+</tr>
+<tr>
+<td><code>provenance.json</code></td>
+<td>完整来源字典</td>
+</tr>
+<tr>
+<td><code>result.json</code></td>
+<td>schema_version=1 的报告数据，默认不含 timeseries</td>
+</tr>
+<tr>
+<td><code>manifest.json</code></td>
+<td>其他输出文件的 SHA-256；不包含自身</td>
+</tr>
+<tr>
+<td><code>matrix.png/.svg/.pdf</code></td>
+<td>完整矩阵；<code>figures=True</code> 时写出</td>
+</tr>
+<tr>
+<td><code>eight_views.png/.svg/.pdf</code></td>
+<td>所有 ROI 有坐标且 figures=True 时写出</td>
+</tr>
+<tr>
+<td><code>report.html</code></td>
+<td>report=True 时写出，内嵌 JS/CSS/数据</td>
+</tr>
+</tbody>
+</table>
+<p>web 任务还生成 <code>result.zip</code>，其内容是 result 目录。<code>Connectome.save()</code> 本身不创建 ZIP。</p>
+<p><code>save</code> 创建临时同级目录，全部完成后改名为目标；失败清除临时导出。已有目标拒绝覆盖。绘图函数直接写图片时遵循 Matplotlib 覆盖规则。</p>
+<h2 id="_2">重新读取数值</h2>
+<pre><code class="language-python">from pathlib import Path
+import json
+import numpy as np
+import pandas as pd
+
+root = Path(&quot;./results/run-001&quot;)
+matrix = np.load(root / &quot;connectivity.npy&quot;, allow_pickle=False)
+signals = np.load(root / &quot;timeseries.npy&quot;, allow_pickle=False)
+rois = pd.read_csv(root / &quot;rois.tsv&quot;, sep=&quot;\t&quot;, dtype={&quot;roi_id&quot;: str})
+samples = pd.read_csv(root / &quot;samples.tsv&quot;, sep=&quot;\t&quot;)
+provenance = json.loads((root / &quot;provenance.json&quot;).read_text(encoding=&quot;utf-8&quot;))
+assert matrix.shape == (len(rois), len(rois))
+assert signals.shape[0] == len(samples)
+</code></pre>
+<p>当前没有 <code>load_result()</code> 或 <code>Connectome.load()</code>。报告 JSON 不含时序，不能单凭该 JSON 恢复全部 Connectome；如需重建对象，必须读取数值和元数据并自己检查一致性。</p>
+<h2 id="qc">QC 字段</h2>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n_input</code>, <code>n_retained</code>, <code>n_censored</code></td>
+<td>原始、保留、唯一排除帧数</td>
+</tr>
+<tr>
+<td><code>retained_fraction</code></td>
+<td>T/N</td>
+</tr>
+<tr>
+<td><code>n_rois</code></td>
+<td>R</td>
+</tr>
+<tr>
+<td><code>t_r</code></td>
+<td>秒或 null</td>
+</tr>
+<tr>
+<td><code>duration_retained_seconds</code></td>
+<td>T×TR 或 null，不是连续时间跨度</td>
+</tr>
+<tr>
+<td><code>confound_columns</code></td>
+<td>实际回归列名</td>
+</tr>
+<tr>
+<td><code>fd_mean</code>, <code>fd_max</code></td>
+<td>所有有限原始 FD 的均值/最大值；没有 FD 为 null</td>
+</tr>
+<tr>
+<td><code>fd_censored</code></td>
+<td>FD 超阈或首行缺失的帧数；可以与其他原因重叠</td>
+</tr>
+<tr>
+<td><code>nonsteady_censored</code></td>
+<td>初始 discard 之后因非稳态删除的帧数</td>
+</tr>
+<tr>
+<td><code>confound_nan_fill</code></td>
+<td>允许的首行 derivative1 NaN→0 记录</td>
+</tr>
+<tr>
+<td><code>confound_design_rank_with_intercept</code></td>
+<td>有回归设计时的初步秩检查</td>
+</tr>
+<tr>
+<td><code>shrinkage</code></td>
+<td>仅 partial 方法的 Ledoit-Wolf 收缩系数</td>
+</tr>
+<tr>
+<td><code>warnings</code></td>
+<td>未提供混杂、坐标不完整、单位推断、依赖清理提醒等</td>
+</tr>
+<tr>
+<td><code>format</code></td>
+<td>volume / cifti / gifti / timeseries-table</td>
+</tr>
+<tr>
+<td><code>roi_voxels</code>, <code>atlas_resampled</code>, <code>orientation</code>, <code>bold_shape</code>, <code>spatial_units</code></td>
+<td>仅体积路径提供</td>
+</tr>
+</tbody>
+</table>
+<p>不同格式的 QC 键集合不同，不应要求每个结果都具备体积专用键。<code>validated=True</code> 是 preflight 响应标记，不是科学质量通过证书。</p>
+<h2 id="provenance">Provenance 字段</h2>
+<p><code>software/version/created_utc</code> 标明软件、版本与 UTC 创建时间；<code>inputs</code> 为实际参与文件的绝对路径、SHA-256、字节数；<code>config</code> 是解析 TR/空间后的生效配置；<code>versions</code> 记录 NumPy/SciPy/NiBabel/Nilearn/scikit-learn 版本；<code>method/roi_order/fisher_z/operations/filter_censoring</code> 记录计算约定。</p>
+<p>GUI 引导记录保存在可选 <code>workflow</code> 字段，包含用户确认、跳过理由、数据集具体方案及其官方来源。合成演示由演示命令写 <code>synthetic=True</code>。</p>
+<p>来源中可能含本地目录名，分享报告前应知道报告包含哪些元数据。研究输入文件不打包进本库发布物。配对影像的指纹边界见 <a href="formats.html">输入格式</a>。</p>
+<h2 id="geometry">Geometry 和显示导出</h2>
+<p><code>geometry</code> 包含 <code>space/units/orientation/source</code>；<code>brain.positions</code> 为展平 xyz，<code>brain.indices</code> 为展平三角面顶点索引；<code>parcels</code> 当前为空字典。有坐标但无参考/图谱影像时，brain 为两个空数组，可只显示节点/边。缺少完整坐标时 geometry 为 null。</p>
+<p>完整 ZIP 的静态图使用生成时默认 |r|≥0.3、最多 200 边。网页当前选择的八视图需用面板导出，或调用 <code>/api/jobs/{id}/views</code>；后者缓存文件在 <code>view-exports/</code>，不会改写既有结果。GUI PNG 使用 WebGL，HTTP 的 PNG/SVG/PDF 使用 Matplotlib，同样的边集合但材质并不相同。</p></main></html>

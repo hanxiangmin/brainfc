@@ -1,0 +1,33 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>validation-v0.2.0 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="020">验证记录 · 0.2.0</h1>
+<p>2026-09-12，Windows / Python 3.12.14。</p>
+<ul>
+<li>Python：44 项通过；Ruff 通过。原有数值、文件格式和错误边界测试保持通过。</li>
+<li>新增：官方方案作用域、字典独立拷贝、TR 元数据优先及冲突、流程确认与可选项、滤波 Nyquist 与 FD 剔除、BOLD/T1 基础库存、CIFTI/GIFTI 分支、表头自动识别、配套文件匹配。</li>
+<li>显示集合：先阈值与选择筛选，再限制数量；正负边和稳定排序、无连接情况都有检查。</li>
+<li>前端：TypeScript 检查与 Vite 构建通过。</li>
+</ul>
+<h2 id="_1">实际浏览器操作</h2>
+<p>使用独立 Playwright 和本机 Chrome 测试，无需用户登录态。应用内自动化运行环境此前无法初始化，因此不声称使用应用内 Browser 完成自动化。</p>
+<p><code>frontend/test-revision.cjs</code> 完整通过，未出现页面脚本或控制台错误：</p>
+<ol>
+<li>Schaefer100 已有结果在新版中显示；深浅主题和摄像机正常。</li>
+<li>按真实投影坐标悬停前方 ROI，仅出现 1 个标签；后方 ROI 不弹出其名称。</li>
+<li>点击矩阵选择第 8 个脑区，阈值 0.2 时的 16 条连接，在三维与八视图中的 ID 逐条相同。</li>
+<li>清除选择恢复 200 条连接；PNG 下载和相同选择的 SVG 响应成功。</li>
+<li>三步引导禁止提前进入后续步骤；输入的合成 BOLD 为 TR=2 s，ADNI 3 Basic 参考为 3 s，采用扫描值并保留差异说明。</li>
+<li>同一个既有输入自动匹配此前确认的图谱和空间，方案页不需要输入文本参数。选择保留上游去噪后，处理成功并保存确认记录。</li>
+<li>生成的 file:// 离线报告也能计算同步八视图。</li>
+<li>390 px 宽度无水平溢出。</li>
+</ol>
+<p>任务 <code>c8c64e6ca2bc48249d7991ab2e7da099</code> 使用<strong>合成 BOLD 作为流程测试</strong>，其中 ADNI 标签只是测试预设选择，不能解释成真实 ADNI 数据。证据：<code>.work/browser-qa-v02/validation.json</code>、截图和导出。</p>
+<p><code>frontend/test-workflow-branches.cjs</code> 完整通过：</p>
+<ul>
+<li>一次选择 <code>.1D</code> 文件，无须输入路径；自动识别无表头时序并保留全部 60 帧、3 个 ROI。</li>
+<li>没有坐标时不要求体积分区图谱，只生成矩阵。</li>
+<li>DICOM 转换、fMRIPrep 和质控步骤按顺序锁定；即使声明外部处理完成，仍需选择 derivatives 并确认报告。</li>
+</ul>
+<p>对应合成时序任务 <code>28a4a985974d4a8faa8c0612363974ee</code>，证据 <code>.work/browser-qa-v02/branches.json</code>。</p>
+<h2 id="_2">未完成的外部运行</h2>
+<p>这次没有新增真实患者验证，也没有在本机完成 DICOM→fMRIPrep 全链路。真实 ADHD 文件读取与提取范围、已验证和未验证的格式，保留在 <a href="validation.html">0.1.0 记录</a>。</p>
+<h2 id="_3">安装包</h2>
+<p>0.2.0 wheel / sdist 完成构建和 twine 元数据检查；独立目录安装 wheel 后核对 Python 导入、预设目录和静态界面资产。发布物校验值记录在 <code>dist/build-manifest-v0.2.0.json</code>。本地安装包可用，未发布 PyPI。</p></main></html>

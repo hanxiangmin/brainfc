@@ -1,0 +1,13 @@
+BrainFC
+Copyright 2026 BrainFC contributors
+
+The 3D viewer in frontend/src/vendor is derived from Hyper-Brain 0.3.0
+https://github.com/hanxiangmin/Hyper-Brain (Apache License 2.0).
+Adapted 2026-09-12. Changes include eight camera directions, coordinate bounds,
+smoothed display surfaces, translucent materials, foreground hover labels,
+and synchronized edge selection and eight-view export.
+Analysis is independent of Hyper-Brain.
+React and Three.js are distributed under their MIT licenses. Their complete
+license texts are included with the bundled frontend in THIRD_PARTY_NOTICES.txt.
+Atlas and participant datasets are not included in the distribution; their
+licenses and citations are determined by the original providers.

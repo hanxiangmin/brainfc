@@ -1,0 +1,434 @@
+[
+  {
+    "name": "brainfc.models.InputError",
+    "signature": "",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 9
+  },
+  {
+    "name": "brainfc.models.Config",
+    "signature": "(t_r: 'float | None' = None, high_pass: 'float | None' = None, low_pass: 'float | None' = None, detrend: 'bool' = True, standardize: 'bool' = True, discard: 'int' = 0, fd_threshold: 'float | None' = None, min_samples: 'int' = 20, method: 'str' = 'pearson', data_space: 'str | None' = None, atlas_space: 'str | None' = None, preprocessed: 'bool' = False, confound_columns: 'tuple[str, ...] | None' = None, table_header: 'bool' = True, transpose: 'bool' = False, variable: 'str | None' = None) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 14
+  },
+  {
+    "name": "brainfc.models.Config.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 99
+  },
+  {
+    "name": "brainfc.models.Connectome",
+    "signature": "(timeseries: 'np.ndarray', connectivity: 'np.ndarray', fisher_z: 'np.ndarray', rois: 'list[dict]', sample_indices: 'np.ndarray', qc: 'dict', provenance: 'dict', geometry: 'dict | None' = None) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 111
+  },
+  {
+    "name": "brainfc.models.Connectome.to_dict",
+    "signature": "(self, *, include_timeseries=False)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 145
+  },
+  {
+    "name": "brainfc.models.Connectome.save",
+    "signature": "(self, directory: 'str | Path', *, figures=True, report=True)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 172
+  },
+  {
+    "name": "brainfc.models.Connectome.plot_matrix",
+    "signature": "(self, path=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 203
+  },
+  {
+    "name": "brainfc.models.Connectome.plot_views",
+    "signature": "(self, path=None, *, threshold=0.3, max_edges=200, selection=None, opacity=0.28, theme='paper')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 225
+  },
+  {
+    "name": "brainfc.models.Connectome.view",
+    "signature": "(self, path='connectome.html', *, open_browser=False)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 273
+  },
+  {
+    "name": "brainfc.models.Connectome.to_hicbrain",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/models.py",
+    "line": 308
+  },
+  {
+    "name": "brainfc.pipeline.fingerprint",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/pipeline.py",
+    "line": 30
+  },
+  {
+    "name": "brainfc.pipeline._confounds",
+    "signature": "(path, n, config)",
+    "public": false,
+    "documented": true,
+    "source": "src/brainfc/pipeline.py",
+    "line": 51
+  },
+  {
+    "name": "brainfc.pipeline.extract_connectome",
+    "signature": "(source, *, atlas=None, rois=None, mask=None, reference=None, confounds=None, config=None, progress=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/pipeline.py",
+    "line": 144
+  },
+  {
+    "name": "brainfc.io.numeric_table",
+    "signature": "(path, *, header=True, variable=None, transpose=False)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/io.py",
+    "line": 17
+  },
+  {
+    "name": "brainfc.io.sidecar_path",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/io.py",
+    "line": 94
+  },
+  {
+    "name": "brainfc.io.metadata",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/io.py",
+    "line": 104
+  },
+  {
+    "name": "brainfc.io.inspect_input",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/io.py",
+    "line": 121
+  },
+  {
+    "name": "brainfc.io.discover_bids",
+    "signature": "(root)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/io.py",
+    "line": 185
+  },
+  {
+    "name": "brainfc.imaging.roi_table",
+    "signature": "(path)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 12
+  },
+  {
+    "name": "brainfc.imaging.make_rois",
+    "signature": "(ids, names=None, coords=None, table=None, *, by_value=True)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 38
+  },
+  {
+    "name": "brainfc.imaging.validate_volume",
+    "signature": "(img, *, ndim=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 107
+  },
+  {
+    "name": "brainfc.imaging.label_values",
+    "signature": "(data)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 133
+  },
+  {
+    "name": "brainfc.imaging.volume_timeseries",
+    "signature": "(img, atlas_path, mask_path=None, table=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 149
+  },
+  {
+    "name": "brainfc.imaging.cifti_timeseries",
+    "signature": "(img, atlas_path=None, table=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 215
+  },
+  {
+    "name": "brainfc.imaging.gifti_timeseries",
+    "signature": "(img, atlas_path, table=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 274
+  },
+  {
+    "name": "brainfc.imaging.brain_geometry",
+    "signature": "(atlas_img=None, reference=None, *, space='unknown')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/imaging.py",
+    "line": 322
+  },
+  {
+    "name": "brainfc.atlases.fetch_atlas",
+    "signature": "(name='schaefer100', *, data_dir=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/atlases.py",
+    "line": 10
+  },
+  {
+    "name": "brainfc.plotting.edges_of",
+    "signature": "(result, threshold=0.3, max_edges=200, selection=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/plotting.py",
+    "line": 21
+  },
+  {
+    "name": "brainfc.plotting._pyplot",
+    "signature": "()",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/plotting.py",
+    "line": 56
+  },
+  {
+    "name": "brainfc.plotting.plot_matrix",
+    "signature": "(result, path=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/plotting.py",
+    "line": 65
+  },
+  {
+    "name": "brainfc.plotting.plot_views",
+    "signature": "(result, path=None, *, threshold=0.3, max_edges=200, selection=None, opacity=0.28, theme='paper')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/plotting.py",
+    "line": 92
+  },
+  {
+    "name": "brainfc.export._json",
+    "signature": "(data)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/export.py",
+    "line": 15
+  },
+  {
+    "name": "brainfc.export.write_report",
+    "signature": "(result, path, *, view_image=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/export.py",
+    "line": 19
+  },
+  {
+    "name": "brainfc.export.save_result",
+    "signature": "(result, directory, *, figures=True, report=True)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/export.py",
+    "line": 54
+  },
+  {
+    "name": "brainfc.demo.create_demo",
+    "signature": "(directory)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/demo.py",
+    "line": 10
+  },
+  {
+    "name": "brainfc.preprocessing.CommandPlan",
+    "signature": "(argv: list[str], description: str) -> None",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 13
+  },
+  {
+    "name": "brainfc.preprocessing.CommandPlan.to_dict",
+    "signature": "(self)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 24
+  },
+  {
+    "name": "brainfc.preprocessing.CommandPlan.run",
+    "signature": "(self, *, log=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 38
+  },
+  {
+    "name": "brainfc.preprocessing._input_directory",
+    "signature": "(path)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 54
+  },
+  {
+    "name": "brainfc.preprocessing._separate",
+    "signature": "(input_dir, output_dir)",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 61
+  },
+  {
+    "name": "brainfc.preprocessing.dicom_plan",
+    "signature": "(source, output, *, executable='dcm2niix')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 66
+  },
+  {
+    "name": "brainfc.preprocessing.convert_dicom",
+    "signature": "(source, output, *, executable='dcm2niix', log=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 85
+  },
+  {
+    "name": "brainfc.preprocessing.fmriprep_plan",
+    "signature": "(bids_dir, output_dir, license_file, *, participant=None, space='MNI152NLin6Asym', image='nipreps/fmriprep:25.2.5')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/preprocessing.py",
+    "line": 99
+  },
+  {
+    "name": "brainfc.presets._variant",
+    "signature": "(id, name, source, *, tr=None, notes='', upstream='', input_kind='volume')",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/presets.py",
+    "line": 13
+  },
+  {
+    "name": "brainfc.presets.dataset_presets",
+    "signature": "()",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/presets.py",
+    "line": 161
+  },
+  {
+    "name": "brainfc.presets.dataset_preset",
+    "signature": "(dataset='custom', variant='custom')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/presets.py",
+    "line": 175
+  },
+  {
+    "name": "brainfc.workflow.input_suggestions",
+    "signature": "(path, *, overrides=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/workflow.py",
+    "line": 11
+  },
+  {
+    "name": "brainfc.workflow.check_raw_bids",
+    "signature": "(payload)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/workflow.py",
+    "line": 47
+  },
+  {
+    "name": "brainfc.workflow.check_input",
+    "signature": "(path, config=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/workflow.py",
+    "line": 84
+  },
+  {
+    "name": "brainfc.workflow.preflight",
+    "signature": "(payload, *, stage='review')",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/workflow.py",
+    "line": 146
+  },
+  {
+    "name": "brainfc.workflow.validate_guidance",
+    "signature": "(payload)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/workflow.py",
+    "line": 214
+  },
+  {
+    "name": "brainfc.cli._parser",
+    "signature": "()",
+    "public": false,
+    "documented": false,
+    "source": "src/brainfc/cli.py",
+    "line": 11
+  },
+  {
+    "name": "brainfc.cli.main",
+    "signature": "(argv=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/cli.py",
+    "line": 60
+  },
+  {
+    "name": "brainfc.web.app.create_app",
+    "signature": "(workspace=None)",
+    "public": true,
+    "documented": true,
+    "source": "src/brainfc/web/app.py",
+    "line": 37
+  }
+]

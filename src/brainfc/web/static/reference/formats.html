@@ -1,0 +1,84 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>输入格式与空间 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="roi">输入格式、ROI 映射与空间</h1>
+<h2 id="_1">支持的输入契约</h2>
+<table>
+<thead>
+<tr>
+<th>格式</th>
+<th>信号维度</th>
+<th>图谱/附加信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NIfTI <code>.nii/.nii.gz</code></td>
+<td>X×Y×Z×T</td>
+<td>同空间 3D 整数标签图谱；可选 mask、混杂、参考</td>
+</tr>
+<tr>
+<td>Analyze <code>.hdr/.img</code>、MGH/MGZ、AFNI HEAD/BRIK</td>
+<td>必须读成 4D</td>
+<td>NiBabel 兼容读取；实际格式验证范围见版本验证记录</td>
+</tr>
+<tr>
+<td>CIFTI <code>.dtseries.nii</code></td>
+<td>SeriesAxis×BrainModelAxis</td>
+<td>完全一致灰坐标轴的单标签 <code>.dlabel.nii</code></td>
+</tr>
+<tr>
+<td>CIFTI <code>.ptseries.nii</code></td>
+<td>SeriesAxis×ParcelsAxis</td>
+<td>自带 ROI 名称顺序；不需要 atlas</td>
+</tr>
+<tr>
+<td>GIFTI <code>.func.gii</code></td>
+<td>一个顶点×时间数组，或逐帧顶点数组</td>
+<td>TIME_SERIES intent；同顶点对应的 <code>.label.gii</code></td>
+</tr>
+<tr>
+<td>CSV/TSV/TXT/1D</td>
+<td>默认 T×R</td>
+<td>只包含 ROI 信号，不含时间/索引/受试者列</td>
+</tr>
+<tr>
+<td>NPY</td>
+<td>2D 实数数组</td>
+<td>不允许 pickle</td>
+</tr>
+<tr>
+<td>NPZ/MAT</td>
+<td>指定的 2D 数值变量</td>
+<td>无歧义时可推断；MAT v7.3/HDF5 不支持</td>
+</tr>
+<tr>
+<td>DICOM、原始 BIDS</td>
+<td>多文件序列/目录</td>
+<td>先外部预处理，再传入已处理 run</td>
+</tr>
+</tbody>
+</table>
+<p>体积与表面影像均要求 <code>preprocessed=True</code> 和可确认的 <code>data_space</code>。表格时序不强制该声明。概率图谱、静态指标图、T1 单图、CIFTI dconn/pconn 不能作为 fMRI 时序。对称表格疑似 FC 时，GUI/preflight 拒绝；低层数值读取函数不会推断科学来源。</p>
+<p>图像可能由多个配对文件组成：例如 Analyze 需要 hdr 与 img 都在本地。<code>provenance.inputs.source</code> 当前只哈希传给 source 的路径，不能代表所有配对文件的完整指纹；研究归档时另外保存这些配对文件。</p>
+<h2 id="_2">文本规则</h2>
+<p>CSV 用逗号，TSV 用制表符，TXT/1D 用空白分隔；<code>#</code> 为注释。Python API 默认有表头；GUI 根据首个有效行是否全为数字推测表头。全数字 ROI ID 的表头有歧义，应显式设置 <code>table_header=True</code>。</p>
+<p>不自动删除数值时间列、行号或表型列。无表头文件用 <code>table_header=False</code>；ROI×时间用 <code>transpose=True</code>，转置后不继续使用旧表头作为 ROI 名称。</p>
+<h2 id="roi_1">ROI 表</h2>
+<p>体积/标签表面图谱示例（实际保存为制表符分隔）：</p>
+<pre><code class="language-text">label_value  roi_id  name        x    y    z
+3            ROI_A   Region A   -32  -20   40
+17           ROI_B   Region B    32  -20   40
+</code></pre>
+<p><code>roi_id</code> 唯一且非空；影像图谱需要 <code>label_value</code> 与真实标签完全对应。<code>name</code> 可省略，会使用图谱名或 <code>ROI {value}</code>；不要把 ROI 表行号当作体素标签。自定义 <code>x,y,z</code> 覆盖图谱质心，需一起提供有限值。</p>
+<p>已分区时序表使用 <code>roi_id</code> 匹配真实列 ID/ParcelsAxis 名称，不需要 <code>label_value</code>。可选字段：<code>name, abbreviation, hemisphere, network, x, y, z</code>。映射必须没有多余或缺失 ROI；ROI 表的行顺序不会改变输入列或图谱提取顺序。</p>
+<h2 id="_3">空间与单位</h2>
+<p><code>MNI152NLin6Asym</code>、<code>MNIColin27</code> 是不同模板，不能简写为同一个 MNI 后混用。空间名称按字符串严格匹配。体积影像的 affine 决定坐标，要求有限、可逆；编码的 qform/sform 冲突会报错。米/微米单位拒绝，unknown 空间单位暂按 mm 并在体积提取结果中提醒。</p>
+<p>坐标约定 RAS+、mm：x 正向为右、y 正向为前、z 正向为上。参考脑/mask/自定义 ROI 坐标的空间由调用者保证；库没有自动配准验证器。GIFTI 相同顶点数不等于实际一一对应，需同模板、半球和顶点顺序。</p>
+<h2 id="tr-json">TR 与 JSON</h2>
+<p><code>t_r</code> 以秒计。NIfTI 已知秒/毫秒/微秒单位会换算；未知时间单位不能直接当作秒。CIFTI 主提取要求 SeriesAxis 单位 SECOND。JSON <code>RepetitionTime</code>、影像头与手动 TR 如有冲突，主处理拒绝。</p>
+<p><code>sidecar_path</code> 对 <code>.nii[.gz]</code> / <code>.dtseries.nii</code> / <code>.ptseries.nii</code> 替换末尾为 <code>.json</code>，其他格式追加 <code>.json</code>，如 <code>signals.tsv.json</code>。本库只读取相邻 JSON，没有完整 BIDS 继承实现。原始 BIDS 的继承由上游 fMRIPrep 处理；单文件提取应带最终生效的 TR 或显式 <code>Config(t_r=...)</code>。</p>
+<h2 id="_4">首次真实数据最小集合</h2>
+<ul>
+<li>已预处理体积：一个 run 的 BOLD、实际空间、匹配标签图谱；推荐同 run 混杂和 mask/参考，TR 未知时补 JSON。</li>
+<li>ROI 时序：信号文件、列含义/图谱顺序；3D 需要全部 ROI 坐标，滤波需要 TR。</li>
+<li>原始数据：一个受试者的完整 BOLD、T1、采集 JSON/序列信息，必要的场图/相位编码资料；先整理为 BIDS。</li>
+</ul>
+<p>公开数据集的下载层级不同，见 <a href="datasets.html">下载说明</a>；数据集名字不会自动证明某份文件已经完成去噪。</p></main></html>

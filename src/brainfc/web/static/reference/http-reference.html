@@ -1,0 +1,2147 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>HTTP 完整接口 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="http-030">HTTP 完整接口 · 0.3.0</h1>
+<p>从实际 FastAPI OpenAPI 生成。运行服务后可在 <code>/docs</code>、<code>/redoc</code> 查看交互说明；机器可读定义在 <code>/openapi.json</code>，离线副本为 <a href="openapi.json">openapi.json</a>。</p>
+<p>响应与轮询示例见 <a href="http-api.html">HTTP 使用指南</a>。</p>
+<h2 id="get-apihealth">GET /api/health</h2>
+<p>Read service version and workspace</p>
+<pre><code class="language-json">{
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HealthResponse&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apipresets">GET /api/presets</h2>
+<p>Read source-attributed dataset/protocol hints</p>
+<pre><code class="language-json">{
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/PresetsResponse&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apisetup">GET /api/setup</h2>
+<p>Suggest new output paths and an existing FS_LICENSE</p>
+<pre><code class="language-json">{
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/SetupResponse&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apiinput-suggestions">POST /api/input-suggestions</h2>
+<p>Infer metadata and companions; may download a suggested atlas</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/SuggestionsRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/SuggestionsResponse&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipreflight">POST /api/preflight</h2>
+<p>Validate one run at input, spatial or review stage</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PreflightRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/InputInfo&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apiinspect">POST /api/inspect</h2>
+<p>Read file structure or list derivative runs</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PathRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/InputInfo&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apidiscover">POST /api/discover</h2>
+<p>Discover separate fMRIPrep preprocessed volume runs</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PathRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;items&quot;: {
+              &quot;$ref&quot;: &quot;#/components/schemas/RunRecord&quot;
+            },
+            &quot;type&quot;: &quot;array&quot;,
+            &quot;title&quot;: &quot;Response Discover Api Discover Post&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apiupload">POST /api/upload</h2>
+<p>Upload one file (4 GiB maximum), preserving existing files</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;multipart/form-data&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/Body_upload_api_upload_post&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/UploadResponse&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apijobs">GET /api/jobs</h2>
+<p>List up to 100 jobs, most recently modified first</p>
+<pre><code class="language-json">{
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;items&quot;: {
+              &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+            },
+            &quot;type&quot;: &quot;array&quot;,
+            &quot;title&quot;: &quot;Response Jobs Api Jobs Get&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apijobs">POST /api/jobs</h2>
+<p>Queue one extraction; does not wait for completion</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/ExtractionRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apidemo">POST /api/demo</h2>
+<p>Queue a deterministic synthetic end-to-end demo</p>
+<pre><code class="language-json">{
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apiatlas">POST /api/atlas</h2>
+<p>Queue a supported-atlas download</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/AtlasRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipreprocessplan">POST /api/preprocess/plan</h2>
+<p>Inspect a pinned fMRIPrep command and minimum BOLD/T1 inventory</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PreprocessRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/CommandResponse&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apipreprocessrun">POST /api/preprocess/run</h2>
+<p>Queue external Docker fMRIPrep execution</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/PreprocessRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apidicomplan">POST /api/dicom/plan</h2>
+<p>Inspect an external dcm2niix conversion command</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/DicomRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/CommandResponse&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="post-apidicomrun">POST /api/dicom/run</h2>
+<p>Queue DICOM conversion to a new output directory</p>
+<pre><code class="language-json">{
+  &quot;requestBody&quot;: {
+    &quot;content&quot;: {
+      &quot;application/json&quot;: {
+        &quot;schema&quot;: {
+          &quot;$ref&quot;: &quot;#/components/schemas/DicomRequest&quot;
+        }
+      }
+    },
+    &quot;required&quot;: true
+  },
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apijobsjob_idviews">GET /api/jobs/{job_id}/views</h2>
+<p>Export eight views for the current threshold/selection</p>
+<pre><code class="language-json">{
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;threshold&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;number&quot;,
+        &quot;maximum&quot;: 1,
+        &quot;minimum&quot;: 0,
+        &quot;description&quot;: &quot;Inclusive |coefficient| cutoff; zero edges excluded.&quot;,
+        &quot;default&quot;: 0.3,
+        &quot;title&quot;: &quot;Threshold&quot;
+      },
+      &quot;description&quot;: &quot;Inclusive |coefficient| cutoff; zero edges excluded.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;max_edges&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;integer&quot;,
+        &quot;maximum&quot;: 10000,
+        &quot;minimum&quot;: 0,
+        &quot;description&quot;: &quot;Cap after threshold and ROI/edge selection.&quot;,
+        &quot;default&quot;: 200,
+        &quot;title&quot;: &quot;Max Edges&quot;
+      },
+      &quot;description&quot;: &quot;Cap after threshold and ROI/edge selection.&quot;
+    },
+    {
+      &quot;name&quot;: &quot;selection_kind&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;anyOf&quot;: [
+          {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          {
+            &quot;type&quot;: &quot;null&quot;
+          }
+        ],
+        &quot;title&quot;: &quot;Selection Kind&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;selection_id&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;anyOf&quot;: [
+          {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          {
+            &quot;type&quot;: &quot;null&quot;
+          }
+        ],
+        &quot;title&quot;: &quot;Selection Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;opacity&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;number&quot;,
+        &quot;maximum&quot;: 1,
+        &quot;minimum&quot;: 0,
+        &quot;default&quot;: 0.28,
+        &quot;title&quot;: &quot;Opacity&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;theme&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;default&quot;: &quot;paper&quot;,
+        &quot;title&quot;: &quot;Theme&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;format&quot;,
+      &quot;in&quot;: &quot;query&quot;,
+      &quot;required&quot;: false,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;default&quot;: &quot;svg&quot;,
+        &quot;title&quot;: &quot;Format&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apijobsjob_id">GET /api/jobs/{job_id}</h2>
+<p>Poll persisted job state</p>
+<pre><code class="language-json">{
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/JobState&quot;
+          }
+        }
+      }
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="get-apijobsjob_idfilesname">GET /api/jobs/{job_id}/files/{name}</h2>
+<p>Download a named result artifact or preprocessing log</p>
+<pre><code class="language-json">{
+  &quot;parameters&quot;: [
+    {
+      &quot;name&quot;: &quot;job_id&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Job Id&quot;
+      }
+    },
+    {
+      &quot;name&quot;: &quot;name&quot;,
+      &quot;in&quot;: &quot;path&quot;,
+      &quot;required&quot;: true,
+      &quot;schema&quot;: {
+        &quot;type&quot;: &quot;string&quot;,
+        &quot;title&quot;: &quot;Name&quot;
+      }
+    }
+  ],
+  &quot;responses&quot;: {
+    &quot;200&quot;: {
+      &quot;description&quot;: &quot;Successful Response&quot;
+    },
+    &quot;422&quot;: {
+      &quot;description&quot;: &quot;Validation Error&quot;,
+      &quot;content&quot;: {
+        &quot;application/json&quot;: {
+          &quot;schema&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/HTTPValidationError&quot;
+          }
+        }
+      }
+    }
+  }
+}
+</code></pre>
+<h2 id="_1">请求与响应数据模型</h2>
+<h3 id="atlasrequest">AtlasRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;name&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;schaefer100&quot;,
+        &quot;schaefer200&quot;,
+        &quot;schaefer400&quot;,
+        &quot;aal116&quot;
+      ],
+      &quot;title&quot;: &quot;Name&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;name&quot;
+  ],
+  &quot;title&quot;: &quot;AtlasRequest&quot;,
+  &quot;description&quot;: &quot;Queue an explicit supported-atlas download into the workspace cache.&quot;
+}
+</code></pre>
+<h3 id="body_upload_api_upload_post">Body_upload_api_upload_post</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;file&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;contentMediaType&quot;: &quot;application/octet-stream&quot;,
+      &quot;title&quot;: &quot;File&quot;
+    },
+    &quot;session&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Session&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;file&quot;,
+    &quot;session&quot;
+  ],
+  &quot;title&quot;: &quot;Body_upload_api_upload_post&quot;
+}
+</code></pre>
+<h3 id="commandresponse">CommandResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;argv&quot;: {
+      &quot;items&quot;: {
+        &quot;type&quot;: &quot;string&quot;
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Argv&quot;
+    },
+    &quot;description&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Description&quot;
+    },
+    &quot;powershell&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Powershell&quot;
+    },
+    &quot;posix&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Posix&quot;
+    },
+    &quot;inventory&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;additionalProperties&quot;: true,
+          &quot;type&quot;: &quot;object&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Inventory&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;argv&quot;,
+    &quot;description&quot;,
+    &quot;powershell&quot;,
+    &quot;posix&quot;
+  ],
+  &quot;title&quot;: &quot;CommandResponse&quot;,
+  &quot;description&quot;: &quot;Inspectable command argv plus shell renderings; no execution on plan routes.&quot;
+}
+</code></pre>
+<h3 id="configrequest">ConfigRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T R&quot;,
+      &quot;description&quot;: &quot;Repetition time in seconds; null infers from scan JSON/header; conflicts are rejected.&quot;
+    },
+    &quot;high_pass&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;High Pass&quot;,
+      &quot;description&quot;: &quot;High-pass cutoff in Hz; null disables. Requires TR and cutoff below Nyquist.&quot;
+    },
+    &quot;low_pass&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Low Pass&quot;,
+      &quot;description&quot;: &quot;Low-pass cutoff in Hz; null disables. Must exceed high_pass when both are set.&quot;
+    },
+    &quot;detrend&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Detrend&quot;,
+      &quot;description&quot;: &quot;Remove linear trends through Nilearn signal.clean.&quot;,
+      &quot;default&quot;: true
+    },
+    &quot;standardize&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Standardize&quot;,
+      &quot;description&quot;: &quot;Sample z-score of cleaned ROI time series (ddof=1).&quot;,
+      &quot;default&quot;: true
+    },
+    &quot;discard&quot;: {
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;title&quot;: &quot;Discard&quot;,
+      &quot;description&quot;: &quot;Number of initial original frames to remove, integer &gt;=0.&quot;,
+      &quot;default&quot;: 0
+    },
+    &quot;fd_threshold&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Fd Threshold&quot;,
+      &quot;description&quot;: &quot;Censor FD &gt; cutoff in mm, also undefined first FD; null disables FD censoring.&quot;
+    },
+    &quot;min_samples&quot;: {
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;title&quot;: &quot;Min Samples&quot;,
+      &quot;description&quot;: &quot;Minimum retained frames (&gt;=3), not a statistical power criterion.&quot;,
+      &quot;default&quot;: 20
+    },
+    &quot;method&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Method&quot;,
+      &quot;description&quot;: &quot;pearson, spearman, or partial (Ledoit-Wolf shrinkage precision).&quot;,
+      &quot;default&quot;: &quot;pearson&quot;
+    },
+    &quot;data_space&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Data Space&quot;,
+      &quot;description&quot;: &quot;Exact source template name. All image inputs require a known space.&quot;
+    },
+    &quot;atlas_space&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Atlas Space&quot;,
+      &quot;description&quot;: &quot;Atlas template name, must match source when atlas is supplied.&quot;
+    },
+    &quot;preprocessed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Preprocessed&quot;,
+      &quot;description&quot;: &quot;Explicit declaration that image motion correction/registration are complete.&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;confound_columns&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confound Columns&quot;,
+      &quot;description&quot;: &quot;Columns to regress; null selects complete motion6 + available WM/CSF.&quot;
+    },
+    &quot;table_header&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Table Header&quot;,
+      &quot;description&quot;: &quot;Text first non-comment row contains ROI names; ignored for NPY/NPZ/MAT.&quot;,
+      &quot;default&quot;: true
+    },
+    &quot;transpose&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Transpose&quot;,
+      &quot;description&quot;: &quot;Transpose table input to time x ROI, discarding text column names.&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;variable&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Variable&quot;,
+      &quot;description&quot;: &quot;NPZ/MAT 2D numeric variable name; null requires one unambiguous variable.&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;title&quot;: &quot;ConfigRequest&quot;
+}
+</code></pre>
+<h3 id="datasetentry">DatasetEntry</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;id&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Id&quot;
+    },
+    &quot;name&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Name&quot;
+    },
+    &quot;variants&quot;: {
+      &quot;items&quot;: {
+        &quot;$ref&quot;: &quot;#/components/schemas/PresetVariant&quot;
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Variants&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;id&quot;,
+    &quot;name&quot;,
+    &quot;variants&quot;
+  ],
+  &quot;title&quot;: &quot;DatasetEntry&quot;
+}
+</code></pre>
+<h3 id="dicomrequest">DicomRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Source&quot;,
+      &quot;description&quot;: &quot;Existing DICOM source directory.&quot;
+    },
+    &quot;output&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Output&quot;,
+      &quot;description&quot;: &quot;New directory, outside and separate from source.&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;source&quot;,
+    &quot;output&quot;
+  ],
+  &quot;title&quot;: &quot;DicomRequest&quot;,
+  &quot;description&quot;: &quot;Plan/run external conversion; both paths are local directories.&quot;
+}
+</code></pre>
+<h3 id="extractionrequest">ExtractionRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Source&quot;,
+      &quot;description&quot;: &quot;Absolute or server-relative path to one fMRI/ROI file.&quot;
+    },
+    &quot;atlas&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Atlas&quot;,
+      &quot;description&quot;: &quot;Integer-label atlas in the source space.&quot;
+    },
+    &quot;rois&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Rois&quot;,
+      &quot;description&quot;: &quot;ROI mapping CSV/TSV; exact IDs and optional RAS+ coordinates.&quot;
+    },
+    &quot;mask&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Mask&quot;,
+      &quot;description&quot;: &quot;Same-space volume mask; positive voxels retained.&quot;
+    },
+    &quot;reference&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Reference&quot;,
+      &quot;description&quot;: &quot;Display-only same-space brain mask/skull-stripped T1.&quot;
+    },
+    &quot;confounds&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confounds&quot;,
+      &quot;description&quot;: &quot;Headered confounds TSV/CSV with all original frames.&quot;
+    },
+    &quot;config&quot;: {
+      &quot;$ref&quot;: &quot;#/components/schemas/ConfigRequest&quot;
+    },
+    &quot;guidance&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;$ref&quot;: &quot;#/components/schemas/Guidance&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ]
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;source&quot;
+  ],
+  &quot;title&quot;: &quot;ExtractionRequest&quot;,
+  &quot;description&quot;: &quot;One source run, optional companion paths and scientific settings.&quot;
+}
+</code></pre>
+<h3 id="guidance">Guidance</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;dataset&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Dataset&quot;,
+      &quot;description&quot;: &quot;Catalog dataset id, e.g. custom or adni.&quot;
+    },
+    &quot;variant&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Variant&quot;,
+      &quot;description&quot;: &quot;Exact variant id returned by /api/presets.&quot;
+    },
+    &quot;input_kind&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Input Kind&quot;,
+      &quot;description&quot;: &quot;Original route, such as auto or raw-bids.&quot;,
+      &quot;default&quot;: &quot;auto&quot;
+    },
+    &quot;source_confirmed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Source Confirmed&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;spatial_confirmed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Spatial Confirmed&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;denoise_confirmed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Denoise Confirmed&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;review_confirmed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Review Confirmed&quot;,
+      &quot;default&quot;: false
+    },
+    &quot;confounds_decision&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confounds Decision&quot;,
+      &quot;description&quot;: &quot;upstream or skip when confounds absent.&quot;
+    },
+    &quot;reference_decision&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Reference Decision&quot;,
+      &quot;description&quot;: &quot;skip when reference absent.&quot;
+    },
+    &quot;raw_qc_confirmed&quot;: {
+      &quot;type&quot;: &quot;boolean&quot;,
+      &quot;title&quot;: &quot;Raw Qc Confirmed&quot;,
+      &quot;default&quot;: false
+    }
+  },
+  &quot;additionalProperties&quot;: true,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;dataset&quot;,
+    &quot;variant&quot;
+  ],
+  &quot;title&quot;: &quot;Guidance&quot;,
+  &quot;description&quot;: &quot;Optional GUI confirmation record; programmatic callers may omit it.&quot;
+}
+</code></pre>
+<h3 id="httpvalidationerror">HTTPValidationError</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;detail&quot;: {
+      &quot;items&quot;: {
+        &quot;$ref&quot;: &quot;#/components/schemas/ValidationError&quot;
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Detail&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;title&quot;: &quot;HTTPValidationError&quot;
+}
+</code></pre>
+<h3 id="healthresponse">HealthResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;status&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;const&quot;: &quot;ok&quot;,
+      &quot;title&quot;: &quot;Status&quot;
+    },
+    &quot;version&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Version&quot;
+    },
+    &quot;workspace&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Workspace&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;status&quot;,
+    &quot;version&quot;,
+    &quot;workspace&quot;
+  ],
+  &quot;title&quot;: &quot;HealthResponse&quot;
+}
+</code></pre>
+<h3 id="inputinfo">InputInfo</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;format&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;directory&quot;,
+        &quot;volume&quot;,
+        &quot;cifti&quot;,
+        &quot;gifti&quot;,
+        &quot;timeseries-table&quot;
+      ],
+      &quot;title&quot;: &quot;Format&quot;
+    },
+    &quot;path&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Path&quot;
+    },
+    &quot;size_bytes&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;integer&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Size Bytes&quot;
+    },
+    &quot;sidecar&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Sidecar&quot;
+    },
+    &quot;t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T R&quot;
+    },
+    &quot;space&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Space&quot;
+    },
+    &quot;shape&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;integer&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Shape&quot;
+    },
+    &quot;affine&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;items&quot;: {
+              &quot;type&quot;: &quot;number&quot;
+            },
+            &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Affine&quot;
+    },
+    &quot;orientation&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Orientation&quot;
+    },
+    &quot;units&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Units&quot;
+    },
+    &quot;axes&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Axes&quot;
+    },
+    &quot;arrays&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;items&quot;: {
+              &quot;type&quot;: &quot;integer&quot;
+            },
+            &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Arrays&quot;
+    },
+    &quot;variables&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;additionalProperties&quot;: {
+            &quot;items&quot;: {
+              &quot;type&quot;: &quot;integer&quot;
+            },
+            &quot;type&quot;: &quot;array&quot;
+          },
+          &quot;type&quot;: &quot;object&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Variables&quot;
+    },
+    &quot;runs&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;$ref&quot;: &quot;#/components/schemas/RunRecord&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Runs&quot;
+    },
+    &quot;n_frames&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;integer&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;N Frames&quot;
+    },
+    &quot;n_rois&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;integer&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;N Rois&quot;
+    },
+    &quot;needs_atlas&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;boolean&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Needs Atlas&quot;
+    },
+    &quot;header_t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Header T R&quot;
+    },
+    &quot;tr_source&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Tr Source&quot;
+    },
+    &quot;n_retained&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;integer&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;N Retained&quot;
+    },
+    &quot;confound_columns&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;items&quot;: {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          &quot;type&quot;: &quot;array&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confound Columns&quot;
+    },
+    &quot;effective_tr&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Effective Tr&quot;
+    },
+    &quot;validated&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;boolean&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Validated&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: true,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;format&quot;
+  ],
+  &quot;title&quot;: &quot;InputInfo&quot;,
+  &quot;description&quot;: &quot;Format-dependent inspection/preflight fields; absent fields are omitted.&quot;
+}
+</code></pre>
+<h3 id="jobstate">JobState</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;id&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Id&quot;
+    },
+    &quot;status&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;queued&quot;,
+        &quot;running&quot;,
+        &quot;complete&quot;,
+        &quot;failed&quot;,
+        &quot;interrupted&quot;
+      ],
+      &quot;title&quot;: &quot;Status&quot;
+    },
+    &quot;message&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Message&quot;
+    },
+    &quot;kind&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;extract&quot;,
+        &quot;demo&quot;,
+        &quot;atlas&quot;,
+        &quot;dicom&quot;,
+        &quot;preprocess&quot;
+      ],
+      &quot;title&quot;: &quot;Kind&quot;
+    },
+    &quot;error_type&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Error Type&quot;
+    },
+    &quot;result_dir&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Result Dir&quot;
+    },
+    &quot;qc&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;additionalProperties&quot;: true,
+          &quot;type&quot;: &quot;object&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Qc&quot;
+    },
+    &quot;atlas&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;additionalProperties&quot;: true,
+          &quot;type&quot;: &quot;object&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Atlas&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: true,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;id&quot;,
+    &quot;status&quot;,
+    &quot;message&quot;,
+    &quot;kind&quot;
+  ],
+  &quot;title&quot;: &quot;JobState&quot;,
+  &quot;description&quot;: &quot;Persistent job state, returned immediately on submission and during polling.&quot;
+}
+</code></pre>
+<h3 id="pathrequest">PathRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;path&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Path&quot;,
+      &quot;description&quot;: &quot;Local file for inspect; directory for discover.&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;path&quot;
+  ],
+  &quot;title&quot;: &quot;PathRequest&quot;,
+  &quot;description&quot;: &quot;A local source path, not a URL or uploaded byte array.&quot;
+}
+</code></pre>
+<h3 id="preflightrequest">PreflightRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Source&quot;,
+      &quot;description&quot;: &quot;Absolute or server-relative path to one fMRI/ROI file.&quot;
+    },
+    &quot;atlas&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Atlas&quot;,
+      &quot;description&quot;: &quot;Integer-label atlas in the source space.&quot;
+    },
+    &quot;rois&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Rois&quot;,
+      &quot;description&quot;: &quot;ROI mapping CSV/TSV; exact IDs and optional RAS+ coordinates.&quot;
+    },
+    &quot;mask&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Mask&quot;,
+      &quot;description&quot;: &quot;Same-space volume mask; positive voxels retained.&quot;
+    },
+    &quot;reference&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Reference&quot;,
+      &quot;description&quot;: &quot;Display-only same-space brain mask/skull-stripped T1.&quot;
+    },
+    &quot;confounds&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confounds&quot;,
+      &quot;description&quot;: &quot;Headered confounds TSV/CSV with all original frames.&quot;
+    },
+    &quot;config&quot;: {
+      &quot;$ref&quot;: &quot;#/components/schemas/ConfigRequest&quot;
+    },
+    &quot;guidance&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;$ref&quot;: &quot;#/components/schemas/Guidance&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ]
+    },
+    &quot;stage&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;enum&quot;: [
+        &quot;input&quot;,
+        &quot;spatial&quot;,
+        &quot;review&quot;
+      ],
+      &quot;title&quot;: &quot;Stage&quot;,
+      &quot;default&quot;: &quot;review&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;source&quot;
+  ],
+  &quot;title&quot;: &quot;PreflightRequest&quot;,
+  &quot;description&quot;: &quot;Progressive validation; does not calculate the connectivity matrix.&quot;
+}
+</code></pre>
+<h3 id="preprocessrequest">PreprocessRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;bids_dir&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Bids Dir&quot;,
+      &quot;description&quot;: &quot;Existing raw BIDS directory with BOLD/T1.&quot;
+    },
+    &quot;output_dir&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Output Dir&quot;,
+      &quot;description&quot;: &quot;Separate derivatives directory; existing output may resume.&quot;
+    },
+    &quot;license_file&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;License File&quot;,
+      &quot;description&quot;: &quot;Existing FreeSurfer license path.&quot;
+    },
+    &quot;participant&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Participant&quot;,
+      &quot;description&quot;: &quot;One subject label, with optional sub- prefix.&quot;
+    },
+    &quot;space&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Space&quot;,
+      &quot;default&quot;: &quot;MNI152NLin6Asym&quot;
+    },
+    &quot;image&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Image&quot;,
+      &quot;default&quot;: &quot;nipreps/fmriprep:25.2.5&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;bids_dir&quot;,
+    &quot;output_dir&quot;,
+    &quot;license_file&quot;
+  ],
+  &quot;title&quot;: &quot;PreprocessRequest&quot;,
+  &quot;description&quot;: &quot;Pinned Docker fMRIPrep parameters; no patient data are uploaded by this API.&quot;
+}
+</code></pre>
+<h3 id="presetvariant">PresetVariant</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;id&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Id&quot;
+    },
+    &quot;name&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Name&quot;
+    },
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Source&quot;
+    },
+    &quot;t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T R&quot;
+    },
+    &quot;notes&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Notes&quot;
+    },
+    &quot;upstream&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Upstream&quot;
+    },
+    &quot;input_kind&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Input Kind&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;id&quot;,
+    &quot;name&quot;,
+    &quot;source&quot;,
+    &quot;t_r&quot;,
+    &quot;notes&quot;,
+    &quot;upstream&quot;,
+    &quot;input_kind&quot;
+  ],
+  &quot;title&quot;: &quot;PresetVariant&quot;
+}
+</code></pre>
+<h3 id="presetsresponse">PresetsResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;version&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Version&quot;,
+      &quot;description&quot;: &quot;Catalog date, independent of software version.&quot;
+    },
+    &quot;datasets&quot;: {
+      &quot;items&quot;: {
+        &quot;$ref&quot;: &quot;#/components/schemas/DatasetEntry&quot;
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Datasets&quot;
+    },
+    &quot;policy&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Policy&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;version&quot;,
+    &quot;datasets&quot;,
+    &quot;policy&quot;
+  ],
+  &quot;title&quot;: &quot;PresetsResponse&quot;
+}
+</code></pre>
+<h3 id="runrecord">RunRecord</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;bold&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Bold&quot;
+    },
+    &quot;confounds&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Confounds&quot;
+    },
+    &quot;mask&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Mask&quot;
+    },
+    &quot;subject&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Subject&quot;
+    },
+    &quot;session&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Session&quot;
+    },
+    &quot;task&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Task&quot;
+    },
+    &quot;run&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Run&quot;
+    },
+    &quot;sidecar&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Sidecar&quot;
+    },
+    &quot;t_r&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;number&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;T R&quot;
+    },
+    &quot;space&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;type&quot;: &quot;string&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;title&quot;: &quot;Space&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;bold&quot;,
+    &quot;confounds&quot;,
+    &quot;mask&quot;,
+    &quot;subject&quot;,
+    &quot;session&quot;,
+    &quot;task&quot;,
+    &quot;run&quot;,
+    &quot;sidecar&quot;,
+    &quot;t_r&quot;,
+    &quot;space&quot;
+  ],
+  &quot;title&quot;: &quot;RunRecord&quot;
+}
+</code></pre>
+<h3 id="setupresponse">SetupResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;conversion_output&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Conversion Output&quot;
+    },
+    &quot;preprocessing_output&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Preprocessing Output&quot;
+    },
+    &quot;license_file&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;License File&quot;,
+      &quot;description&quot;: &quot;Existing FS_LICENSE path or empty string.&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;conversion_output&quot;,
+    &quot;preprocessing_output&quot;,
+    &quot;license_file&quot;
+  ],
+  &quot;title&quot;: &quot;SetupResponse&quot;
+}
+</code></pre>
+<h3 id="suggestionsrequest">SuggestionsRequest</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;source&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;minLength&quot;: 1,
+      &quot;title&quot;: &quot;Source&quot;
+    },
+    &quot;overrides&quot;: {
+      &quot;anyOf&quot;: [
+        {
+          &quot;$ref&quot;: &quot;#/components/schemas/ConfigRequest&quot;
+        },
+        {
+          &quot;type&quot;: &quot;null&quot;
+        }
+      ],
+      &quot;description&quot;: &quot;Only explicitly supplied fields override inference.&quot;
+    }
+  },
+  &quot;additionalProperties&quot;: false,
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;source&quot;
+  ],
+  &quot;title&quot;: &quot;SuggestionsRequest&quot;,
+  &quot;description&quot;: &quot;Inspect one file and infer conservative defaults.&quot;
+}
+</code></pre>
+<h3 id="suggestionsresponse">SuggestionsResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;info&quot;: {
+      &quot;$ref&quot;: &quot;#/components/schemas/InputInfo&quot;
+    },
+    &quot;config&quot;: {
+      &quot;additionalProperties&quot;: true,
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;title&quot;: &quot;Config&quot;,
+      &quot;description&quot;: &quot;Only inferred/overridden Config fields, not a full default Config.&quot;
+    },
+    &quot;paths&quot;: {
+      &quot;additionalProperties&quot;: {
+        &quot;type&quot;: &quot;string&quot;
+      },
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;title&quot;: &quot;Paths&quot;,
+      &quot;description&quot;: &quot;Matched atlas/rois/confounds/mask/reference paths when available.&quot;
+    },
+    &quot;notes&quot;: {
+      &quot;items&quot;: {
+        &quot;type&quot;: &quot;string&quot;
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Notes&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;info&quot;,
+    &quot;config&quot;,
+    &quot;paths&quot;,
+    &quot;notes&quot;
+  ],
+  &quot;title&quot;: &quot;SuggestionsResponse&quot;
+}
+</code></pre>
+<h3 id="uploadresponse">UploadResponse</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;path&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Path&quot;,
+      &quot;description&quot;: &quot;Server-local saved path; use as source or companion in later requests.&quot;
+    },
+    &quot;size_bytes&quot;: {
+      &quot;type&quot;: &quot;integer&quot;,
+      &quot;title&quot;: &quot;Size Bytes&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;path&quot;,
+    &quot;size_bytes&quot;
+  ],
+  &quot;title&quot;: &quot;UploadResponse&quot;
+}
+</code></pre>
+<h3 id="validationerror">ValidationError</h3>
+<pre><code class="language-json">{
+  &quot;properties&quot;: {
+    &quot;loc&quot;: {
+      &quot;items&quot;: {
+        &quot;anyOf&quot;: [
+          {
+            &quot;type&quot;: &quot;string&quot;
+          },
+          {
+            &quot;type&quot;: &quot;integer&quot;
+          }
+        ]
+      },
+      &quot;type&quot;: &quot;array&quot;,
+      &quot;title&quot;: &quot;Location&quot;
+    },
+    &quot;msg&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Message&quot;
+    },
+    &quot;type&quot;: {
+      &quot;type&quot;: &quot;string&quot;,
+      &quot;title&quot;: &quot;Error Type&quot;
+    },
+    &quot;input&quot;: {
+      &quot;title&quot;: &quot;Input&quot;
+    },
+    &quot;ctx&quot;: {
+      &quot;type&quot;: &quot;object&quot;,
+      &quot;title&quot;: &quot;Context&quot;
+    }
+  },
+  &quot;type&quot;: &quot;object&quot;,
+  &quot;required&quot;: [
+    &quot;loc&quot;,
+    &quot;msg&quot;,
+    &quot;type&quot;
+  ],
+  &quot;title&quot;: &quot;ValidationError&quot;
+}
+</code></pre></main></html>
