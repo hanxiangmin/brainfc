@@ -2,14 +2,14 @@
 
 ## 包名与安装方式
 
-分发名为 `brainfc`，Python 导入名为 `brainfc`，命令行为 `brainfc`。正式上传 PyPI 后，只需：
+分发名、Python 导入名和命令行均为 `brainfc`。安装 PyPI 已发布版本并启动：
 
 ```shell
 pip install brainfc
 brainfc serve
 ```
 
-目前发行包已准备，本次未取得 PyPI 发布授权配置，因而还不能把该命令当作已上线的安装方式。当前按下方本地方式安装。
+可用版本以 [PyPI 项目页](https://pypi.org/project/brainfc/) 为准。如果目标版本尚未发布，或需要源码版，按下方本地方式安装。
 
 ## 从源码或本地安装包安装
 
@@ -35,7 +35,7 @@ brainfc --version
 brainfc serve
 ```
 
-wheel 内含网页和离线手册。普通使用不需要 Node.js；首次安装仍需获取 Python 依赖。完全断网安装需提前准备依赖 wheel 或已有依赖环境。项目在本次准备阶段尚未上传 PyPI，不能把 `pip install brainfc` 当作已经上线的安装方式。
+wheel 内含网页和离线手册。普通使用不需要 Node.js；首次安装仍需获取 Python 依赖。完全断网安装需提前准备依赖 wheel 或已有依赖环境。
 
 ## 第一次运行
 

@@ -1,6 +1,6 @@
 # 验证记录 · 0.3.0
 
-发布准备日期：2026-09-12，Windows / Python 3.12.14。GitHub CI 与 PyPI 上传未执行。
+本地验收快照：2026-09-12，Windows / Python 3.12.14。以下是上传前的本地验证记录；远端检查和发布状态分别见 [GitHub Actions](https://github.com/hanxiangmin/brainfc/actions) 与 [PyPI](https://pypi.org/project/brainfc/)。
 
 ## 更名与安装范围
 
@@ -23,4 +23,4 @@
 
 ## 尚未完成的外部验证
 
-完整 DICOM→BIDS→fMRIPrep 全链路未实跑；没有新的跨站点科学验证。新增 Windows/Linux CI 是待远端执行的配置，不作为已通过证据。PyPI/独立 GitHub 仓库尚未发布。
+完整 DICOM→BIDS→fMRIPrep 全链路未实跑；没有新的跨站点科学验证。Windows/Linux CI 的实际结果以 GitHub Actions 中对应提交的检查为准，本页本地记录不替代远端验证。

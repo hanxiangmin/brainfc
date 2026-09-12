@@ -4,7 +4,7 @@
 
 A standalone Python package for **single-run fMRI → ROI time series → signed functional connectivity → matrix, eight-view and interactive 3D reports**. The Python API, CLI and Chinese local GUI share one processing core. Apache-2.0.
 
-The current release is prepared locally as source and wheel distributions; **it is not yet published on PyPI**.
+Source is available at [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc). Published distribution versions are listed on [PyPI](https://pypi.org/project/brainfc/); use the source installation below when a target version has not been uploaded yet.
 
 ## Install
 

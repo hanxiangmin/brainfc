@@ -4,7 +4,7 @@
 
 一个独立、可 pip 安装的 Python 库：**fMRI → 脑区时序 → 功能连接矩阵 → 八视图 / 交互三维**。
 
-中文本地网页与 Python API 共用处理核心。三维球棍组件复用 Hyper-Brain 0.3.0；无需安装原项目，不需要 Node.js，也不将数据发送到外部服务。当前提供本地源码与 wheel 安装，**尚未发布 PyPI**。
+中文本地网页与 Python API 共用处理核心。三维球棍组件复用 Hyper-Brain 0.3.0；无需安装原项目，不需要 Node.js，也不将数据发送到外部服务。源码位于 [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc)，可用发行版本以 [PyPI 项目页](https://pypi.org/project/brainfc/) 为准。
 
 ![Schaefer 100 脑区的新版三维视图](docs/interface-preview.png)
 
@@ -12,14 +12,14 @@
 
 ## 安装与启动
 
-Python 3.11+。正式 PyPI 发布后的使用方式是（目前尚未上传）：
+Python 3.11+。安装 PyPI 已发布版本并启动：
 
 ```shell
 pip install brainfc
 brainfc serve
 ```
 
-当前可从本目录安装：
+如果目标版本尚未发布，或需要使用源码版，在本目录安装：
 
 ```powershell
 python -m pip install .
