@@ -4,7 +4,7 @@
 
 发布根目录是 `brainfc/`，作为独立项目即可运行，不依赖父项目。准备版本为 **0.3.0**，Apache-2.0；有中文 README、英文简介、完整 API 手册、测试、前端源码、内置网页及第三方声明。
 
-独立发布仓库为 [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc)。PyPI 首次发布需要维护者完成下文的账号关联；关联本身不会上传文件。现有工作区父项目是另一个项目，本目录使用自己的 Git 仓库与工作流。PyPI `brainfc` 项目查询在 2026-09-12 的准备阶段返回 404；这不代表名称已保留。
+独立发布仓库为 [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc)，[PyPI 0.3.0](https://pypi.org/project/brainfc/0.3.0/) 已发布。当前源码新增的 rest01 样例尚未包含在该 PyPI 版本中，使用它须从当前源码安装。下文的账号关联仅适用于首次配置或新索引。现有工作区父项目是另一个项目，本目录使用自己的 Git 仓库与工作流。
 
 ## 发布包包含什么
 
@@ -13,7 +13,7 @@
 - standalone source ZIP：与 sdist 同源的独立仓库目录，可解压后作为新仓库根目录。
 - 校验清单：各发行文件 SHA-256、大小与版本。
 
-真实影像、下载缓存、`.work/`、输出结果、虚拟环境和 node_modules 不进入发布包。包内示例只在运行时创建合成数据。历史浏览器回归脚本需要原开发环境，独立开源的 `npm run test:ui` 使用全新合成任务。
+原始 DICOM、个体 T1/BOLD、下载缓存、`.work/`、输出结果、虚拟环境和 node_modules 不进入发布包。默认演示在运行时创建合成数据；可选 rest01 仅包含经核查的脑区表格、混杂变量、必要参数和二值显示掩膜，文件清单及校验值受发行物检查约束。具体见[样例隐私核查](privacy-review.md)。独立开源的 `npm run test:ui` 使用全新合成任务。
 
 ## 本地构建
 

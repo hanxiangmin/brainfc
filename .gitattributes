@@ -2,6 +2,7 @@
 *.py text eol=lf
 *.md text eol=lf
 *.json text eol=lf
+*.tsv text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
 *.ts text eol=lf
@@ -13,4 +14,5 @@
 *.txt text eol=lf
 docs/assets/ARCHIFY-LICENSE text eol=lf
 *.png binary
+*.nii.gz binary
 *.cmd text eol=crlf

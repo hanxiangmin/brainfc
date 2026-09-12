@@ -15,8 +15,8 @@ positional arguments:
     serve               Start the local graphical interface
     inspect             Inspect an image or discover BIDS derivatives
     atlas               Explicitly download a supported standard atlas
-    demo                Create synthetic NIfTI and extract a complete example
-                        report
+    demo                Extract a bundled synthetic or de-identified resting-
+                        state example
     extract             Extract one run
     batch               Extract each fMRIPrep run separately; failed runs are
                         recorded
@@ -69,11 +69,12 @@ options:
 ## demo
 
 ```text
-usage: brainfc demo [-h] --output OUTPUT
+usage: brainfc demo [-h] --output OUTPUT [--kind {synthetic,rest01}]
 
 options:
-  -h, --help       show this help message and exit
+  -h, --help            show this help message and exit
   --output OUTPUT
+  --kind {synthetic,rest01}
 ```
 
 ## extract

@@ -16,6 +16,7 @@ frontend/node_modules/
 license.txt
 *.nii
 *.nii.gz
+!src/brainfc/data/rest01/reference_mask.nii.gz
 *.dcm
 *.npy
 *.npz

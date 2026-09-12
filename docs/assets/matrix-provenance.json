@@ -1,0 +1,17 @@
+{
+  "sample": "rest01",
+  "synthetic": false,
+  "n_participants": 1,
+  "n_rois": 100,
+  "retained_frames": 145,
+  "roi_order": "Original Schaefer-100 order, unchanged",
+  "matrix": "Full signed Pearson correlation; diagonal one; no display threshold",
+  "color_limits": [
+    -1,
+    1
+  ],
+  "interpolation": "nearest",
+  "matrix_float64_sha256": "31ade047d795ecfed1f11a66d6ca7e6860c7faa05e421c1a20441ef6019456c9",
+  "alignment": "Not applicable: single quantitative panel; colorbar is a scale",
+  "scope": "Software demonstration; not a diagnosis or population average"
+}

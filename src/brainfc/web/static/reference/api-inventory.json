@@ -273,11 +273,11 @@
   },
   {
     "name": "brainfc.demo.create_demo",
-    "signature": "(directory)",
+    "signature": "(directory, *, kind='synthetic')",
     "public": true,
     "documented": true,
     "source": "src/brainfc/demo.py",
-    "line": 10
+    "line": 11
   },
   {
     "name": "brainfc.preprocessing.CommandPlan",
@@ -421,7 +421,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/cli.py",
-    "line": 60
+    "line": 61
   },
   {
     "name": "brainfc.web.app.create_app",

@@ -29,6 +29,8 @@ Use the source installation for development or a version not yet uploaded to PyP
 
 </details>
 
+The current source build also includes a [de-identified resting-state example](docs/real-example.md): `brainfc demo --kind rest01 --output rest01-demo`, with processing methods, metadata corrections, and QC records.
+
 ## Use
 
 ### 1. Start with ROI time series
@@ -105,7 +107,9 @@ result.save("results/sub-01")
 <tr><td><a href="docs/assets/matrix.png"><img src="docs/assets/matrix.png" alt="Full Schaefer-100 matrix"></a></td><td><a href="docs/assets/eight-views.png"><img src="docs/assets/eight-views.png" alt="Eight projections of the same displayed connections"></a></td></tr>
 </table>
 
-These outputs use the **Schaefer 100 atlas, a reference brain, and synthetic fMRI signals**, not patient findings. The header is conceptual artwork. Display thresholds never change the full numerical matrix. Without an anatomical reference, the display surface is an atlas-coverage envelope.
+These outputs use the [**reviewed, de-identified resting-state example rest01**](docs/real-example.md): one participant, 100 Schaefer ROIs and 145 retained frames. The full Pearson matrix retains the original ROI order and a fixed −1 to +1 color scale. L/R denotes hemisphere; lines indicate network boundaries. No clustering, reordering or smoothing is applied. The 3D and eight-view displays use the same selected edges; their filters do not change the matrix. The header remains conceptual artwork.
+
+Earlier screenshots used synthetic signals whose repeated groups produced periodic diagonal stripes. The current figures show the real computation. Reproduce the matrix with `python scripts/render_example_matrix.py --output matrix-demo`; see the [privacy review](docs/privacy-review.md) and [figure provenance](docs/assets/matrix-provenance.json). This is a single-participant software example without slice-timing or susceptibility-distortion correction.
 
 ## Processing workflow
 

@@ -59,6 +59,8 @@ brainfc demo --output ./demo-001
 
 `demo-001` 必须不存在。`input/` 是合成输入，`result/` 包含数组、CSV/TSV、PNG/SVG/PDF、质控、来源和离线 `report.html`。
 
+当前源码版还提供脱敏真实样例：`brainfc demo --kind rest01 --output ./rest01-demo`。它直接使用包内的 100 脑区时间序列，不需要手填扫描参数。详见[真实样例与处理范围](real-example.md)。
+
 Python 可执行例子在源码的 `examples/quickstart.py` 和 `examples/roi_timeseries.py`，两者均不需要网络。完整函数说明见 [API 参考](api-reference.md)。
 
 ## 原始扫描入口

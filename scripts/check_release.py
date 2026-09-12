@@ -2,6 +2,7 @@
 
 import argparse
 import ast
+import hashlib
 from email.parser import BytesParser
 import json
 from pathlib import Path
@@ -24,13 +25,29 @@ FORBIDDEN = {
     "license.txt",
 }
 DATA_SUFFIXES = (".nii", ".nii.gz", ".dcm", ".npy", ".npz", ".mat", ".gii", ".pyc")
+EXAMPLE_FILES = {
+    "timeseries.tsv", "timeseries.json", "rois.tsv", "confounds.tsv",
+    "reference_mask.nii.gz", "example.json", "README.md",
+}
+
+
+def check_example(payloads):
+    """Require the exact reviewed sample members and content in an archive."""
+    assert set(payloads) == EXAMPLE_FILES | {"privacy-review.json"}, "Unreviewed example file set"
+    review = json.loads(payloads["privacy-review.json"])
+    assert review["status"] == "reviewed_for_direct_identifiers"
+    assert set(review["reviewed_files"]) == EXAMPLE_FILES, "Incomplete example review"
+    for name, digest in review["reviewed_files"].items():
+        assert hashlib.sha256(payloads[name]).hexdigest() == digest, f"Unreviewed example content: {name}"
 
 
 def check_names(names):
     for name in names:
         path = Path(name)
         assert not set(path.parts) & FORBIDDEN, f"Private/generated directory in archive: {name}"
-        assert not name.lower().endswith(DATA_SUFFIXES), f"Data/cache in archive: {name}"
+        # The reviewed brain-only example mask is the sole binary-image exception.
+        is_example_mask = name.replace("\\", "/").endswith("brainfc/data/rest01/reference_mask.nii.gz")
+        assert is_example_mask or not name.lower().endswith(DATA_SUFFIXES), f"Data/cache in archive: {name}"
         assert not path.is_absolute() and ".." not in path.parts, f"Unsafe archive name: {name}"
 
 
@@ -40,6 +57,8 @@ def check_archives(directory, version):
     with zipfile.ZipFile(wheel) as archive:
         names = archive.namelist()
         check_names(names)
+        prefix = "brainfc/data/rest01/"
+        check_example({n[len(prefix):]: archive.read(n) for n in names if n.startswith(prefix) and not n.endswith("/")})
         for required in (
             "brainfc/web/static/app.js",
             "brainfc/web/static/app.css",
@@ -56,6 +75,9 @@ def check_archives(directory, version):
     with tarfile.open(source) as archive:
         names = archive.getnames()
         check_names(names)
+        prefix = f"brainfc-{version}/src/brainfc/data/rest01/"
+        check_example({n[len(prefix):]: archive.extractfile(n).read()
+                       for n in names if n.startswith(prefix) and archive.getmember(n).isfile()})
         for required in (
             "pyproject.toml",
             "README.md",

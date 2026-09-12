@@ -1,0 +1,125 @@
+{
+  "sample_id": "rest01",
+  "synthetic": false,
+  "participants": 1,
+  "task": "rest",
+  "task_source": "participant-confirmed no task",
+  "original_frames": 150,
+  "tr_seconds": 2,
+  "echo_time_seconds": 0.023,
+  "space": "MNI152NLin6Asym",
+  "atlas": "Schaefer 2018, 100 parcels, 7 networks",
+  "data_kind": "ROI means after motion correction, brain extraction and spatial normalization; temporal cleaning is run by BrainFC",
+  "extraction_config": {
+    "t_r": 2,
+    "high_pass": 0.01,
+    "low_pass": 0.08,
+    "detrend": true,
+    "standardize": true,
+    "discard": 5,
+    "fd_threshold": 0.5,
+    "min_samples": 100,
+    "method": "pearson",
+    "data_space": "MNI152NLin6Asym",
+    "atlas_space": "MNI152NLin6Asym",
+    "preprocessed": true,
+    "confound_columns": [
+      "motion_matrix_00",
+      "motion_matrix_01",
+      "motion_matrix_02",
+      "motion_matrix_10",
+      "motion_matrix_11",
+      "motion_matrix_12",
+      "motion_matrix_20",
+      "motion_matrix_21",
+      "motion_matrix_22",
+      "motion_offset_x",
+      "motion_offset_y",
+      "motion_offset_z",
+      "csf",
+      "white_matter"
+    ],
+    "table_header": true,
+    "transpose": false,
+    "variable": null
+  },
+  "processing": {
+    "brain_extraction": "SynthStrip model v1, surfa 0.6.3",
+    "model_sha256": "37417f802196186441aae3e7f385d94f8a98c64a88acaeaa2723af995c653e33",
+    "motion": {
+      "software": "ANTsPy",
+      "version": "0.6.3",
+      "type": "BOLDRigid",
+      "frames": 150,
+      "reference": "mean of original frames 5-149",
+      "seed": 42,
+      "threads": 8,
+      "fd_definition": "ANTs generalized FD, fdOffset=50 mm; not Power FD",
+      "fd_mean_mm": 0.12704284339143126,
+      "fd_max_mm": 0.38602834939956665,
+      "fd_over_0_5": 0,
+      "confound_columns": [
+        "motion_matrix_00",
+        "motion_matrix_01",
+        "motion_matrix_02",
+        "motion_matrix_10",
+        "motion_matrix_11",
+        "motion_matrix_12",
+        "motion_matrix_20",
+        "motion_matrix_21",
+        "motion_matrix_22",
+        "motion_offset_x",
+        "motion_offset_y",
+        "motion_offset_z"
+      ]
+    },
+    "registration": {
+      "software": "ANTsPy",
+      "version": "0.6.3",
+      "space": "MNI152NLin6Asym",
+      "T1_transform": "SyN",
+      "BOLD_to_T1_transform": "Rigid",
+      "T1_mask_Dice": 0.9568085499983182,
+      "BOLD_brain_coverage": 0.9798628344340716,
+      "tissue_voxels": {
+        "csf": 2071,
+        "white_matter": 55086
+      },
+      "tissue_T1_means": {
+        "1": 302.54583740234375,
+        "2": 754.5572509765625,
+        "3": 1178.601806640625
+      },
+      "slice_timing_correction": false,
+      "susceptibility_distortion_correction": false,
+      "limitations": [
+        "No slice-timing correction in this demonstration pipeline",
+        "Fieldmap scaling/units unresolved; no susceptibility-distortion correction"
+      ]
+    },
+    "temporal_denoising": "Nilearn joint detrending, 0.01-0.08 Hz Butterworth filtering, 12 motion-matrix/offset terms plus WM/CSF means; no global signal regression"
+  },
+  "limitations": [
+    "No slice-timing correction in this demonstration pipeline",
+    "Fieldmap scaling/units unresolved; no susceptibility-distortion correction",
+    "Single-participant demonstration; no diagnostic or group-level interpretation"
+  ],
+  "privacy": {
+    "direct_identifiers_removed": true,
+    "face_and_nonbrain_voxels_removed": true,
+    "raw_dicom_included": false,
+    "dates_demographics_included": false,
+    "source_paths_uids_included": false,
+    "scope": "Identifying metadata and facial anatomy removed; neural anatomy and functional signals remain"
+  },
+  "roi_coverage": {
+    "minimum_fraction": 0.5176946410515673,
+    "minimum_voxels": 380,
+    "all_100_nonempty": true
+  },
+  "references": [
+    "https://doi.org/10.1016/j.neuroimage.2022.119474",
+    "https://github.com/ANTsX/ANTsPy",
+    "https://doi.org/10.1093/cercor/bhx179"
+  ]
+}

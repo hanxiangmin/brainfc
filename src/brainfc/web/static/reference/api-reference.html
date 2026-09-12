@@ -1,4 +1,4 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>全部函数与参数 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="api-030">API 完整参考 · 0.3.0</h1>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>全部函数与参数 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="api-030">API 完整参考 · 0.3.0</h1>
 <p>由实际 Python 签名和源码 docstring 自动生成。修改接口后运行 <code>python scripts/generate_reference.py</code>；CI 检查文档是否同步。</p>
 <p>共 <strong>48 个类、函数和方法条目</strong>；包括所有模块公开处理函数及 <code>_confounds</code> 的行为契约。HTTP 数据模型另见 <a href="http-reference.html">HTTP 完整接口</a>。</p>
 <p>推荐入口见 <a href="python-api.html">Python 使用指南</a>。底层函数面向高级用户，完整校验仍由 <code>extract_connectome</code> 执行。</p>
@@ -761,18 +761,23 @@ exported files, excluding itself. See docs/outputs.md for schemas and file list.
 <p>源码：<code>src/brainfc/export.py</code>，第 54 行。</p>
 <h2 id="brainfcdemo">brainfc.demo</h2>
 <h3 id="create_demo">create_demo</h3>
-<pre><code class="language-python">create_demo(directory)
+<pre><code class="language-python">create_demo(directory, *, kind='synthetic')
 </code></pre>
-<pre><code class="language-text">Create deterministic synthetic NIfTI inputs in a new directory.
+<pre><code class="language-text">Copy or generate bundled example inputs in a new directory.
 
 Returns a dict of source/atlas/rois/confounds paths plus a plain config dict.
 Use Config(**spec.pop('config')) before passing spec to extract_connectome.
-Seed 42, 160 frames, 12 artificial ROIs, TR=2 s and synthetic-demo space.
-Creates input files only; does not extract a result or download human data.
-Existing directory raises FileExistsError. Mark provenance['synthetic']=True
-when exporting an extracted demo (the CLI/GUI demo commands already do so).
+kind='synthetic' (default): seed 42, 160 frames, 12 artificial ROIs, TR=2 s
+in synthetic-demo space. kind='rest01': a de-identified single-participant
+resting-state example, with 150 preprocessed time points in 100 Schaefer ROIs,
+confounds and a brain-only display mask. The latter includes an example.json
+methods/QC record; it has no slice-timing or susceptibility-distortion correction.
+Its returned spec also includes reference, and omits atlas (table input).
+Creates inputs only, without network access or computing connectivity.
+Existing directories raise FileExistsError; invalid kind raises ValueError.
+When exporting, mark provenance['synthetic'] according to kind (the CLI does so).
 </code></pre>
-<p>源码：<code>src/brainfc/demo.py</code>，第 10 行。</p>
+<p>源码：<code>src/brainfc/demo.py</code>，第 11 行。</p>
 <h2 id="brainfcpreprocessing">brainfc.preprocessing</h2>
 <h3 id="commandplan">CommandPlan</h3>
 <pre><code class="language-python">CommandPlan(argv: list[str], description: str) -&gt; None
@@ -962,7 +967,7 @@ SystemExit(2) for usage, InputError and common path errors. Unexpected
 library/external-process errors propagate; a failed batch exits with 2
 after preserving successful run outputs and batch.json.
 </code></pre>
-<p>源码：<code>src/brainfc/cli.py</code>，第 60 行。</p>
+<p>源码：<code>src/brainfc/cli.py</code>，第 61 行。</p>
 <h2 id="brainfcwebapp">brainfc.web.app</h2>
 <h3 id="create_app">create_app</h3>
 <pre><code class="language-python">create_app(workspace=None)

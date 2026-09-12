@@ -1,0 +1,66 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>真实静息态样例 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#142a36;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#147b79}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #24928a;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.3.0.html">本次验证范围</a></aside><main><h1 id="rest01">真实静息态样例 rest01</h1>
+<p>此样例经数据提供者授权用于演示，包含一个被试的 150 个时间点、100 个 Schaefer 脑区，TR 为 2 秒、TE 为 23 ms。姓名、编号、出生日期、检查日期、机构、设备编号、源路径和 DICOM UID 均未放入样例；解剖显示掩膜仅包含脑组织。</p>
+<h2 id="_1">一条命令运行</h2>
+<p>以下功能需要包含 rest01 数据的当前源码版本；可在仓库根目录先执行 <code>pip install .</code>。原有 <code>brainfc demo</code> 默认仍使用合成数据。</p>
+<pre><code class="language-shell">brainfc demo --kind rest01 --output rest01-demo
+</code></pre>
+<p>目录必须不存在。运行不需要联网、图谱下载或原始 DICOM。结束后打开 <code>rest01-demo/result/report.html</code>，可操作三维网络、矩阵和同步八视图；完整数值和处理记录位于同一目录。</p>
+<h2 id="python">Python 接口</h2>
+<pre><code class="language-python">from brainfc import Config, extract_connectome
+from brainfc.demo import create_demo
+
+spec = create_demo(&quot;rest01-input&quot;, kind=&quot;rest01&quot;)
+config = Config(**spec.pop(&quot;config&quot;))
+result = extract_connectome(**spec, config=config)
+result.provenance[&quot;synthetic&quot;] = False
+result.save(&quot;rest01-result&quot;)
+</code></pre>
+<p><code>rest01-input/example.json</code> 记录该样例的上游方法、质控、文献和未执行步骤。命令行会将这份说明一并放入输出报告；Python 调用者可按需要加入 <code>result.provenance</code>。</p>
+<h2 id="_2">已经执行的处理</h2>
+<ol>
+<li>DICOM 转 NIfTI；逐序列核对 TR、TE 和读出参数，修正经过对照实验证实的问题。</li>
+<li>SynthStrip 脑组织提取；移除非脑组织和面部信息，重建不含自由文本或扩展字段的 NIfTI 头。</li>
+<li>ANTsPy BOLDRigid 逐帧头动校正；T1 N4 偏场校正；BOLD 刚体配准至 T1，T1 经 SyN 配准至 MNI152NLin6Asym。</li>
+<li>同一标准空间提取 Schaefer-100 ROI 均值；由 T1 组织分类估计白质和脑脊液混杂信号。</li>
+<li>运行样例时由 BrainFC 删除前 5 帧、回归 12 个运动矩阵/偏移项及白质/脑脊液信号，联合去趋势和 0.01–0.08 Hz 滤波，应用 FD 阈值，再计算 Pearson 相关和 Fisher-z。</li>
+</ol>
+<p>FD 使用 ANTs generalized FD（fdOffset=50 mm），不能与 Power FD 的数值不加区分地比较。本样例阈值为 0.5 mm。未使用全局信号回归。</p>
+<p>计算保留 145 个时间点。100 个脑区均有有效体素，单个脑区最低覆盖率为 51.8%；ROI 均值仅基于其有效覆盖部分，部分覆盖脑区的结果需要结合影像质控解读。</p>
+<p><strong>未执行切片时序校正和磁敏感畸变校正。</strong> 场图单位/缩放尚未核实，没有猜测后强行使用。因此，本例是具有完整方法记录的演示流程，不是 fMRIPrep 输出，也不是临床参考数据。</p>
+<h2 id="_3">数据内容与脱敏范围</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>timeseries.tsv</code> / <code>timeseries.json</code></td>
+<td>空间处理后的 150 × 100 ROI 均值与 TR；尚未时间去噪</td>
+</tr>
+<tr>
+<td><code>rois.tsv</code></td>
+<td>Schaefer ROI 名称、网络和标准空间坐标</td>
+</tr>
+<tr>
+<td><code>confounds.tsv</code></td>
+<td>运动项、FD、白质/脑脊液信号</td>
+</tr>
+<tr>
+<td><code>reference_mask.nii.gz</code></td>
+<td>标准空间脑组织显示掩膜，不含面部和颅外组织</td>
+</tr>
+<tr>
+<td><code>example.json</code></td>
+<td>方法、参数、质控和处理范围</td>
+</tr>
+<tr>
+<td><code>privacy-review.json</code></td>
+<td>发布核查范围和七个样例文件的 SHA-256；打包时校验</td>
+</tr>
+</tbody>
+</table>
+<p>包内不包含原始 DICOM、检查报告、个体 T1/BOLD 影像或影像压缩包。唯一的影像文件是仅取值 0/1 的脑组织显示掩膜，不含原始扫描灰度。去除身份字段和面部并不等于消除神经影像的一切个体特征；本样例仍保留真实脑信号，用于软件演示，不用于诊断或群体结论。具体范围见<a href="privacy-review.html">发布前隐私核查</a>。</p>
+<p>参数冲突的原因、对照实验及复用脚本见 <a href="uih-metadata.html">UIH 参数核验</a>。方法来源：<a href="https://doi.org/10.1016/j.neuroimage.2022.119474">SynthStrip</a>、<a href="https://github.com/ANTsX/ANTsPy">ANTsPy</a>、<a href="https://doi.org/10.1093/cercor/bhx179">Schaefer 图谱</a>。</p></main></html>

@@ -25,7 +25,7 @@ from brainfc import (
 | `presets` | `dataset_presets`, `dataset_preset` | 官方方案来源及采集提示 |
 | `plotting` | `edges_of`, `plot_matrix`, `plot_views` | 显示连接选择与图像 |
 | `export` | `save_result`, `write_report` | 完整文件导出 / 离线 HTML |
-| `demo` | `create_demo` | 不联网的合成输入 |
+| `demo` | `create_demo` | 不联网的合成输入或脱敏静息态样例，见[样例说明](real-example.md) |
 | `web.app` | `create_app` | 可选的 FastAPI 本地服务 |
 | `cli` | `main` | 命令行入口 |
 

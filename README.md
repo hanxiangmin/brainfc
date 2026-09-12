@@ -36,6 +36,8 @@ brainfc demo --output demo-001
 
 </details>
 
+当前源码版新增[真实静息态样例 rest01](docs/real-example.md)：`brainfc demo --kind rest01 --output rest01-demo`。已去除身份信息和面部，附有处理方法、参数修正及质控记录。
+
 ## 使用
 
 ### 在界面中处理
@@ -125,7 +127,9 @@ quality = result.qc
 <tr><td><a href="docs/assets/matrix.png"><img src="docs/assets/matrix.png" alt="Schaefer 100 脑区完整相关矩阵"></a></td><td><a href="docs/assets/eight-views.png"><img src="docs/assets/eight-views.png" alt="同一组连接在八个解剖视角下的实际渲染"></a></td></tr>
 </table>
 
-以上界面与矩阵来自 **Schaefer 100 图谱、参考脑和合成 fMRI 信号**，不代表患者结果。顶部为产品概念插画。显示阈值只筛选画面中的连接，不改变完整数值矩阵；没有解剖参考时，显示表面为图谱覆盖包络。
+以上界面与矩阵来自[**经脱敏核查的真实静息态样例 rest01**](docs/real-example.md)：1 名被试、Schaefer 100 脑区、145 个保留时间点。矩阵保留原始 ROI 顺序和完整 Pearson 相关，色标固定为 −1～1；L/R 表示左右半球，分隔线标出网络边界，没有聚类重排或平滑。三维与八视图使用同一组筛选连接，不改变完整数值矩阵。顶部仍为产品概念插画。
+
+早期 README 使用合成信号，重复的信号分组在交错的 ROI 顺序下形成周期性斜纹；现已替换为真实计算结果。可用 `python scripts/render_example_matrix.py --output matrix-demo` 复现矩阵图；[核查范围](docs/privacy-review.md)与[图像来源记录](docs/assets/matrix-provenance.json)可供检查。本例是单被试软件演示，未进行切片时序和磁敏感畸变校正。
 
 ## 详细处理流程
 

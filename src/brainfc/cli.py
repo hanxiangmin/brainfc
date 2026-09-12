@@ -23,8 +23,9 @@ def _parser():
     fetch = sub.add_parser("atlas", help="Explicitly download a supported standard atlas")
     fetch.add_argument("name", choices=["schaefer100", "schaefer200", "schaefer400", "aal116"])
     fetch.add_argument("--data-dir", type=Path)
-    demo = sub.add_parser("demo", help="Create synthetic NIfTI and extract a complete example report")
+    demo = sub.add_parser("demo", help="Extract a bundled synthetic or de-identified resting-state example")
     demo.add_argument("--output", type=Path, required=True)
+    demo.add_argument("--kind", choices=["synthetic", "rest01"], default="synthetic")
     extract = sub.add_parser("extract", help="Extract one run")
     extract.add_argument("source")
     for key in ("atlas", "rois", "confounds", "mask", "reference"):
@@ -99,10 +100,15 @@ def main(argv=None):
             from .pipeline import extract_connectome
 
             args.output.mkdir(parents=True, exist_ok=False)
-            spec = create_demo(args.output / "input")
+            spec = create_demo(args.output / "input", kind=args.kind)
             config = Config(**spec.pop("config"))
             result = extract_connectome(**spec, config=config, progress=print)
-            result.provenance["synthetic"] = True
+            result.provenance["synthetic"] = args.kind == "synthetic"
+            if args.kind == "rest01":
+                result.provenance["example"] = json.loads(
+                    (args.output / "input" / "example.json").read_text(encoding="utf-8")
+                )
+                result.qc["warnings"].extend(result.provenance["example"]["limitations"])
             print(result.save(args.output / "result"))
         elif args.command == "extract":
             from .pipeline import extract_connectome

@@ -913,21 +913,26 @@ exported files, excluding itself. See docs/outputs.md for schemas and file list.
 ### create_demo
 
 ```python
-create_demo(directory)
+create_demo(directory, *, kind='synthetic')
 ```
 
 ```text
-Create deterministic synthetic NIfTI inputs in a new directory.
+Copy or generate bundled example inputs in a new directory.
 
 Returns a dict of source/atlas/rois/confounds paths plus a plain config dict.
 Use Config(**spec.pop('config')) before passing spec to extract_connectome.
-Seed 42, 160 frames, 12 artificial ROIs, TR=2 s and synthetic-demo space.
-Creates input files only; does not extract a result or download human data.
-Existing directory raises FileExistsError. Mark provenance['synthetic']=True
-when exporting an extracted demo (the CLI/GUI demo commands already do so).
+kind='synthetic' (default): seed 42, 160 frames, 12 artificial ROIs, TR=2 s
+in synthetic-demo space. kind='rest01': a de-identified single-participant
+resting-state example, with 150 preprocessed time points in 100 Schaefer ROIs,
+confounds and a brain-only display mask. The latter includes an example.json
+methods/QC record; it has no slice-timing or susceptibility-distortion correction.
+Its returned spec also includes reference, and omits atlas (table input).
+Creates inputs only, without network access or computing connectivity.
+Existing directories raise FileExistsError; invalid kind raises ValueError.
+When exporting, mark provenance['synthetic'] according to kind (the CLI does so).
 ```
 
-源码：`src/brainfc/demo.py`，第 10 行。
+源码：`src/brainfc/demo.py`，第 11 行。
 
 ## brainfc.preprocessing
 
@@ -1205,7 +1210,7 @@ library/external-process errors propagate; a failed batch exits with 2
 after preserving successful run outputs and batch.json.
 ```
 
-源码：`src/brainfc/cli.py`，第 60 行。
+源码：`src/brainfc/cli.py`，第 61 行。
 
 ## brainfc.web.app
 

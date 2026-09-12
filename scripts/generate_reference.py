@@ -37,6 +37,9 @@ MODULES = [
 PAGES = [
     ("index", "文档导航"),
     ("quickstart", "安装与上手"),
+    ("real-example", "真实静息态样例"),
+    ("privacy-review", "样例隐私核查"),
+    ("uih-metadata", "UIH 参数核验"),
     ("python-api", "Python 使用指南"),
     ("api-reference", "全部函数与参数"),
     ("processing", "处理顺序与方法"),

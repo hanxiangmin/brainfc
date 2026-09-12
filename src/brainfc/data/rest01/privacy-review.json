@@ -1,0 +1,40 @@
+{
+  "sample_id": "rest01",
+  "status": "reviewed_for_direct_identifiers",
+  "scope": "Known identity fields, file metadata, pixel text and exact publication members; not a guarantee of irreversible anonymity",
+  "public_data": "ROI signals, nuisance regressors, ROI metadata, necessary acquisition parameters and a binary brain display mask",
+  "excluded": [
+    "raw DICOM",
+    "individual T1/BOLD intensity images",
+    "clinical reports",
+    "private paths and source identifiers",
+    "local image ZIP and review images"
+  ],
+  "checks": {
+    "source_headers_checked": 913,
+    "known_direct_identifier_matches": 0,
+    "empty_nifti_free_text_and_extensions": true,
+    "mask_values": [
+      0,
+      1
+    ],
+    "all_mask_planes_visually_reviewed": true,
+    "repository_graphics_visually_reviewed": true,
+    "pixel_ocr_images": 198,
+    "pixel_ocr_known_identifier_matches": 0,
+    "pixel_ocr_positive_control_passed": true,
+    "pixel_ocr_method": "Tesseract 5.5.0; eng+chi_sim; sparse text; all recognized words including low confidence",
+    "local_T1_acquisition_slices_checked": 520,
+    "local_BOLD_frames_checked": 150,
+    "local_BOLD_slices_per_frame": 81
+  },
+  "reviewed_files": {
+    "timeseries.tsv": "d607804634ab8c56a89ddccbcaabee5339f8348d7bf05b89eda62ef54d97b072",
+    "timeseries.json": "54a685e01ca3468a0daeb43a003f39d89eea16125112237062e6c619706a5593",
+    "rois.tsv": "0428ea004a540ffc5fa2f2ac1720330f3f572554c6ecd0c77d54347df6cc85ba",
+    "confounds.tsv": "037cc4af5b9658c04d01a8930ab069118e4c41ae4085db600dfa19caf27f567a",
+    "reference_mask.nii.gz": "3c860431e71f45f4af02cb416f61ee56c79d63b72f7b2796f4e3e5c5673bb81e",
+    "example.json": "d83fcf623ef4d762f6ee3e11d24ee58eb67215f40be2d23182a3926f0ce2ae92",
+    "README.md": "9b38348d74c8ab3347d40aba0289fab5fd5f26a195e0d1bb1f8b7b3800010806"
+  }
+}

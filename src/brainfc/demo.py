@@ -1,21 +1,48 @@
-"""Deterministic synthetic volume, never represented as human subject data."""
+"""Bundled examples with explicit synthetic or human-data provenance."""
 
 from pathlib import Path
 import json
+import shutil
 import nibabel as nib
 import numpy as np
 import pandas as pd
 
 
-def create_demo(directory):
-    """Create deterministic synthetic NIfTI inputs in a new directory.
+def create_demo(directory, *, kind="synthetic"):
+    """Copy or generate bundled example inputs in a new directory.
 
     Returns a dict of source/atlas/rois/confounds paths plus a plain config dict.
     Use Config(**spec.pop('config')) before passing spec to extract_connectome.
-    Seed 42, 160 frames, 12 artificial ROIs, TR=2 s and synthetic-demo space.
-    Creates input files only; does not extract a result or download human data.
-    Existing directory raises FileExistsError. Mark provenance['synthetic']=True
-    when exporting an extracted demo (the CLI/GUI demo commands already do so)."""
+    kind='synthetic' (default): seed 42, 160 frames, 12 artificial ROIs, TR=2 s
+    in synthetic-demo space. kind='rest01': a de-identified single-participant
+    resting-state example, with 150 preprocessed time points in 100 Schaefer ROIs,
+    confounds and a brain-only display mask. The latter includes an example.json
+    methods/QC record; it has no slice-timing or susceptibility-distortion correction.
+    Its returned spec also includes reference, and omits atlas (table input).
+    Creates inputs only, without network access or computing connectivity.
+    Existing directories raise FileExistsError; invalid kind raises ValueError.
+    When exporting, mark provenance['synthetic'] according to kind (the CLI does so).
+    """
+    if kind not in {"synthetic", "rest01"}:
+        raise ValueError("kind must be 'synthetic' or 'rest01'.")
+    if kind == "rest01":
+        from importlib.resources import files, as_file
+
+        resource = files("brainfc").joinpath("data", "rest01")
+        root = Path(directory).resolve()
+        root.mkdir(parents=True, exist_ok=False)
+        for name in ("timeseries.tsv", "timeseries.json", "rois.tsv", "confounds.tsv",
+                     "reference_mask.nii.gz", "example.json", "README.md", "privacy-review.json"):
+            with as_file(resource.joinpath(name)) as source:
+                shutil.copyfile(source, root / name)
+        settings = json.loads((root / "example.json").read_text(encoding="utf-8"))["extraction_config"]
+        return {
+            "source": str(root / "timeseries.tsv"),
+            "rois": str(root / "rois.tsv"),
+            "confounds": str(root / "confounds.tsv"),
+            "reference": str(root / "reference_mask.nii.gz"),
+            "config": settings,
+        }
     root = Path(directory).resolve()
     root.mkdir(parents=True, exist_ok=False)
     rng = np.random.default_rng(42)
