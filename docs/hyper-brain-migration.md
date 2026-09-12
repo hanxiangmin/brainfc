@@ -14,12 +14,10 @@
 | `hicbrain analyze` | `brainfc network` | 旧参数保留；新命令还能直接读取 BrainFC 保存目录。 |
 | 独立 Hyper-Brain HTTP `/api/v1` | 统一服务 `/networks/api/v1` | HTTP 客户端需要更改基础路径；旧 `hicbrain.web.app.create_app()` 仍可独立提供旧路由。 |
 
-### 安装当前合并版
-
-当前合并源码版本为 **0.4.0**，正式 PyPI 发布以版本标签和发布记录为准。要立即使用本次合并：
+### 安装与升级
 
 ```bash
-pip install "brainfc @ git+https://github.com/hanxiangmin/brainfc.git"
+pip install -U brainfc
 brainfc serve
 ```
 

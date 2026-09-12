@@ -1,89 +1,53 @@
-# GitHub 开源与 pip 包发布
+# 发布维护指南
 
-## 当前交付形态
+本页供维护者使用。普通用户运行 `pip install -U brainfc` 和 `brainfc serve` 即可。
 
-发布根目录是 `brainfc/`，作为独立项目即可运行，不依赖父项目。准备版本为 **0.3.0**，Apache-2.0；有中文 README、英文简介、完整 API 手册、测试、前端源码、内置网页及第三方声明。
+## 发行物
 
-独立发布仓库为 [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc)，[PyPI 0.3.0](https://pypi.org/project/brainfc/0.3.0/) 已发布。当前源码新增的 rest01 样例尚未包含在该 PyPI 版本中，使用它须从当前源码安装。下文的账号关联仅适用于首次配置或新索引。现有工作区父项目是另一个项目，本目录使用自己的 Git 仓库与工作流。
+- wheel：Python API、命令行、两套本地界面、离线手册和许可证。
+- sdist：源码、前端锁文件、文档、示例、测试和发布工具。
+- rest01：经核查的 ROI 时序、混杂变量、参数和二值脑组织掩膜。
 
-## 发布包包含什么
+原始 DICOM、个体 T1/BOLD、私人输出与缓存不打包。`scripts/check_release.py` 检查发行范围，并校验 rest01 的文件清单和 SHA-256。详见[隐私核查](privacy-review.md)。
 
-- wheel：Python 库、CLI、已构建网页、离线完整手册、许可证。
-- sdist：源码、前端及锁文件、文档、示例、测试、CI 和发布工具。
-- standalone source ZIP：与 sdist 同源的独立仓库目录，可解压后作为新仓库根目录。
-- 校验清单：各发行文件 SHA-256、大小与版本。
-
-原始 DICOM、个体 T1/BOLD、下载缓存、`.work/`、输出结果、虚拟环境和 node_modules 不进入发布包。默认演示在运行时创建合成数据；可选 rest01 仅包含经核查的脑区表格、混杂变量、必要参数和二值显示掩膜，文件清单及校验值受发行物检查约束。具体见[样例隐私核查](privacy-review.md)。独立开源的 `npm run test:ui` 使用全新合成任务。
-
-## 本地构建
+## 本地检查
 
 ```shell
 python -m pip install -e ".[dev]"
-cd frontend
-npm ci
-npm run check
-npm run build
-cd ..
+npm --prefix frontend ci
+npm --prefix frontend run check
+npm --prefix frontend run build
+npm --prefix network-frontend ci
+npm --prefix network-frontend run check
+npm --prefix network-frontend test
+npm --prefix network-frontend run build
 python -m ruff check src tests examples scripts
 python -m pytest -q
-python scripts/generate_reference.py
 python scripts/generate_reference.py --check
 python scripts/check_release.py
 python -m build
 python -m twine check dist/*.whl dist/*.tar.gz
 python scripts/check_release.py --dist dist
 python scripts/smoke_wheel.py --wheel-dir dist
-python scripts/package_release.py --dist dist
 ```
 
-`smoke_wheel.py` 新建不继承站点包的虚拟环境，直接安装 wheel 及默认依赖，确认包从新环境导入，运行提取/HTML 导出/CLI/文档资产检查。实际依赖解析结果应连同发布验证记录保存。
+修改 API 或文档后，先运行 `python scripts/generate_reference.py` 更新离线手册，再进行 `--check`。
 
-打包遵循 [PyPA pyproject 指南](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)：标准构建后端、extras、入口点、动态版本和许可证元数据。
+## 发布步骤
 
-## GitHub 独立仓库
+1. 更新版本、变更记录和文档，提交检查通过的源码。
+2. 创建与 `src/brainfc/_version.py` 一致的 `vVERSION` 标签，例如 `v0.4.0`；已有标签不重写。
+3. 在该标签上运行 **Publish Python distributions**，选择 `pypi`。
+4. 工作流重新验证 Windows/Linux、两套前端、文档、安装包和真实样例浏览器流程，再上传同一批发行物。
+5. 核对 PyPI 版本、下载文件 SHA-256 和干净环境安装结果，补充 GitHub Release。
 
-从独立仓库取得源码。在检查通过后，为实际发行版本创建对应标签。下列标签必须与 `src/brainfc/_version.py` 一致；已发布标签不应重写。
+PyPI 已使用 [Trusted Publishing](https://docs.pypi.org/trusted-publishers/using-a-publisher/)，仓库不保存发布密码或令牌。
 
-```shell
-git clone https://github.com/hanxiangmin/brainfc.git
-cd brainfc
-# 完成本文所列检查后：
-git tag v0.3.0
-git push origin v0.3.0
-```
-
-`[project.urls]` 和 `CITATION.cff` 已指向独立仓库。PyPI 使用 `PYPI.md` 作为项目说明，其中的文档链接是完整 GitHub 地址；源码仓库使用包含本地相对链接的中文 README。项目名改变时同时核对打包脚本中的分发名。
-
-`CI` 工作流配置 Windows/Linux × Python 3.11/3.12 测试、前端构建、文档同步、发行物范围、全新安装和合成浏览器操作。它们在 GitHub 上运行成功前，不能声称远程跨平台验证已通过。
-
-## PyPI / TestPyPI
-
-尚无账号时，先在 [PyPI 注册页](https://pypi.org/account/register/) 注册并完成邮箱验证，再按账号提示配置身份验证。账户名可以与包名不同；包名、Python 导入名和命令名均为 `brainfc`。注册本身不会占用包名。无需把密码或令牌写入源码或发送给协作者。
-
-`publish.yml` 是手动触发工作流，默认 TestPyPI，只接受与代码版本一致的 `v0.3.0` 标签。验证成功后使用 PyPI Trusted Publishing；不在仓库保存密码或 token。配置方法以 [PyPI 官方 Trusted Publisher 文档](https://docs.pypi.org/trusted-publishers/using-a-publisher/) 为准。
-
-需要维护者完成一次账号关联：在目标索引配置 owner、独立 repository、工作流 `publish.yml` 和环境 `testpypi` 或 `pypi`；GitHub 创建同名 environment。首次可使用 pending publisher。之后在标签上运行该工作流，选择目标索引。
-
-本项目的正式 PyPI 关联值如下，在 [账号 Publishing 页面](https://pypi.org/manage/account/publishing/) 的 GitHub 表单添加：
-
-| 字段 | 值 |
+| 配置 | 值 |
 | --- | --- |
-| PyPI Project Name | `brainfc` |
-| Owner | `hanxiangmin` |
-| Repository name | `brainfc` |
-| Workflow name | `publish.yml` |
-| Environment name | `pypi` |
+| 项目 | `brainfc` |
+| GitHub 仓库 | `hanxiangmin/brainfc` |
+| 工作流 | `publish.yml` |
+| 环境 | `pypi` |
 
-PyPI 用户名用于登录网站，不填写在 GitHub Owner 一栏。TestPyPI 是独立服务，需要单独的账号关联；其 environment 使用 `testpypi`。
-
-先验证 TestPyPI 的发行物与安装，再发布 PyPI。正式 PyPI 同版本文件不能替换，修订后递增版本。成功发布后才能将首选安装方式改成：
-
-```shell
-python -m pip install brainfc==0.3.0
-```
-
-最后核对远端 tag/commit、下载文件 SHA-256、干净环境安装结果，并把这些证据写进 GitHub Release。手工上传也可用 `twine upload`，但账号授权应通过维护者自己的发布环境完成。
-
-## 发布说明草稿
-
-BrainFC 0.3.0 提供单 run fMRI/ROI 时序到功能连接矩阵的 Python API、CLI 和本地网页，包含来源记录、矩阵/八视图/交互 3D。此版本补齐函数级文档、可试用的 HTTP schema、离线手册和独立发行工具，并修复版本记录不一致。体积/表面格式支持范围和外部 fMRIPrep 未实跑的边界见版本验证文档。
+TestPyPI 是独立索引，需要单独配置 `testpypi` 环境与发布者。正式 PyPI 的同版本文件不能替换；需要修订时递增版本。

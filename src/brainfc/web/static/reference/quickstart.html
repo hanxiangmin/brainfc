@@ -1,12 +1,12 @@
 <!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>安装与上手 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.4.0.html">本次验证范围</a></aside><main><h1 id="_1">安装与上手</h1>
 <h2 id="_2">包名与安装方式</h2>
 <p>分发名、Python 导入名和命令行均为 <code>brainfc</code>。安装 PyPI 已发布版本并启动：</p>
-<pre><code class="language-shell">pip install brainfc
+<pre><code class="language-shell">pip install -U brainfc
 brainfc serve
 </code></pre>
 <p>可用版本以 <a href="https://pypi.org/project/brainfc/">PyPI 项目页</a> 为准。如果目标版本尚未发布，或需要源码版，按下方本地方式安装。</p>
 <h2 id="_3">从源码或本地安装包安装</h2>
-<p>需要 Python 3.11 或更高版本。完整验证环境是 Windows / Python 3.12；其他平台由新增 CI 配置覆盖，远程 CI 实际结果需发布后查看。</p>
+<p>需要 Python 3.11 或更高版本，Windows / Linux × Python 3.11 / 3.12 已通过 CI 验证。</p>
 <p>在解压后的源码根目录执行：</p>
 <pre><code class="language-shell">python -m venv .venv
 # Windows
@@ -16,7 +16,7 @@ brainfc serve
 </code></pre>
 <p>已激活自己的虚拟环境时，只需 <code>python -m pip install .</code> 和 <code>brainfc serve</code>。默认安装已包含全部 Python API 和本地网页依赖，不需要另外选择 extras。</p>
 <p>本地 wheel 安装：</p>
-<pre><code class="language-shell">python -m pip install &quot;brainfc-0.3.0-py3-none-any.whl&quot;
+<pre><code class="language-shell">python -m pip install &quot;brainfc-0.4.0-py3-none-any.whl&quot;
 brainfc --version
 brainfc serve
 </code></pre>

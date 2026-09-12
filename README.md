@@ -13,32 +13,14 @@
 
 ## 安装
 
-需要 **Python 3.11+**。一次安装即包含计算核心、网页界面和离线手册。
-
-**当前源码 0.4.0 已合并 Hyper-Brain。** PyPI 仍是 0.3.0；使用下方源码安装命令可立即体验网络与超图分析，迁移说明见[合并指南](docs/hyper-brain-migration.md)。
+需要 **Python 3.11+**。
 
 ```bash
-pip install brainfc
+pip install -U brainfc
 brainfc serve
 ```
 
-浏览器打开 `http://127.0.0.1:8766`，点击 **打开真实样例**，使用包内经脱敏核查的 rest01 静息态数据完成去噪、矩阵计算和可视化。100 个脑区、TR 2 秒，处理后保留 145 帧；无需另找数据或手填参数，日常使用不需要 Node.js。
-
-<details>
-<summary>从 GitHub 源码安装 / 命令行演示</summary>
-
-```bash
-git clone https://github.com/hanxiangmin/brainfc.git
-cd brainfc
-pip install .
-brainfc demo --kind rest01 --output demo-001
-```
-
-源码安装适用于开发版，以及尚未上传到 PyPI 的版本。离线手册位于本地服务的 `/reference/`，HTTP 接口说明位于 `/docs`。更多环境与批处理说明见 [快速上手](docs/quickstart.md)。
-
-</details>
-
-当前源码版新增[真实静息态样例 rest01](docs/real-example.md)：`brainfc demo --kind rest01 --output rest01-demo`。已去除身份信息和面部，附有处理方法、参数修正及质控记录。
+启动后点击 **打开真实样例** 即可体验，无需准备数据或填写参数。
 
 ## 使用
 
@@ -46,7 +28,7 @@ brainfc demo --kind rest01 --output demo-001
 
 **选择数据 → 确认方案 → 开始处理。**
 
-界面识别文件类型，读取可用的 TR、空间和配套文件；只有无法确定的信息才需要补充。高级设置默认收起，后续步骤依次解锁。可选 ABIDE、ADNI、ADHD-200、MDD、PPMI 的资料预设，扫描元数据优先，参数仍需确认。
+上传自己的数据，界面会自动读取文件信息，提示需要确认的参数。
 
 ### 1. 已有脑区时间序列
 
@@ -88,7 +70,7 @@ result = extract_connectome(
 )
 ```
 
-影像须已配准到声明的空间；图谱重采样不会代替配准。默认去趋势、标准化，不启用频带滤波或 FD 阈值删帧；需要时按上游处理记录设置。详细 [处理方法](docs/processing.md) 和 [参数默认值](docs/python-api.md#5-参数一览) 可逐项查阅。
+影像须已配准；去噪参数按上游处理记录设置。详见[处理方法](docs/processing.md)与[参数默认值](docs/python-api.md#5-参数一览)。
 
 ### 3. 可视化与导出
 
@@ -105,13 +87,13 @@ original_frames = result.sample_indices
 quality = result.qc
 ```
 
-`save()` 导出矩阵、时序、脑区与帧号、质量记录、处理来源、图片和离线交互报告；目标目录须为新目录。三维和八视图需要完整 ROI 坐标；自定义坐标须声明空间。
+`save()` 保存完整结果和离线报告，目标目录须不存在。三维和八视图需要脑区坐标与空间信息。
 
 [可直接运行的完整示例](examples/quickstart.py) · [批处理示例](examples/batch_derivatives.py) · [Python 使用指南](docs/python-api.md) · [CLI](docs/cli-reference.md) · [HTTP API](docs/http-api.md)
 
 ### 4. 继续构建图与原生超图
 
-Hyper-Brain 已集成到 `brainfc.network`，无需安装第二个库。接上文的 `result`：
+接上文的 `result`：
 
 ```python
 from brainfc.network import AnalysisConfig
@@ -124,9 +106,9 @@ network = result.analyze_network(AnalysisConfig(
 export_result(network, "network-result.zip")
 ```
 
-界面中点击 **进入网络分析**，即可沿用矩阵、脑区坐标与处理记录；已有矩阵也可直接进入页面顶部的 **网络与超图分析**。支持节点连线、透明包络、分区表面、完整超边成员表与组间统计。仅有参考脑壳时不提供分区表面或图谱切片。
+界面中点击 **进入网络分析**，矩阵、坐标和处理记录自动带入。
 
-[网络分析完整指南](docs/network-analysis.md) · [可运行示例](examples/network_analysis.py) · [旧接口迁移](docs/hyper-brain-migration.md)
+[网络分析指南](docs/network-analysis.md) · [可运行示例](examples/network_analysis.py)
 
 ## 关键功能
 
@@ -150,9 +132,7 @@ export_result(network, "network-result.zip")
 <tr><td><a href="docs/assets/matrix.png"><img src="docs/assets/matrix.png" alt="Schaefer 100 脑区完整相关矩阵"></a></td><td><a href="docs/assets/eight-views.png"><img src="docs/assets/eight-views.png" alt="同一组连接在八个解剖视角下的实际渲染"></a></td></tr>
 </table>
 
-以上界面与矩阵来自[**经脱敏核查的真实静息态样例 rest01**](docs/real-example.md)：1 名被试、Schaefer 100 脑区、145 个保留时间点。矩阵保留原始 ROI 顺序和完整 Pearson 相关，色标固定为 −1～1；L/R 表示左右半球，分隔线标出网络边界，没有聚类重排或平滑。三维与八视图使用同一组筛选连接，不改变完整数值矩阵。顶部仍为产品概念插画。
-
-早期 README 使用合成信号，重复的信号分组在交错的 ROI 顺序下形成周期性斜纹；现已替换为真实计算结果。可用 `python scripts/render_example_matrix.py --output matrix-demo` 复现矩阵图；[核查范围](docs/privacy-review.md)与[图像来源记录](docs/assets/matrix-provenance.json)可供检查。本例是单被试软件演示，未进行切片时序和磁敏感畸变校正。
+以上结果来自[脱敏真实样例 rest01](docs/real-example.md)：100 个脑区、145 个时间点。矩阵保留完整 Pearson 相关；三维与八视图共享筛选连接。顶部为产品概念插画。[处理与质控](docs/real-example.md) · [隐私核查](docs/privacy-review.md)
 
 ## 影像到功能连接的处理流程
 
@@ -160,7 +140,7 @@ export_result(network, "network-result.zip")
 
 [查看清晰矢量图](docs/assets/processing.svg) · [下载交互流程图 HTML](docs/assets/processing.html) · [可编辑流程定义](docs/assets/processing.dataflow.json) · [逐步方法说明](docs/processing.md)
 
-ROI 时序文件可从“统一 ROI 时序”进入；原始影像先走外部 **dcm2niix → BIDS → fMRIPrep**，检查报告后重新导入。BrainFC 的 pip 包不包含这些外部工具，也不自行完成空间预处理；完整外部原始数据链的验证状态见 [验证记录](docs/validation-v0.3.0.md)。
+ROI 时序可直接导入。原始影像需先用外部 **dcm2niix / fMRIPrep** 完成空间预处理，再交由 BrainFC 提取功能连接。
 
 | 想进一步了解 | 文档入口 |
 | :--- | :--- |

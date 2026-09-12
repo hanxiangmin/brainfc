@@ -5,7 +5,7 @@
 分发名、Python 导入名和命令行均为 `brainfc`。安装 PyPI 已发布版本并启动：
 
 ```shell
-pip install brainfc
+pip install -U brainfc
 brainfc serve
 ```
 
@@ -13,7 +13,7 @@ brainfc serve
 
 ## 从源码或本地安装包安装
 
-需要 Python 3.11 或更高版本。完整验证环境是 Windows / Python 3.12；其他平台由新增 CI 配置覆盖，远程 CI 实际结果需发布后查看。
+需要 Python 3.11 或更高版本，Windows / Linux × Python 3.11 / 3.12 已通过 CI 验证。
 
 在解压后的源码根目录执行：
 
@@ -30,7 +30,7 @@ python -m venv .venv
 本地 wheel 安装：
 
 ```shell
-python -m pip install "brainfc-0.3.0-py3-none-any.whl"
+python -m pip install "brainfc-0.4.0-py3-none-any.whl"
 brainfc --version
 brainfc serve
 ```

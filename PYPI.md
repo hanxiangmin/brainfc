@@ -4,16 +4,16 @@
 
 **fMRI → ROI time series → functional connectivity → matrix, eight-view and interactive 3D reports.**
 
-BrainFC is a Python library with a command-line interface and a local graphical interface. Both interfaces use the same processing core. The default installation includes the GUI and an offline API manual. Python 3.11 or newer is required; ordinary users do not need Node.js.
+Functional connectivity, brain graphs and native hypergraphs in one Python package, with a local GUI and complete API. Requires Python 3.11+.
 
 ## Install and launch
 
 ```shell
-pip install brainfc
+pip install -U brainfc
 brainfc serve
 ```
 
-The interface opens at `http://127.0.0.1:8766`. Choose the real example to process the bundled, privacy-reviewed rest01 ROI signals and confounds, generating a 100-ROI matrix and complete report without extra downloads or parameter entry. The offline manual is available at `/reference/` and the HTTP API schema at `/docs`.
+Choose **打开真实样例** to try the bundled rest01 example. No files or parameters to supply.
 
 ## Python API
 
@@ -51,11 +51,14 @@ Raw DICOM/BIDS spatial preprocessing requires external dcm2niix/fMRIPrep. BrainF
 
 Licensed under Apache-2.0. The 3D viewer is adapted from Hyper-Brain; BrainFC runs independently. Dataset and atlas licenses remain with their original providers.
 
-## Integrated network analysis (0.4.0)
+## Network analysis
 
-Hyper-Brain's graph, native-hypergraph, atlas, statistics and network workbench
-are included in BrainFC. Use `result.analyze_network(AnalysisConfig(...))`,
-`brainfc network result-folder --output network.zip`, or the **进入网络分析**
-button after extraction. Existing `hicbrain` imports are compatibility aliases.
-Remove an old `hic-brain` distribution before upgrading in the same environment.
-See the [network guide](https://github.com/hanxiangmin/brainfc/blob/main/docs/network-analysis.md).
+Choose **进入网络分析** after extraction to explore graphs, native hypergraphs and network metrics. The matrix and ROI mapping transfer automatically.
+
+```python
+from brainfc.network import AnalysisConfig
+
+network = result.analyze_network(AnalysisConfig(k=5))
+```
+
+[Network guide](https://github.com/hanxiangmin/brainfc/blob/main/docs/network-analysis.md) · [Compatibility guide](https://github.com/hanxiangmin/brainfc/blob/main/docs/hyper-brain-migration.md)
