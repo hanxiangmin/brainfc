@@ -1,3 +1,5 @@
+![BrainFC: functional connectivity, made visible](https://raw.githubusercontent.com/hanxiangmin/brainfc/main/docs/assets/brainfc-hero.png)
+
 # BrainFC
 
 **fMRI → ROI time series → functional connectivity → matrix, eight-view and interactive 3D reports.**

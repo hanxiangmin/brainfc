@@ -1,0 +1,230 @@
+{
+  "schema_version": 1,
+  "diagram_type": "dataflow",
+  "meta": {
+    "title": "BrainFC · 使用 archify skill 绘制",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "legend": {
+      "mode": "hidden"
+    },
+    "viewBox": [
+      920,
+      550
+    ]
+  },
+  "stages": [
+    {
+      "label": "输入 · archify skill 绘制"
+    },
+    {
+      "label": "脑区与空间"
+    },
+    {
+      "label": "时序与连接"
+    },
+    {
+      "label": "结果与可视化"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "raw",
+      "stage": 0,
+      "row": 0,
+      "type": "external",
+      "label": "原始影像外部预处理",
+      "sublabel": "dcm2niix → BIDS → fMRIPrep",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "images",
+      "stage": 0,
+      "row": 1,
+      "type": "frontend",
+      "label": "已预处理影像",
+      "sublabel": "NIfTI / CIFTI / GIFTI",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "tables",
+      "stage": 0,
+      "row": 2,
+      "type": "frontend",
+      "label": "ROI 时序文件",
+      "sublabel": "CSV / NPY / NPZ / MAT",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "space",
+      "stage": 1,
+      "row": 0,
+      "type": "security",
+      "label": "空间与图谱检查",
+      "sublabel": "模板 · 标签 · 轴 / 顶点",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "extract",
+      "stage": 1,
+      "row": 1,
+      "type": "backend",
+      "label": "提取脑区均值",
+      "sublabel": "体素 / 灰坐标 / 顶点",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "signals",
+      "stage": 1,
+      "row": 2,
+      "type": "database",
+      "label": "统一 ROI 时序",
+      "sublabel": "time × ROI · 核对顺序",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "frames",
+      "stage": 2,
+      "row": 0,
+      "type": "security",
+      "label": "建立保留帧掩码",
+      "sublabel": "起始帧 · 非稳态 · FD",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "clean",
+      "stage": 2,
+      "row": 1,
+      "type": "backend",
+      "label": "Nilearn 联合清理",
+      "sublabel": "去趋势 · 混杂 · 滤波 · 删帧",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "correlate",
+      "stage": 2,
+      "row": 2,
+      "type": "backend",
+      "label": "连接与 Fisher-z",
+      "sublabel": "Pearson / 秩 / 偏相关",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "result",
+      "stage": 3,
+      "row": 0,
+      "type": "database",
+      "label": "完整矩阵与追溯",
+      "sublabel": "ROI · 帧号 · QC · 哈希",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "filter",
+      "stage": 3,
+      "row": 1,
+      "type": "frontend",
+      "label": "筛选显示连接",
+      "sublabel": "阈值 · 上限 · 脑区 / 边",
+      "width": 136,
+      "height": 58
+    },
+    {
+      "id": "views",
+      "stage": 3,
+      "row": 2,
+      "type": "frontend",
+      "label": "三维与八视图同步",
+      "sublabel": "PNG / SVG / PDF / HTML",
+      "width": 136,
+      "height": 58
+    }
+  ],
+  "flows": [
+    {
+      "from": "raw",
+      "to": "images",
+      "label": "报告质控后导入",
+      "variant": "dashed",
+      "labelDy": 24
+    },
+    {
+      "from": "images",
+      "to": "space",
+      "label": "影像 + 同空间图谱",
+      "variant": "default"
+    },
+    {
+      "from": "space",
+      "to": "extract",
+      "label": "标签 / 轴检查通过",
+      "variant": "default",
+      "labelDy": 24
+    },
+    {
+      "from": "extract",
+      "to": "signals",
+      "label": "脑区平均信号",
+      "variant": "default",
+      "labelDy": 24
+    },
+    {
+      "from": "tables",
+      "to": "signals",
+      "label": "读取并核对顺序",
+      "variant": "default",
+      "labelDy": -23
+    },
+    {
+      "from": "signals",
+      "to": "frames",
+      "label": "时序 + 可选混杂",
+      "variant": "default",
+      "labelDy": 53
+    },
+    {
+      "from": "frames",
+      "to": "clean",
+      "label": "信号与 sample_mask",
+      "variant": "default",
+      "labelDy": 24
+    },
+    {
+      "from": "clean",
+      "to": "correlate",
+      "label": "清理后的保留帧",
+      "variant": "default",
+      "labelDy": 24
+    },
+    {
+      "from": "correlate",
+      "to": "result",
+      "label": "完整 r / Fisher-z",
+      "variant": "default",
+      "labelDy": 53
+    },
+    {
+      "from": "result",
+      "to": "filter",
+      "label": "显示副本 · 原矩阵保留",
+      "variant": "default",
+      "labelDy": 24
+    },
+    {
+      "from": "filter",
+      "to": "views",
+      "label": "同一组连接",
+      "variant": "default",
+      "labelDy": 24
+    }
+  ]
+}

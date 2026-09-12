@@ -8,5 +8,9 @@
 *.tsx text eol=lf
 *.js text eol=lf
 *.cjs text eol=lf
+*.html text eol=lf
+*.svg text eol=lf
+*.txt text eol=lf
+docs/assets/ARCHIFY-LICENSE text eol=lf
 *.png binary
 *.cmd text eol=crlf

@@ -11,3 +11,9 @@ React and Three.js are distributed under their MIT licenses. Their complete
 license texts are included with the bundled frontend in THIRD_PARTY_NOTICES.txt.
 Atlas and participant datasets are not included in the distribution; their
 licenses and citations are determined by the original providers.
+
+The standalone diagram viewer in docs/assets/processing.html is generated with
+archify skill 2.16 (MIT), https://github.com/tt-a1i/archify.
+The accompanying license is in docs/assets/ARCHIFY-LICENSE.
+The README hero is AI-generated conceptual product artwork; the separately
+identified application previews use synthetic signals and are actual renders.

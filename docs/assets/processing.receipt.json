@@ -1,0 +1,56 @@
+{
+  "diagram_type": "dataflow",
+  "output": "processing.html",
+  "specification": {
+    "file": "processing.dataflow.json",
+    "sha256": "6a08a6b86c251b61ad042417d28ad4a77230b38248f90d71459b56fbcdd11147",
+    "bytes": 4802
+  },
+  "artifact": {
+    "file": "processing.html",
+    "sha256": "6009b51d1ce4e955cfc159f5b9c9b9fae3c38cc926b785c9f48655bfc2ce44dc",
+    "bytes": 716657
+  },
+  "validation": {
+    "checksPassed": 9,
+    "checkCount": 9,
+    "compositionProfile": "showcase",
+    "compositionStatus": "pass",
+    "errors": 0,
+    "warnings": 0
+  },
+  "browser_evidence": "passed",
+  "viewports": [
+    {
+      "width": 1440,
+      "height": 900,
+      "contained": true
+    },
+    {
+      "width": 1600,
+      "height": 1000,
+      "contained": true
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "contained": true
+    },
+    {
+      "width": 2048,
+      "height": 1320,
+      "contained": true
+    }
+  ],
+  "themes": [
+    "light",
+    "dark"
+  ],
+  "visual_review": "passed",
+  "visual_review_notes": "Both themes and the clean exported PNG were inspected; all twelve nodes, semantic labels, and in-diagram archify credit are visible. No page toolbar or footer in exported SVG/PNG.",
+  "correction_rounds": 2,
+  "exports": {
+    "processing.png": "93413b7d42bffe5ca7de80c591e9722d62928bd1dbba2103b391812b55c82186",
+    "processing.svg": "ea3567865faa254edc4308671837451d88bb41790c9b894a183b0645e5880650"
+  }
+}

@@ -1,51 +1,124 @@
-# BrainFC
+![BrainFC — functional connectivity, made visible](docs/assets/brainfc-hero.png)
 
-[中文](README.md) · [Complete documentation](docs/index.md) · [Python API reference](docs/api-reference.md)
+<p align="center"><b>From fMRI and ROI signals to signed connectivity and interactive brain networks.</b><br>One Python package. A local GUI, command-line tools, and a documented scientific API.</p>
 
-A standalone Python package for **single-run fMRI → ROI time series → signed functional connectivity → matrix, eight-view and interactive 3D reports**. The Python API, CLI and Chinese local GUI share one processing core. Apache-2.0.
-
-Source is available at [hanxiangmin/brainfc](https://github.com/hanxiangmin/brainfc). Published distribution versions are listed on [PyPI](https://pypi.org/project/brainfc/); use the source installation below when a target version has not been uploaded yet.
+<p align="center"><a href="README.md">中文</a> · <b>English</b> · <a href="docs/index.md">Documentation</a> · <a href="docs/api-reference.md">API reference</a> · <a href="https://pypi.org/project/brainfc/">PyPI</a></p>
 
 ## Install
 
-Python 3.11+. From the source root:
+Python **3.11+**. The default installation includes the local GUI and offline manual.
 
-```shell
-python -m pip install .
+```bash
+pip install brainfc
 brainfc serve
 ```
 
-The default installation includes both the scientific API and local GUI. The GUI, offline manual and report assets are bundled; ordinary users do not need Node.js. Browse the local service at `http://127.0.0.1:8766`, the manual at `/reference/`, or the HTTP schema at `/docs`.
+Open `http://127.0.0.1:8766` and choose the built-in demo to try the pipeline with synthetic signals. No participant download or Node.js installation is needed. The current GUI and full reference manual are in Chinese; Python API docstrings are in English.
 
-```shell
-brainfc demo --output ./demo-001
+<details>
+<summary>Install from source / run a command-line demo</summary>
+
+```bash
+ git clone https://github.com/hanxiangmin/brainfc.git
+ cd brainfc
+ pip install .
+ brainfc demo --output demo-001
 ```
 
-This creates synthetic NIfTI inputs and an exported report in a new directory. No participant data are downloaded.
+Use the source installation for development or a version not yet uploaded to PyPI. The local manual is at `/reference/`; the HTTP schema is at `/docs`.
 
-## Python
+</details>
+
+## Use
+
+### 1. Start with ROI time series
+
+For signals that already received the required upstream denoising. The TSV has a header, one time point per row, and ROI signal columns only.
 
 ```python
 from brainfc import Config, extract_connectome
 
 result = extract_connectome(
-    "signals.tsv",
+    "roi_timeseries.tsv",
     config=Config(detrend=False, standardize=False),
 )
-matrix = result.connectivity
-result.save("results/run-001")
+fc = result.connectivity
+z = result.fisher_z
+result.save("results/roi-001")
 ```
 
-Text tables default to time × ROI, with a header and no numeric index/time column. For volume images, supply a same-space integer-label atlas and explicitly confirm `preprocessed=True`. See the [Python guide](docs/python-api.md) for NIfTI, CIFTI, GIFTI, confounds, batches and visualizations.
+Use `table_header=False` for headerless text. Matrix computation and plotting work without coordinates; 3D and eight-view rendering require complete ROI coordinates and a declared space.
 
-## Scope
+### 2. Extract from preprocessed fMRI
 
-- NiBabel volume formats, CIFTI dtseries/ptseries, paired GIFTI time-series/labels, CSV/TSV/TXT/1D/NPY/NPZ/MAT (excluding MAT v7.3).
-- Explicit spatial declarations, ROI arithmetic means, Nilearn temporal cleaning, censoring and original-frame indices.
-- Pearson, Spearman and Ledoit-Wolf partial correlation; separate clipped Fisher-z; full signed matrices retained.
-- Source hashes, parameter/quality records and non-overwriting result exports.
-- Threshold and selected ROI/edge synchronized between 3D and eight views. Display filtering does not alter numerical matrices.
+Replace the filenames with your BOLD run and row-aligned confound table. The BOLD must already be registered to the declared space.
 
-Raw DICOM/BIDS requires external dcm2niix and fMRIPrep. The package provides command adapters, not an independent spatial preprocessing implementation. Full raw fMRIPrep execution has not been validated locally. No disease diagnosis, group inference, task GLM or structural tract reconstruction is performed.
+```python
+from brainfc import Config, extract_connectome, fetch_atlas
 
-The 3D viewer derives from [Hyper-Brain](https://github.com/hanxiangmin/Hyper-Brain); the scientific package works independently. See [NOTICE](NOTICE), [validation](docs/validation-v0.3.0.md), [contributing](CONTRIBUTING.md) and the [release guide](docs/release.md).
+atlas = fetch_atlas("schaefer100")  # Downloads once, then reuses its cache.
+result = extract_connectome(
+    "sub-01_space-MNI152NLin6Asym_desc-preproc_bold.nii.gz",
+    atlas=atlas["atlas"],
+    rois=atlas["rois"],
+    confounds="sub-01_desc-confounds_timeseries.tsv",
+    config=Config(
+        preprocessed=True,
+        data_space="MNI152NLin6Asym",
+        atlas_space=atlas["space"],
+    ),
+)
+```
+
+Defaults include detrending and standardization, with no band-pass filter or FD-threshold censoring. Select temporal options according to the upstream processing history. Atlas grid resampling does not perform spatial registration.
+
+### 3. Visualize and export
+
+Continue with the image result above:
+
+```python
+result.plot_matrix("matrix.svg")
+result.plot_views("eight_views.pdf", threshold=0.4, max_edges=150)
+result.view("brain-network.html", open_browser=True)
+result.save("results/sub-01")
+```
+
+`save()` requires a new directory. It exports arrays, tables, ROI order, original frame indices, quality/provenance records, figures, and a self-contained HTML report.
+
+[Runnable example](examples/quickstart.py) · [Batch example](examples/batch_derivatives.py) · [Python guide](docs/python-api.md) · [Complete API](docs/api-reference.md) · [CLI](docs/cli-reference.md) · [HTTP API](docs/http-api.md)
+
+## Features
+
+| Capability | What it provides |
+| :--- | :--- |
+| Multiple inputs | Supported NiBabel volume containers, CIFTI, paired GIFTI, ROI tables/arrays, and fMRIPrep run discovery. |
+| Scientific processing | ROI means; joint Nilearn temporal cleaning and censoring; Pearson, Spearman, or Ledoit–Wolf partial correlation. |
+| Guided setup | Metadata suggestions, ordered confirmation steps, and source-linked ABIDE/ADNI/ADHD-200/MDD/PPMI presets. |
+| Synchronized views | Matrix-to-ROI selection; shared thresholds, edge limits, and ROI/edge selections in 3D and eight views. |
+| Traceable results | Full signed matrices, separate Fisher-z, parameters, QC, input hashes, ROI order, and original frame indices. |
+| Local operation | Shared Python/CLI/GUI core, local data processing, and offline interactive reports. |
+
+![Actual BrainFC 3D interface](docs/assets/viewer.png)
+
+<table>
+<tr><th width="50%">Full connectivity matrix</th><th width="50%">Synchronized eight views</th></tr>
+<tr><td><a href="docs/assets/matrix.png"><img src="docs/assets/matrix.png" alt="Full Schaefer-100 matrix"></a></td><td><a href="docs/assets/eight-views.png"><img src="docs/assets/eight-views.png" alt="Eight projections of the same displayed connections"></a></td></tr>
+</table>
+
+These outputs use the **Schaefer 100 atlas, a reference brain, and synthetic fMRI signals**, not patient findings. The header is conceptual artwork. Display thresholds never change the full numerical matrix. Without an anatomical reference, the display surface is an atlas-coverage envelope.
+
+## Processing workflow
+
+![Detailed processing workflow, drawn with the archify skill](docs/assets/processing.png)
+
+[Vector SVG](docs/assets/processing.svg) · [Download interactive HTML](docs/assets/processing.html) · [Editable specification](docs/assets/processing.dataflow.json) · [Methods](docs/processing.md)
+
+ROI tables enter at the unified ROI time-series stage. Raw images need external **dcm2niix → BIDS → fMRIPrep**, followed by report inspection and re-import. These external tools are not included in the pip package; the complete external raw-data chain has not been validated in this release. BrainFC does not provide disease diagnosis, task GLM, or cohort-level inference. See [input contracts](docs/formats.md), [validation](docs/validation-v0.3.0.md), and [output schemas](docs/outputs.md).
+
+## License and credits
+
+Copyright © 2026 BrainFC contributors. [Apache License 2.0](LICENSE). Citation metadata: [CITATION.cff](CITATION.cff).
+
+Built on NumPy, SciPy, NiBabel, Nilearn, scikit-learn, Matplotlib, React, and Three.js. The 3D component is adapted from [Hyper-Brain](https://github.com/hanxiangmin/Hyper-Brain); BrainFC installs and runs independently. Workflow artwork uses the [archify skill](https://github.com/tt-a1i/archify). See [NOTICE](NOTICE) and [third-party licenses](src/brainfc/web/static/THIRD_PARTY_NOTICES.txt). Atlas and dataset licenses remain with their providers; participant data are not distributed here.
+
+[Contributing](CONTRIBUTING.md) · [Release guide](docs/release.md) · [Issues](https://github.com/hanxiangmin/brainfc/issues)

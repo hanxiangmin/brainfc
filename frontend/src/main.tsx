@@ -271,7 +271,7 @@ function App() {
         <a className="brand" href={offline ? "#" : "/"}>
           <span className="brand-icon">◎</span>
           <div>
-            fMRI <strong>Connect</strong>
+            Brain<strong>FC</strong>
             <small>从脑影像到功能连接</small>
           </div>
         </a>
