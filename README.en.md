@@ -17,6 +17,37 @@ Choose **打开真实样例** in the browser to try the bundled real example. No
 
 ## Use
 
+### Start with raw BOLD + T1
+
+Supply a resting-state 4D BOLD, matching 3D T1 and acquisition JSON. TR and slice timing are read from the files; missing or conflicting metadata require confirmation.
+
+```python
+from brainfc import preprocess_fmri
+
+run = preprocess_fmri("bold.nii.gz", "t1w.nii.gz", "results/preprocessed")
+```
+
+Inspect `results/preprocessed/qc.html` for brain extraction, alignment, tissue masks and motion before continuing:
+
+```python
+from brainfc import load_preprocessed
+
+run = load_preprocessed("results/preprocessed")
+result = run.extract(qc_reviewed=True)
+result.save("results/connectome")
+```
+
+| Stage | Actual method and entry point |
+| :--- | :--- |
+| Input | `scan_dicom()` / `convert_dicom_python()` if needed; `inspect_raw()` checks geometry, TR and slice metadata. |
+| Timing and motion | `preprocess_fmri()`: padded FFT slice correction to 0.5 × TR, ANTs BOLDRigid motion estimation. |
+| Anatomy and alignment | N4, brain extraction, three-class Atropos; rigid BOLD→T1 and SyN T1→MNI152NLin6Asym; composed transforms, one final spatial interpolation per frame at 2 mm. |
+| Confounds and QC | Motion-matrix, WM/CSF, generalized ANTs FD and DVARS; no spatial smoothing or initial discard by default; visual review required. |
+| Signals and FC | `run.extract()`: Schaefer100 ROI means, joint detrending/filtering/regression/censoring, Pearson matrix and separate Fisher-z. Default band-pass 0.01–0.1 Hz, motion-matrix + WM/CSF regression; FD censoring off. |
+| Networks | `result.analyze_network()` builds graphs/hypergraphs from the complete signed FC; analysis parameters and display filters are separate. |
+
+**[Step-by-step methods, parameters and reproducible example](docs/python-preprocessing.md)** (Chinese) · [English API contracts](docs/api-reference.md). Passing an explicit `Config()` disables temporal filtering by default; it does **not** inherit the `run.extract()` band-pass. The GUI also requires checking its displayed filter settings. No susceptibility-distortion correction or SPM/DPABI numerical equivalence is claimed. These are BrainFC defaults, not universal dataset protocols.
+
 ### 1. Start with ROI time series
 
 For signals that already received the required upstream denoising. The TSV has a header, one time point per row, and ROI signal columns only.

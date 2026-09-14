@@ -32,16 +32,38 @@ brainfc serve
 
 ### 原始 fMRI：从 BOLD + T1 开始
 
+准备同一次研究中匹配的静息态 **4D BOLD、3D T1 和 BOLD 采集 JSON**。TR、切片时间与方向优先从文件读取；缺失或冲突时提示确认。
+
 ```python
 from brainfc import preprocess_fmri
 
 run = preprocess_fmri("bold.nii.gz", "t1w.nii.gz", "results/preprocessed")
-# 查看 results/preprocessed/qc.html，确认配准和头动后继续。
+```
+
+先打开 `results/preprocessed/qc.html` 检查脑提取、配准、组织分割和头动，再继续：
+
+```python
+from brainfc import load_preprocessed
+
+run = load_preprocessed("results/preprocessed")
 result = run.extract(qc_reviewed=True)
 result.save("results/connectome")
 ```
 
-[参数与 DICOM 用法](docs/python-preprocessing.md) · 支持已有 conda 环境，无需 MATLAB 或 Docker。
+### 从原始影像到脑网络，具体做了什么？
+
+| 顺序 | 实际处理 | 调用入口与默认设置 |
+| :--- | :--- | :--- |
+| 1. 输入检查 | DICOM 转换（如需）；检查维度、TR、切片时间、空间几何 | `scan_dicom()` / `convert_dicom_python()` / `inspect_raw()`；不猜切片顺序 |
+| 2. 时间与头动 | FFT 层间时间校正、逐帧刚体头动估计 | `preprocess_fmri()`；参考时间 `0.5 × TR`，ANTs `BOLDRigid` |
+| 3. T1 与标准化 | N4、脑提取、Atropos 组织分割；BOLD→T1 刚体配准，T1→MNI SyN | 同一函数自动完成；MNI152NLin6Asym、2 mm，合成变换后逐帧一次最终空间插值 |
+| 4. 混杂与质控 | 提取运动矩阵、WM/CSF、FD/DVARS；可选平滑；生成配准报告 | 默认不平滑、不删除开头帧；检查 `qc.html` 后才进入提取 |
+| 5. ROI 与功能连接 | ROI 均值 → 初始帧剔除 → 联合去趋势、滤波、混杂回归与删帧 → 相关 | `run.extract()`；Schaefer100、0.01–0.1 Hz、运动矩阵 + WM/CSF、Pearson；FD 删帧默认关闭 |
+| 6. 脑网络与导出 | 保存完整正负矩阵与 Fisher-z；可进一步构图或构建超图 | `result.save()` / `result.analyze_network()`；网络构建参数与显示筛选分别设置 |
+
+**[完整方法与参数说明](docs/python-preprocessing.md)**：逐步算法、函数对应、全部预处理参数、可复现示例、质控判据和处理记录。**显式传入 `Config()` 时滤波默认关闭**，不会继承 `run.extract()` 的带通默认值；网页滤波也以确认页为准。
+
+支持已有 conda 环境，无需 MATLAB 或 Docker。当前未实现场图/反向相位编码畸变校正；默认设置属于 BrainFC 方案，不是各数据集的统一标准，也不声称与 SPM/DPABI 数值等价。
 
 ### 1. 已有脑区时间序列
 
@@ -162,7 +184,7 @@ export_result(network, "network-result.zip")
 | 该提供哪些输入，如何准备坐标与图谱 | [输入格式](docs/formats.md) · [数据集指南](docs/datasets.md) |
 | 数据集预设如何预填，哪些值需要确认 | [预设与引导流程](docs/presets-and-workflow.md) |
 | 每个输出文件的含义 | [输出格式](docs/outputs.md) |
-| 开发、测试与发布 | [贡献指南](CONTRIBUTING.md) · [验证记录](docs/validation-v0.3.0.md) |
+| 开发、测试与发布 | [贡献指南](CONTRIBUTING.md) · [原始 fMRI 验证记录](docs/validation-v0.5.0.md) |
 
 ## 许可与致谢
 

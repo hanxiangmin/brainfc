@@ -95,7 +95,10 @@ class PreprocessedRun:
         config is Config or None. None uses 0.01–0.1 Hz filtering, detrending,
         standardization and recorded motion-matrix/WM/CSF regression; no FD
         threshold is assumed. TR, spaces and the spatial discard count are bound
-        to the actual run. Conflicting TR/spaces/columns or discard are rejected.
+        to the actual run. Conflicting TR/spaces or discard are rejected. An
+        explicit Config is not merged with the default filter cutoffs: Config()
+        disables filtering. Nonempty confound_columns override the recorded
+        motion-matrix/WM/CSF selection and must exist in the confounds table.
         Returns Connectome, including the preprocessing provenance and QC. The
         proposed defaults are BrainFC choices, not official dataset parameters.
         """

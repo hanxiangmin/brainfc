@@ -397,7 +397,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 130
+    "line": 133
   },
   {
     "name": "brainfc.raw.pipeline.load_preprocessed",
@@ -405,7 +405,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 134
+    "line": 137
   },
   {
     "name": "brainfc.raw.pipeline._check_image",
@@ -413,7 +413,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 163
+    "line": 166
   },
   {
     "name": "brainfc.raw.pipeline.discover_raw",
@@ -421,7 +421,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 185
+    "line": 188
   },
   {
     "name": "brainfc.raw.pipeline.inspect_raw",
@@ -429,7 +429,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 218
+    "line": 221
   },
   {
     "name": "brainfc.raw.pipeline._ants",
@@ -437,7 +437,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 282
+    "line": 285
   },
   {
     "name": "brainfc.raw.pipeline._ants_session",
@@ -445,7 +445,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 290
+    "line": 293
   },
   {
     "name": "brainfc.raw.pipeline._like",
@@ -453,7 +453,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 304
+    "line": 307
   },
   {
     "name": "brainfc.raw.pipeline._largest",
@@ -461,7 +461,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 309
+    "line": 312
   },
   {
     "name": "brainfc.raw.pipeline._motion_table",
@@ -469,7 +469,7 @@
     "public": false,
     "documented": false,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 318
+    "line": 321
   },
   {
     "name": "brainfc.raw.pipeline.preprocess_fmri",
@@ -477,7 +477,7 @@
     "public": true,
     "documented": true,
     "source": "src/brainfc/raw/pipeline.py",
-    "line": 335
+    "line": 338
   },
   {
     "name": "brainfc.raw.temporal.slice_time_correct",

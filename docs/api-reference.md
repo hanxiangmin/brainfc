@@ -1191,7 +1191,10 @@ atlas is a fetch_atlas name in MNI152NLin6Asym (Schaefer100/200/400).
 config is Config or None. None uses 0.01–0.1 Hz filtering, detrending,
 standardization and recorded motion-matrix/WM/CSF regression; no FD
 threshold is assumed. TR, spaces and the spatial discard count are bound
-to the actual run. Conflicting TR/spaces/columns or discard are rejected.
+to the actual run. Conflicting TR/spaces or discard are rejected. An
+explicit Config is not merged with the default filter cutoffs: Config()
+disables filtering. Nonempty confound_columns override the recorded
+motion-matrix/WM/CSF selection and must exist in the confounds table.
 Returns Connectome, including the preprocessing provenance and QC. The
 proposed defaults are BrainFC choices, not official dataset parameters.
 ```
@@ -1215,7 +1218,7 @@ original provenance retains original input/transform paths for traceability.
 Loading does not bypass .extract(qc_reviewed=True).
 ```
 
-源码：`src/brainfc/raw/pipeline.py`，第 134 行。
+源码：`src/brainfc/raw/pipeline.py`，第 137 行。
 
 ### discover_raw
 
@@ -1235,7 +1238,7 @@ an acquisition sidecar before preprocessing when metadata are inherited.
 Raises InputError if the directory or eligible pairs are absent.
 ```
 
-源码：`src/brainfc/raw/pipeline.py`，第 185 行。
+源码：`src/brainfc/raw/pipeline.py`，第 188 行。
 
 ### inspect_raw
 
@@ -1255,7 +1258,7 @@ Invalid/conflicting TR, timing or orientation raises InputError. Missing slice
 timing/axis is returned as a blocker unless explicitly skipped.
 ```
 
-源码：`src/brainfc/raw/pipeline.py`，第 218 行。
+源码：`src/brainfc/raw/pipeline.py`，第 221 行。
 
 ### preprocess_fmri
 
@@ -1305,7 +1308,7 @@ Failures preserve a failed stage record and partial outputs for inspection;
 incomplete outputs are never returned as a successful PreprocessedRun.
 ```
 
-源码：`src/brainfc/raw/pipeline.py`，第 335 行。
+源码：`src/brainfc/raw/pipeline.py`，第 338 行。
 
 ## brainfc.raw.temporal
 

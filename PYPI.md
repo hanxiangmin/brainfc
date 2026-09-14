@@ -44,6 +44,7 @@ Raw BOLD + T1 and supported DICOM series have an in-process Python preprocessing
 ## Documentation and source
 
 - [Quickstart](https://github.com/hanxiangmin/brainfc/blob/main/docs/quickstart.md)
+- [Raw fMRI to brain networks: methods, functions, parameters and QC](https://github.com/hanxiangmin/brainfc/blob/main/docs/python-preprocessing.md)
 - [Complete Python API](https://github.com/hanxiangmin/brainfc/blob/main/docs/api-reference.md)
 - [Python usage guide](https://github.com/hanxiangmin/brainfc/blob/main/docs/python-api.md)
 - [Input formats and processing contract](https://github.com/hanxiangmin/brainfc/blob/main/docs/formats.md)

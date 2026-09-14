@@ -6,7 +6,7 @@ Python 库、命令行和本地网页，共用处理核心。从原始 BOLD + T1
 |---|---|
 | 安装、打开界面、运行演示 | [安装与上手](quickstart.md) |
 | 用 Python 处理自己的数据 | [Python 使用指南](python-api.md) |
-| 从原始 BOLD / DICOM 开始 | [Python 原始 fMRI 全流程](python-preprocessing.md) |
+| 从原始 fMRI 到脑网络：每步算法、函数、参数和质控 | [完整流程与参数](python-preprocessing.md) |
 | 查每个函数的准确参数和返回值 | [全部函数与参数](api-reference.md) |
 | 了解计算顺序、头动剔除、偏相关 | [处理流程与方法](processing.md) |
 | 确认需要哪些文件和空间信息 | [输入格式与空间](formats.md) |

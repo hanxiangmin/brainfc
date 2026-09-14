@@ -1,115 +1,484 @@
-<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Python 原始 fMRI 全流程 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="python-preprocessing.html">Python 原始 fMRI 全流程</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.5.0.html">本次验证范围</a></aside><main><h1 id="python-fmri">Python 原始 fMRI 全流程</h1>
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="data:,"><title>Python 原始 fMRI 全流程 · BrainFC</title><style>body{margin:0;background:#f5f8fa;color:#243849;font:16px/1.7 system-ui,sans-serif}aside{position:fixed;width:225px;inset:0 auto 0 0;background:#005f7d;padding:26px 20px;overflow:auto}aside a{display:block;color:#dbecef;text-decoration:none;padding:7px 0}aside b{color:#fff}main{margin-left:265px;max-width:1080px;padding:36px 48px}a{color:#007da3}h1,h2,h3{line-height:1.35;scroll-margin:24px}h2{margin-top:42px;border-bottom:1px solid #d1dce2;padding-bottom:12px}pre{overflow:auto;background:#eaf0f3;padding:18px;border-radius:8px;font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}code{font-size:.9em}table{border-collapse:collapse;width:100%;display:block;overflow:auto}th,td{border:1px solid #cdd9df;padding:9px 12px;vertical-align:top}img{max-width:100%}blockquote{border-left:3px solid #0096c3;margin:20px 0;padding-left:18px} @media(max-width:850px){aside{position:static;width:auto}aside a{display:inline-block;margin-right:15px}main{margin:0;padding:20px}}body{overflow-wrap:anywhere}main{min-width:0}pre,table{max-width:100%;box-sizing:border-box}</style><aside><b>BrainFC · 开发与使用文档</b><a href="index.html">文档导航</a><a href="quickstart.html">安装与上手</a><a href="real-example.html">真实静息态样例</a><a href="privacy-review.html">样例隐私核查</a><a href="uih-metadata.html">UIH 参数核验</a><a href="python-api.html">Python 使用指南</a><a href="network-analysis.html">网络与超图分析</a><a href="hyper-brain-migration.html">Hyper-Brain 合并说明</a><a href="network-http-reference.html">网络分析 HTTP 接口</a><a href="api-reference.html">全部函数与参数</a><a href="processing.html">处理顺序与方法</a><a href="python-preprocessing.html">Python 原始 fMRI 全流程</a><a href="formats.html">输入格式与空间</a><a href="outputs.html">结果文件与质控</a><a href="http-api.html">HTTP 使用指南</a><a href="http-reference.html">HTTP 完整接口</a><a href="cli-reference.html">命令行完整参数</a><a href="presets-and-workflow.html">数据集预设</a><a href="release.html">开源与发布</a><a href="validation-v0.5.0.html">本次验证范围</a></aside><main><h1 id="fmri">原始 fMRI → 脑网络：完整流程与参数</h1>
+<p>本页对应 BrainFC 0.5.1 的实际实现，说明每一步的输入、算法、调用函数和参数。先阅读总览与示例；复现实验时按参数表和输出记录核对。完整签名与返回值见 <a href="api-reference.html">API 参考</a>，时序清理细节见 <a href="processing.html">处理方法</a>。</p>
+<h2 id="1">1. 选择正确的起点</h2>
+<table>
+<thead>
+<tr>
+<th>现有数据</th>
+<th>从哪里开始</th>
+<th>必须确认</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原始 DICOM</td>
+<td><code>scan_dicom()</code> → <code>convert_dicom_python()</code> → <code>preprocess_fmri()</code></td>
+<td>主 BOLD 与同一人的 T1 序列；不是定位像、场图或反向短序列</td>
+</tr>
+<tr>
+<td>原始 NIfTI / BIDS</td>
+<td><code>inspect_raw()</code> → <code>preprocess_fmri()</code></td>
+<td>4D 静息态 BOLD、匹配 3D T1、采集 JSON；BIDS 可用 <code>discover_raw()</code> 找候选</td>
+</tr>
+<tr>
+<td>已完成空间预处理的影像</td>
+<td><code>extract_connectome()</code></td>
+<td>实际空间与图谱一致；混杂表和去噪历史。<code>preprocessed=True</code> 是调用者声明，不会触发空间预处理</td>
+</tr>
+<tr>
+<td>已分区 ROI 时序</td>
+<td><code>extract_connectome()</code></td>
+<td>行是时间、列是 ROI；是否已经滤波/回归，避免重复清理</td>
+</tr>
+<tr>
+<td>已有功能连接矩阵</td>
+<td><code>brainfc.network.load_data(..., kind="connectivity", matrix_kind="correlation")</code> → <code>analyze()</code></td>
+<td>矩阵含义、ROI 顺序；不要把方阵当时序再次求相关</td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-text">DICOM ──转换──&gt; BOLD + T1 + 采集 JSON
+                       │
+             检查 TR、切片时间和几何
+                       │
+       层间时间校正 → 逐帧头动估计
+                       │
+       T1 N4 → 脑提取 → 组织分割 → T1 到 MNI
+                       │
+       BOLD 到 T1 → 合成逐帧变换 → 2 mm 标准空间
+                       │
+       组织混杂、FD/DVARS → 可选平滑 → 人工质控
+                       │
+已预处理影像 ──&gt; ROI 均值
+                       ├── 已分区时序从此处进入
+       初始帧剔除 → 联合去趋势/滤波/回归/删帧
+                       │
+              完整有符号 FC + Fisher-z
+                       │
+       保存与可视化 / 普通图 / 可选原生超图
+</code></pre>
+<p>空间输出 BOLD 尚未进行 ROI 时序去噪；<code>result.timeseries</code> 才是清理后的 ROI 信号。空间阶段保留全部帧，<code>discard</code> 在连接提取阶段实际移除。普通图与超图均可直接从完整 FC 构建，超图不依赖普通图先筛选出来的边。</p>
+<h2 id="2">2. 安装与界面</h2>
 <p>在已有 <strong>Python 3.11–3.13 的 conda 环境</strong>中安装即可，无需重装 Python：</p>
 <pre><code class="language-shell">python -m pip install -U brainfc
 brainfc serve
 </code></pre>
 <p>界面选择“原始 NIfTI / BIDS”或“原始 DICOM”，依次完成 <strong>选影像 → 确认方案 → 预处理 → 检查质控 → 功能连接</strong>。原始 NIfTI 只需 BOLD 和同一人的 T1；同名采集 JSON 自动读取。DICOM 文件夹先识别序列，确认 BOLD 与 T1。输出目录自动安排。</p>
 <p>所有计算通过 Python 包完成。ANTsPy 的编译内核随 wheel 安装，不需要 MATLAB、SPM、Docker、FreeSurfer 许可证或独立命令行工具。首次使用会下载约 1.5 MB 的 TemplateFlow 模板；Schaefer 图谱另行缓存。</p>
-<h2 id="python">最短 Python 用法</h2>
-<pre><code class="language-python">from brainfc import preprocess_fmri
-
-run = preprocess_fmri(
-    &quot;sub-01_task-rest_bold.nii.gz&quot;,
-    &quot;sub-01_T1w.nii.gz&quot;,
-    &quot;results/preprocessed-01&quot;,  # 必须是新目录
-    progress=print,
-)
-
-# 先打开 results/preprocessed-01/qc.html，检查对齐、组织分割和头动。
-result = run.extract(&quot;schaefer100&quot;, qc_reviewed=True)
-result.save(&quot;results/connectome-01&quot;)
-</code></pre>
-<p>之后可在另一次 Python 会话继续，不必重复预处理：</p>
-<pre><code class="language-python">from brainfc import load_preprocessed
-
-run = load_preprocessed(&quot;results/preprocessed-01&quot;)  # 验证输出完整性和 SHA-256
-result = run.extract(qc_reviewed=True)
-</code></pre>
-<h2 id="_1">数据与参数确认</h2>
-<p>要求单回波、恒定 TR 的 4D 静息态 BOLD 和匹配的 3D T1，具有有效 qform/sform、毫米单位、正交体素轴。未实现多回波合并、变 TR / 稀疏采样、畸变校正和表面重建。原始 DWI 不属于此入口。成人 MNI 模板是否适用于儿童、明显病变等数据，需要独立确认。</p>
-<p>TR 按实际采集 JSON / 影像头读取；数值冲突时停止。切片时间采用 BIDS 的<strong>秒</strong>，支持多带相同时间；负的 <code>SliceEncodingDirection</code> 会反转时间列表。切片维度由 JSON 或 NIfTI <code>dim_info</code> 读取。只有可靠元数据缺失时才需要补充；不按奇偶层数猜采集顺序。BIDS 继承元数据需先整理为该次扫描的独立 sidecar。</p>
+<h2 id="3-python">3. 可复现的 Python 示例</h2>
+<p>以下分两次执行，保留人工质控环节。示例选择丢弃开头 5 帧，<strong>不是所有扫描的默认要求</strong>；实际默认值为 0。TR 和切片时间不手填，优先读取扫描元数据。</p>
 <pre><code class="language-python">from brainfc import PreprocessConfig, inspect_raw, preprocess_fmri
 
-settings = PreprocessConfig(
-    discard=5,             # 示例选择，按采集与研究方案确认；默认 0
-    smoothing_fwhm=0,       # 默认不平滑
-    # slice_axis=2,         # 仅在采集记录确认 k 为切片维度、文件头缺失时填写
-    # slice_timing=&quot;skip&quot;,  # 仅在明确决定跳过时启用，并记录到结果
-)
+settings = PreprocessConfig(discard=5, smoothing_fwhm=0, seed=42)
 plan = inspect_raw(&quot;bold.nii.gz&quot;, &quot;t1w.nii.gz&quot;, config=settings)
-print(plan[&quot;ready&quot;], plan[&quot;missing&quot;])
-run = preprocess_fmri(&quot;bold.nii.gz&quot;, &quot;t1w.nii.gz&quot;, &quot;preprocessed-02&quot;, config=settings)
+if not plan[&quot;ready&quot;]:
+    raise ValueError(plan[&quot;missing&quot;])  # 按采集记录补充元数据或明确选择跳过
+
+run = preprocess_fmri(
+    &quot;bold.nii.gz&quot;,
+    &quot;t1w.nii.gz&quot;,
+    &quot;results/preprocessed-01&quot;,  # 必须是新目录
+    config=settings,
+    progress=print,
+)
+print(run.directory / &quot;qc.html&quot;)
 </code></pre>
-<p><code>PreprocessConfig</code> 完整默认值：<code>t_r=None</code>、<code>slice_timing="auto"</code>、<code>slice_axis=None</code>、<code>reference=0.5</code>、<code>discard=0</code>、<code>smoothing_fwhm=0</code>、<code>seed=42</code>。<code>reference</code> 是 TR 的比例，不是切片编号。<code>auto</code> 遇到缺失切片元数据会停止确认。</p>
-<h2 id="_2">实际算法与顺序</h2>
+<p><strong>先打开上面的 <code>qc.html</code>，按第 8 节检查。</strong> 通过后再执行下面代码；重新打开 Python 也可继续，不必重复空间预处理。</p>
+<pre><code class="language-python">from brainfc import Config, load_preprocessed
+from brainfc.network import AnalysisConfig
+from brainfc.network.export import export_result
+
+run = load_preprocessed(&quot;results/preprocessed-01&quot;)  # 验证输出完整性和 SHA-256
+result = run.extract(
+    &quot;schaefer100&quot;,
+    config=Config(
+        high_pass=0.01, low_pass=0.1,  # Hz；显式写明，便于复现
+        detrend=True, standardize=True,
+        discard=run.provenance[&quot;config&quot;][&quot;discard&quot;],
+        fd_threshold=None, min_samples=20, method=&quot;pearson&quot;,
+    ),
+    qc_reviewed=True,
+)
+result.save(&quot;results/connectome-01&quot;)  # 新目录；完整矩阵、时序、质控与图像
+
+network = result.analyze_network(AnalysisConfig(
+    graph_method=&quot;density&quot;, density=0.1,
+    compute_hypergraph=False,  # 此例只构建普通图；超图用法见第 7 节
+))
+export_result(network, &quot;results/network-01.zip&quot;)
+
+print(result.connectivity.shape, result.timeseries.shape)
+print(result.provenance[&quot;config&quot;])  # 实际绑定后的 TR、空间、回归列等
+print(result.sample_indices)        # 原始帧号，从 0 开始
+</code></pre>
+<p>这里 <code>run.extract()</code> 自动传入标准空间脑掩膜、图谱标签及 14 列运动矩阵/WM/CSF 混杂，无需重新填写路径或空间。图谱与模板首次下载后缓存。上述代码没有启用 GSR 或 FD 阈值删帧。</p>
+<h2 id="4">4. 采集信息与空间参数</h2>
+<p>要求单回波、恒定 TR 的 4D 静息态 BOLD 和匹配的 3D T1，具有有效 qform/sform、毫米单位、正交体素轴。未实现多回波合并、变 TR / 稀疏采样、畸变校正和表面重建。原始 DWI 不属于此入口。成人 MNI 模板是否适用于儿童、明显病变等数据，需要独立确认。</p>
+<p>TR 按实际采集 JSON / 影像头读取；数值冲突时停止。切片时间采用 BIDS 的<strong>秒</strong>，支持多带相同时间；负的 <code>SliceEncodingDirection</code> 会反转时间列表。切片维度由 JSON 或 NIfTI <code>dim_info</code> 读取。只有可靠元数据缺失时才需要补充；不按奇偶层数猜采集顺序。BIDS 继承元数据需先整理为该次扫描的独立 sidecar。</p>
+<h3 id="preprocessconfig"><code>PreprocessConfig</code> 全部参数</h3>
 <table>
 <thead>
 <tr>
-<th>步骤</th>
-<th>实现及输出</th>
+<th>参数</th>
+<th>默认值 / 单位</th>
+<th>如何设置与实际作用</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>DICOM 转换</td>
-<td><code>pydicom</code> + <code>dicom2nifti</code>；联影 UIH 拼图按每层位置与时间解码；标准 TE/TR 毫秒转秒；不同序列与回波分开</td>
+<td><code>t_r</code></td>
+<td><code>None</code> / 秒</td>
+<td>自动读取 JSON/影像头；仅在有可靠采集记录时补充。显式值与已有元数据冲突会停止，不强行覆盖</td>
+</tr>
+<tr>
+<td><code>slice_timing</code></td>
+<td><code>"auto"</code></td>
+<td><code>auto</code> / <code>require</code> 均要求可用的切片时间与维度；<code>skip</code> 明确跳过并记录。没有猜测“奇数先”或“偶数先”</td>
+</tr>
+<tr>
+<td><code>slice_axis</code></td>
+<td><code>None</code></td>
+<td>原始 NIfTI 的空间维度 <code>0/1/2</code>；优先读取 <code>SliceEncodingDirection</code> 或 <code>dim_info</code>，不是显示器上的上下方向</td>
+</tr>
+<tr>
+<td><code>reference</code></td>
+<td><code>0.5</code> / TR 比例</td>
+<td>所有切片移到一个 TR 内的这一时间点，范围 <code>[0,1)</code>；例如 TR=2 s 时对应 1 s</td>
+</tr>
+<tr>
+<td><code>discard</code></td>
+<td><code>0</code> / 帧</td>
+<td>根据采集协议和稳态情况决定；开头这些帧不参与头动参考均值，仍做空间处理，提取时再删除；不是自动稳态检测</td>
+</tr>
+<tr>
+<td><code>smoothing_fwhm</code></td>
+<td><code>0.0</code> / mm</td>
+<td>0 关闭；非负空间高斯 FWHM。是否平滑及宽度由图谱尺度和研究方案决定；会影响 ROI 信号，不应用于 WM/CSF 混杂提取</td>
+</tr>
+<tr>
+<td><code>seed</code></td>
+<td><code>42</code> / 整数</td>
+<td>非负 ANTs 随机种子；记录软件与线程环境，不能据此保证跨平台逐位一致</td>
+</tr>
+</tbody>
+</table>
+<p><code>preprocess_fmri()</code> 的 <code>sidecar</code> 可指定采集 JSON，默认找与 BOLD 同名的 JSON；<code>t1_mask</code> 可传独立脑掩膜，必须与输入 T1 原始网格匹配；<code>template_dir</code> 只改变缓存位置，<strong>不更换模板种类或分辨率</strong>。<code>progress</code> 接收进度字符串。输出目录必须不存在，失败目录保留用于排查。</p>
+<p>疾病/队列名称不能决定 TR、切片顺序或去噪策略。ABIDE、ADNI、ADHD-200、MDD、PPMI 的预设只提供有来源的采集参考，扫描元数据优先，详见 <a href="presets-and-workflow.html">预设依据</a>。</p>
+<h2 id="5">5. 空间预处理：实际函数与固定设置</h2>
+<p>用户只需调用 <code>preprocess_fmri()</code>。下表列出它内部调用的函数；其中 N4、SyN、Atropos 等低层设置目前固定在实现中，<strong>不是可直接传给 <code>PreprocessConfig</code> 的参数</strong>。算法细节以固定依赖 ANTsPy 0.6.3 和 <a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/raw/pipeline.py">流水线源码</a> 为准。</p>
+<table>
+<thead>
+<tr>
+<th>步骤</th>
+<th>实际调用</th>
+<th>设置、输入与输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DICOM 转换（如需）</td>
+<td><code>convert_dicom_python()</code>；<code>pydicom</code> + <code>dicom2nifti</code></td>
+<td>联影 UIH 拼图按每层位置与时间解码；标准 TE/TR 毫秒转秒；序列与回波分开，输出 NIfTI + 最小采集 JSON</td>
 </tr>
 <tr>
 <td>层间时间校正</td>
-<td>SciPy FFT、两端各反射填充 T 帧；逐切片移到 <code>reference × TR</code>；保留全部帧索引</td>
+<td><code>brainfc.raw.temporal.slice_time_correct()</code>；SciPy FFT</td>
+<td>两端各反射填充 T 帧，逐切片移到 <code>reference × TR</code>，保留全部帧索引。明确跳过时省略此步</td>
 </tr>
 <tr>
 <td>头动估计</td>
-<td>ANTs <code>BOLDRigid</code>；参考为去除指定开头帧后的均值；保存每帧刚体矩阵</td>
+<td><code>ants.motion_correction()</code></td>
+<td><code>type_of_transform="BOLDRigid"</code>、<code>fdOffset=50</code>；初始参考为去除指定开头帧后的均值，再用校正后的对应帧均值作 BOLD 参考；保存每帧刚体矩阵</td>
 </tr>
 <tr>
-<td>T1 与脑提取</td>
-<td>T1 工作网格 1.5 mm；N4 偏置校正；未给独立脑掩膜时，先做整头 SyN，再逆变换传播模板脑掩膜；脑内再 N4</td>
+<td>T1 偏置与脑提取</td>
+<td><code>ants.resample_image()</code>、<code>ants.n4_bias_field_correction()</code>、<code>ants.registration()</code> / <code>apply_transforms()</code></td>
+<td>T1 工作网格 1.5 mm；N4 <code>shrink_factor=2</code>、迭代 <code>[30,20,10]</code>、容差 <code>1e-6</code>。没有独立掩膜时，整头 SyN 后逆传播模板掩膜，保留最大连通部分并填孔；脑内再 N4</td>
 </tr>
 <tr>
 <td>组织分割</td>
-<td>ANTs Atropos，3 类 KMeans 初始化、MRF <code>[0.2,1x1x1]</code>、5 次迭代；按 T1 强度均值排序 CSF / GM / WM</td>
+<td><code>ants.atropos()</code></td>
+<td><code>i="KMeans[3]"</code>、<code>m="[0.2,1x1x1]"</code>、<code>c="[5,0]"</code>；按 T1 类别平均强度由低到高指定 CSF / GM / WM，不是 SPM 的组织先验模型</td>
 </tr>
 <tr>
-<td>标准化</td>
-<td>脑 T1 → MNI152NLin6Asym 的 SyN，非线性迭代 <code>(60,40,20)</code>；BOLD 参考 → T1 的刚体互信息配准</td>
+<td>T1 标准化</td>
+<td><code>ants.registration()</code></td>
+<td>去颅骨 T1→MNI152NLin6Asym；<code>type_of_transform="SyN"</code>、<code>reg_iterations=(60,40,20)</code>，模板脑掩膜约束；整头预配准也用相同 SyN 迭代</td>
 </tr>
 <tr>
-<td>重采样</td>
-<td>合成标准化、BOLD-to-T1 和每帧头动变换，从层间时间校正后的输入<strong>只做一次最终空间插值</strong>；2 mm、线性插值</td>
+<td>BOLD 与 T1 对齐</td>
+<td><code>nilearn.masking.compute_epi_mask()</code>、<code>ants.registration()</code></td>
+<td>BOLD 参考信号掩膜 <code>opening=1</code>；masked BOLD→脑 T1，<code>type_of_transform="Rigid"</code>、<code>aff_iterations=(1000,500,250,100)</code>；互信息度量继承固定 ANTsPy 版本默认</td>
 </tr>
 <tr>
-<td>脑覆盖</td>
-<td>EPI 信号掩膜变换到模板，与模板脑掩膜取交集；覆盖率 &lt;50% 停止；其余仍需目视检查</td>
+<td>脑覆盖与重采样</td>
+<td><code>ants.apply_transforms()</code></td>
+<td>标准化 EPI 掩膜与模板脑掩膜取交集，覆盖率 &lt;50% 停止；合成 T1 标准化、BOLD→T1 和逐帧头动变换，从层间时间校正后的输入<strong>只做一次最终空间插值</strong>，2 mm、线性插值</td>
 </tr>
 <tr>
-<td>混杂信号</td>
-<td>WM / CSF 概率 &gt;0.9，T1 工作网格腐蚀 1 体素，最近邻变换后各至少 20 体素；从未平滑 BOLD 提取均值</td>
+<td>混杂提取</td>
+<td>SciPy <code>binary_erosion()</code>、<code>ants.apply_transforms()</code>、NumPy 均值</td>
+<td>WM/CSF 概率 &gt;0.9；在 T1 工作网格腐蚀 1 体素，最近邻变换并与覆盖掩膜相交，各至少 20 体素；从未平滑标准空间 BOLD 提取均值</td>
+</tr>
+<tr>
+<td>FD / DVARS</td>
+<td>头动结果中的 <code>FD</code>；NumPy 时间差分</td>
+<td>ANTs generalized FD；DVARS 是相邻帧脑内体素强度差的均方根，未标准化、单位随原始强度；两者首帧写为 <code>n/a</code></td>
 </tr>
 <tr>
 <td>可选平滑</td>
-<td>逐帧三维高斯，FWHM 单位 mm；只影响 ROI 输入，混杂均值仍来自未平滑数据</td>
+<td><code>scipy.ndimage.gaussian_filter()</code></td>
+<td>逐帧三维高斯，FWHM 换算为各轴体素 sigma；默认关闭；此后写入空间预处理 BOLD</td>
 </tr>
 <tr>
-<td>时序与 FC</td>
-<td><code>run.extract()</code> 调用既有 Nilearn 联合回归/滤波，再计算完整有符号 Pearson 或所选相关矩阵、单独 Fisher-z</td>
+<td>报告</td>
+<td><code>brainfc.raw.quality.write_qc()</code></td>
+<td>对齐、组织与头动图，以及 <code>qc.html</code>；不会自动把运行成功判成影像质量合格</td>
 </tr>
 </tbody>
 </table>
 <p>ANTs 使用 LPS 物理坐标，NiBabel 使用 RAS；影像适配器通过 NIfTI 保存几何，已设旋转坐标往返测试。图像变换和点变换有不同方向约定，不能把变换列表反向后直接当成逆变换。</p>
 <p>该实现参考教程的步骤组织，<strong>不声称与 SPM、DPABI 或 fMRIPrep 数值等价</strong>。切片插值边界、配准优化、组织分割和运动混杂模型均有明确差异。</p>
 <p>配准种子通过 ANTsPy 0.6.3 的配置接口传入底层 ANTs；仅向 <code>registration()</code> 传旧版 <code>random_seed</code> 关键字在该版本不会生效。结果记录种子、库版本和 ITK 线程环境，跨平台或多线程计算不保证逐位一致。实际验证范围见 <a href="validation-v0.5.0.html">0.5.0 验证记录</a>。</p>
-<h2 id="_3">去噪设置</h2>
+<h2 id="6-roi">6. ROI、去噪与功能连接</h2>
+<h3 id="_1">三个入口的默认行为</h3>
+<table>
+<thead>
+<tr>
+<th>设置</th>
+<th><code>run.extract(config=None)</code></th>
+<th><code>extract_connectome(..., config=None)</code> / 显式 <code>Config()</code></th>
+<th>网页新建提取方案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>高通 / 低通</td>
+<td>0.01 / 0.1 Hz</td>
+<td><code>None</code> / <code>None</code>，不滤波</td>
+<td>初始留空，不滤波；以确认页实际值为准</td>
+</tr>
+<tr>
+<td>去趋势 / 标准化</td>
+<td>开 / 样本 z-score</td>
+<td>开 / 样本 z-score</td>
+<td>初始均开；选择“上游已去噪”会关闭重复清理</td>
+</tr>
+<tr>
+<td>初始帧</td>
+<td>继承空间预处理的 <code>discard</code></td>
+<td>0</td>
+<td>原始流程继承 <code>discard</code></td>
+</tr>
+<tr>
+<td>回归列</td>
+<td>默认 14 列（12 列运动矩阵/偏移 + WM/CSF）</td>
+<td>没有 confounds 则不回归；有表时识别完整 motion6 + 可用 WM/CSF，其他模型需指定列</td>
+<td>原始流程自动带入 14 列；外部影像按提供的表及确认策略</td>
+</tr>
+<tr>
+<td>FD 删帧</td>
+<td>关闭</td>
+<td>关闭</td>
+<td>初始关闭</td>
+</tr>
+<tr>
+<td>相关方法 / 最少帧数</td>
+<td>Pearson / 20</td>
+<td>Pearson / 20</td>
+<td>Pearson / 20</td>
+</tr>
+</tbody>
+</table>
+<p><strong>显式 <code>Config</code> 是完整配置，不是对便捷默认值的局部补丁。</strong> 例如 <code>run.extract(config=Config(discard=5), ...)</code> 会关闭带通；若要保留，应同时写 <code>high_pass=0.01, low_pass=0.1</code>。网页和 Python 共用计算核心，但初始化默认值不同；比较结果必须比较最终配置。</p>
+<h3 id="roi">ROI 提取</h3>
+<p><code>run.extract(atlas="schaefer100")</code> 调用 <code>fetch_atlas()</code>，再调用 <code>extract_connectome()</code>；默认 Schaefer 100，可选同一 MNI152NLin6Asym 空间的 <code>schaefer200</code> / <code>schaefer400</code>。不同 MNI 变体不能仅凭名称中有“MNI”就混用。</p>
+<p>体积数据由 <code>brainfc.imaging.volume_timeseries()</code> 将离散标签以最近邻重采样到 BOLD 网格，然后对脑掩膜内每个 ROI 计算体素算术均值。0 是背景；ROI 按原始正标签数值升序排列。任何 ROI 在掩膜内为空都会报错。这里调整网格，不重新估计配准；标签、ID、名称及 RAS+ mm 坐标一起保存。提取后的 ROI 信号才进入时序清理。</p>
+<h3 id="config"><code>Config</code> 的时序参数</h3>
+<table>
+<thead>
+<tr>
+<th>参数</th>
+<th>类默认值</th>
+<th>含义与设置依据</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t_r</code></td>
+<td><code>None</code></td>
+<td>秒；<code>run.extract()</code> 绑定真实输出 TR，冲突报错</td>
+</tr>
+<tr>
+<td><code>high_pass</code> / <code>low_pass</code></td>
+<td><code>None</code> / <code>None</code></td>
+<td>Hz；分别开启高通/低通，两者均有值时为带通。须 <code>0 &lt; high_pass &lt; low_pass &lt; 1/(2×TR)</code>；单一截止频率也须小于 Nyquist。0.01–0.1 是便捷入口默认，不是官方通用最佳值</td>
+</tr>
+<tr>
+<td><code>detrend</code></td>
+<td><code>True</code></td>
+<td>去线性趋势；已在上游完成时避免无依据地重复</td>
+</tr>
+<tr>
+<td><code>standardize</code></td>
+<td><code>True</code></td>
+<td>Nilearn <code>zscore_sample</code>；关闭则不做该标准化</td>
+</tr>
+<tr>
+<td><code>discard</code></td>
+<td><code>0</code></td>
+<td>删除输入最前面的帧，必须与本次空间预处理记录一致</td>
+</tr>
+<tr>
+<td><code>confound_columns</code></td>
+<td><code>None</code></td>
+<td>非空列名序列显式指定回归变量；列必须存在且通过有限值校验。<code>run.extract()</code> 留空时自动绑定运动矩阵 + WM/CSF；空列表不能用来关闭该默认回归</td>
+</tr>
+<tr>
+<td><code>fd_threshold</code></td>
+<td><code>None</code></td>
+<td>mm；正数才开启逐帧剔除。<code>FD &gt; 阈值</code> 删除，等于阈值保留；不连带删除邻帧。必须按实际 FD 定义制定阈值</td>
+</tr>
+<tr>
+<td><code>min_samples</code></td>
+<td><code>20</code></td>
+<td>删帧后最少保留点数，≥3 的整数；20 是运行检查下限，不代表足够的可靠性或统计效能</td>
+</tr>
+<tr>
+<td><code>method</code></td>
+<td><code>"pearson"</code></td>
+<td><code>pearson</code> / <code>spearman</code> / <code>partial</code>，见下文</td>
+</tr>
+</tbody>
+</table>
+<p>其余 <code>Config</code> 字段用于输入解释：<code>data_space=None</code>、<code>atlas_space=None</code>、<code>preprocessed=False</code>（便捷原始入口自动绑定）；<code>table_header=True</code>、<code>transpose=False</code>、<code>variable=None</code>（表格/数组/MAT 入口），详见 <a href="formats.html">格式说明</a>。</p>
 <p><code>run.extract()</code> 默认使用 0.01–0.1 Hz、去趋势和样本 z-score，回归 9 个旋转矩阵元素、3 个 LPS 仿射偏移及 WM/CSF 均值。这是 BrainFC 的可修改建议；不是数据集官方统一参数，也不是 SPM motion6 / Friston-24。矩阵列可能线性相关，提取会检查实际设计秩和残余自由度。</p>
-<pre><code class="language-python">from brainfc import Config
-
-result = run.extract(
-    config=Config(high_pass=0.01, low_pass=0.08, discard=5),
-    qc_reviewed=True,
-)
-</code></pre>
 <p><code>discard</code> 应与预处理配置一致。TR 和空间由真实输出绑定。FD 默认不用于删帧；显式 <code>fd_threshold</code> 才启用。这里的 FD 是 <strong>ANTs generalized FD，<code>fdOffset=50 mm</code></strong>，不是 Power FD；不能直接套用另一种 FD 的阈值。首行 FD/DVARS 未定义，写为 <code>n/a</code>。DVARS 为原始强度单位。全局信号提供为检查列，默认不回归。</p>
-<h2 id="dicom">DICOM 与命令行</h2>
+<p>14 列的确切名称为 <code>motion_matrix_00</code> … <code>motion_matrix_22</code>（3×3 旋转矩阵逐行排列）、<code>motion_offset_x/y/z</code>（LPS 下的 <code>t+c−Rc</code>）、<code>white_matter</code>、<code>csf</code>。这 14 列不等于 14 个独立运动自由度；不自动追加导数、平方项、aCompCor 或 ICA-AROMA。</p>
+<h3 id="_2">联合清理顺序和删帧</h3>
+<p><code>extract_connectome()</code> 先建立原始帧保留掩码，再去除开头 <code>discard</code> 帧，最后将信号、混杂及剩余帧索引一起传给 <code>nilearn.signal.clean()</code>。设置 <code>standardize_confounds=True</code>；有截止频率则 <code>filter="butterworth"</code>，否则关闭滤波；显式 <code>extrapolate=True</code>。</p>
+<p>有带通和删帧时，Nilearn 先插值被剔除位置用于规则时间网格的去趋势和滤波，再移除指定样本、回归混杂并标准化；信号和混杂接受配套滤波。没有开启滤波时不做该滤波插值。BrainFC 不将删帧后的不规则样本重新当成连续等间隔扫描。具体顺序及默认滤波实现见 <a href="https://nilearn.github.io/stable/modules/generated/nilearn.signal.clean.html">Nilearn <code>signal.clean</code></a>。</p>
+<p>当前依赖 <code>nilearn&gt;=0.14,&lt;0.15</code>；未覆盖其 Butterworth 默认阶数 5、<code>padtype="odd"</code>、<code>padlen=None</code>，使用前后向滤波。BrainFC 暂未将阶数/边界填充设为 <code>Config</code> 参数。短序列无法满足滤波要求时会报错，应检查扫描长度和方案，不能直接省略失败步骤后声称完成相同处理。</p>
+<p><code>non_steady_state_outlier*</code> 非零的帧也会被剔除；原始 Python 路线目前不自动生成这些列。启用 FD 时首帧缺失 FD 被删除；后续缺失 FD 报错。保留帧数、回归设计秩、常数 ROI 和非有限值均检查；没有把不可计算的连接填成 0。全部规则见 <a href="processing.html">删帧与回归定义</a>。</p>
+<h3 id="_3">矩阵怎么算</h3>
+<table>
+<thead>
+<tr>
+<th><code>method</code></th>
+<th>实现</th>
+<th>输出解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pearson</code></td>
+<td><code>numpy.corrcoef(cleaned, rowvar=False)</code></td>
+<td>清理后 ROI 时序两两线性相关</td>
+</tr>
+<tr>
+<td><code>spearman</code></td>
+<td><code>scipy.stats.rankdata(..., axis=0)</code> 后 Pearson</td>
+<td>平均并列秩的秩相关</td>
+</tr>
+<tr>
+<td><code>partial</code></td>
+<td><code>sklearn.covariance.LedoitWolf</code> 的精度矩阵 P，<code>−Pij / sqrt(Pii×Pjj)</code></td>
+<td>收缩估计的偏相关，收缩系数记录在 QC</td>
+</tr>
+</tbody>
+</table>
+<p>结果对称化、截到 <code>[−1,1]</code>，对角线设为 1。<code>result.fisher_z</code> 单独保存 <code>atanh(clip(r, −1+1e−7, 1−1e−7))</code>，对角线 0。此数值转换不生成 p 值；完整 FC 保留所有正负相关，不按可视化阈值稀疏化。</p>
+<h2 id="7-fc">7. 从 FC 构建脑网络</h2>
+<p><code>result.analyze_network(AnalysisConfig(...))</code> 经 <code>brainfc.network.bridge.from_connectome()</code> 和 <code>brainfc.network.analyze()</code> 转交已有完整 FC、ROI、空间和处理来源；不会再次做时序去噪或重新从时序计算 FC。图与超图分别由 <code>brainfc.network.graph.build_graph()</code>、<code>brainfc.network.hypergraph.build_hypergraph()</code> 构建，再计算描述性指标。可用函数的准确模块名见 <a href="api-reference.html">API 参考</a>。</p>
+<h3 id="_4">普通图</h3>
+<table>
+<thead>
+<tr>
+<th><code>AnalysisConfig</code> 设置</th>
+<th>实际选边方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>graph_method="density", density=0.1</code>（默认）</td>
+<td>按绝对 FC 强度，目标边数 <code>ceil(0.1×N×(N−1)/2)</code>；截止并列全部保留，实际密度可高于请求值，非零边不足时可更低</td>
+</tr>
+<tr>
+<td><code>graph_method="threshold", threshold=0.2</code></td>
+<td>保留绝对强度达到阈值的非零边；阈值只在该方法生效，不是 p 值</td>
+</tr>
+<tr>
+<td><code>graph_method="knn", k=5</code></td>
+<td>各 ROI 取最强 k 个非零连接，取两侧邻居选择的并集，包含截止并列；最终度不必等于 k</td>
+</tr>
+<tr>
+<td><code>graph_method="weighted"</code></td>
+<td>全部非零边</td>
+</tr>
+<tr>
+<td><code>graph_method="mst"</code></td>
+<td>绝对权重的最大生成森林；孤立节点保留</td>
+</tr>
+</tbody>
+</table>
+<p>均去掉自环、保留被选边原始符号。正/负强度分开记录；路径指标只使用正边、长度 <code>1/weight</code>，不能把负相关直接当负路径长度。完整指标定义见 <a href="network/methods.html">网络方法</a>。提取可支持更多 ROI，但网络模块上限为 1000 个 ROI。</p>
+<h3 id="_5">原生超图（可选）</h3>
+<pre><code class="language-python">network = result.analyze_network(AnalysisConfig(
+    graph_method=&quot;density&quot;, density=0.1,
+    hypergraph_method=&quot;multiscale&quot;, hypergraph_ks=[5, 10],
+    compute_graph=True, compute_hypergraph=True,
+))
+export_result(network, &quot;results/network-multiscale-01.zip&quot;)
+</code></pre>
+<p><code>AnalysisConfig()</code> 默认同时计算图和超图：<code>compute_graph=True</code>、<code>compute_hypergraph=True</code>。默认超图 <code>hypergraph_method="knn"</code> 使用 <code>k=5</code>；<code>hypergraph_ks=[5,10]</code> 只在 <code>multiscale</code> 生效。<code>template</code> 使用 <code>groups={组ID: [ROI ID, ...]}</code>；<code>custom</code> 使用 <code>custom_edges=[{"id": ..., "members": [...], "weight": ...}]</code>，两者默认空，须提供所需成员。</p>
+<p>FC-profile 超图将完整 FC 的对角线置零，把每行视作该 ROI 的连接模式，按<strong>有符号余弦相似度</strong>选择邻居。每条超边包含中心及邻居；截止并列保留，完全相同的生成成员集合合并，记录中心和尺度，生成超边权重为 1。它不同于按 <code>|FCij|</code> 选择普通图邻居；也不是从 fMRI 直接估计多体相互作用。</p>
+<p><code>connectivity_method="pearson"</code> 是网络模块读取时序时的默认值；从 <code>Connectome</code> 传入矩阵时不生效。改变相关方法应回到第 6 节的 <code>Config(method=...)</code>。</p>
+<h3 id="_6">显示筛选与分析选边分别记录</h3>
+<p><code>result.plot_views(..., threshold=0.3, max_edges=200)</code> 和三维页面的阈值、选择、透明度只控制显示。完整矩阵不变，已算出的图指标也不会随旋转或显示筛选改变。要改变网络分析的边，须改变 <code>AnalysisConfig</code> 并重新分析。提取页的三维和八视图共享显示选择；网络分析页展示相应分析结果的普通边/超边。球棍不是纤维束，超边不是已证实的不可约生理相互作用。</p>
+<h2 id="8">8. 质控：何时继续，何时停止</h2>
+<table>
+<thead>
+<tr>
+<th>检查位置</th>
+<th>看什么</th>
+<th>处理要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>输入计划</td>
+<td>TR、帧数、切片方向与采集时间、同一被试的 BOLD/T1</td>
+<td>冲突或不匹配先解决，不能靠改文件名/头信息掩盖问题</td>
+</tr>
+<tr>
+<td><code>qc.html</code> 脑提取图</td>
+<td>皮层/小脑是否被误删、颅外组织是否明显残留</td>
+<td>明显异常先停止；可检查输入或提供独立 T1 脑掩膜后在新目录重跑</td>
+</tr>
+<tr>
+<td>BOLD→T1 与 T1→MNI 叠加</td>
+<td>脑室、外轮廓、左右方向、皮层是否整体对齐</td>
+<td>明显错位不能继续做标准图谱提取；头动/刚体配准不能修复所有 EPI 畸变</td>
+</tr>
+<tr>
+<td>WM/CSF 叠加</td>
+<td>掩膜是否落在对应组织，是否混入大量灰质/脑外</td>
+<td>组织数达到运行下限不代表组织选择正确</td>
+</tr>
+<tr>
+<td>覆盖与运动曲线</td>
+<td>视野缺失、FD/DVARS 峰值、持续头动</td>
+<td>覆盖 &lt;50% 自动停止；超过下限仍须检查。按研究预先制定的扫描排除和删帧规则处理</td>
+</tr>
+<tr>
+<td>连接结果 <code>qc.json</code></td>
+<td>保留帧数、原始帧号、回归列/设计秩、警告与 ROI 体素数</td>
+<td><code>min_samples=20</code> 只是数值下限；警告不等于已解决，不能仅凭矩阵可绘制认定可用于研究</td>
+</tr>
+</tbody>
+</table>
+<p><code>qc_reviewed=True</code> 是研究者检查后的确认，不是自动质量认证。不提供统一的“合格 FD”或最低可靠扫描时长；这两项应结合采集方案、FD 定义与研究设计决定。单例验证范围见第 10 节。</p>
+<h2 id="9-dicom">9. DICOM、命令行与公共函数</h2>
 <pre><code class="language-shell">brainfc convert ./dicom --scan
 brainfc convert ./dicom --series-id &lt;上一步的序列ID&gt; --kind bold --output ./bold-converted
 brainfc convert ./dicom --series-id &lt;T1序列ID&gt; --kind t1w --output ./t1-converted
@@ -117,13 +486,60 @@ brainfc process ./bold-converted/image.nii.gz --t1w ./t1-converted/image.nii.gz 
 </code></pre>
 <p>Python 对应 <code>scan_dicom()</code>、<code>convert_dicom_python()</code>、<code>inspect_raw()</code>、<code>preprocess_fmri()</code>、<code>load_preprocessed()</code>；完整签名、错误、返回值见 <a href="api-reference.html">API 参考</a>。<code>discover_raw()</code> 保留同一 subject/session 内的候选对，多 T1 不会随意选择。</p>
 <p>通用 DICOM 由 dicom2nifti 的布局与几何校验决定是否支持，不能承诺所有厂商、压缩方式及私有格式都能转换。无可靠切片时间的布局不会伪造 <code>SliceTiming</code>。不支持的数据会报错。</p>
-<h2 id="_4">质控与文件</h2>
+<p>公共入口分工：<code>scan_dicom()</code> 返回可选择的序列；<code>convert_dicom_python()</code> 转换指定序列；<code>discover_raw()</code> 返回 BIDS 候选；<code>inspect_raw()</code> 检查元数据；<code>preprocess_fmri()</code> 返回 <code>PreprocessedRun</code>；<code>load_preprocessed()</code> 载入完成的运行；<code>PreprocessedRun.extract()</code> 返回 <code>Connectome</code>；<code>Connectome.analyze_network()</code> 返回 <code>AnalysisResult</code>。<code>Connectome.save()</code> 保存目录，<code>export_result()</code> 保存网络 ZIP，两者不能混为同一个导出格式。</p>
+<h2 id="10">10. 保存什么，如何复现与报告</h2>
 <p>输出包含标准空间 BOLD、脑掩膜、WM/CSF 掩膜、混杂表、<code>transforms/</code>、<code>work/</code> 中间影像、<code>qc.html</code>、<code>qc.json</code>、<code>preprocessing.json</code>、<code>run.json</code>、<code>output_hashes.json</code> 和 <code>stages.json</code>。失败输出保留供检查，但不能加载为成功结果。重跑需新目录。</p>
 <p>检查脑提取完整性、脑室/皮层对齐、WM/CSF 所在组织、脑覆盖及 FD/DVARS。模板传播掩膜与模板的重叠不是独立分割精度；代码和界面不会以该数值自动宣告质量合格。</p>
+<table>
+<thead>
+<tr>
+<th>要核对的事项</th>
+<th>读取哪里</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>原始文件、模板、实际 TR / 切片时间、空间算法、种子与版本</td>
+<td>预处理目录 <code>preprocessing.json</code>；<code>resolved</code> 为读入后的采集值，<code>config</code> 为用户配置；模板有 SHA-256</td>
+</tr>
+<tr>
+<td>预处理完成状态与输出完整性</td>
+<td><code>stages.json</code>、<code>output_hashes.json</code>；<code>load_preprocessed()</code> 核验清单中的核心影像、混杂与记录文件，不是对全部中间文件或人工质控的认证</td>
+</tr>
+<tr>
+<td>实际滤波、回归列、丢弃帧、相关方法</td>
+<td>连接目录 <code>provenance.json</code> 的 <code>config</code>、<code>versions</code>、<code>raw_preprocessing</code>；无需从截图猜参数</td>
+</tr>
+<tr>
+<td>完整数值与排列</td>
+<td><code>connectivity.npy/csv</code>、<code>fisher_z.npy/csv</code>、<code>timeseries.npy/tsv</code>、<code>rois.tsv</code>、<code>samples.tsv</code>；矩阵和 ROI 表共用顺序</td>
+</tr>
+<tr>
+<td>留存样本与文件校验</td>
+<td>连接目录 <code>qc.json</code>、<code>manifest.json</code>；<code>samples.tsv</code> 保留 0 起始的原始索引，删帧后存在间断时不能当连续时段</td>
+</tr>
+<tr>
+<td>网络选择及指标含义</td>
+<td>网络导出的 <code>result.json</code> 中 <code>config</code>、<code>metadata</code>、<code>graph</code>、<code>hypergraph</code>；报告请求与实际密度，超边成员和构建方法</td>
+</tr>
+</tbody>
+</table>
+<p>研究方法应至少报告：软件/依赖版本；采集 TR 与切片信息来源；初始帧数；是否做层间时间/畸变校正；配准模型、准确模板和分辨率；平滑 FWHM；图谱与 ROI 顺序；回归列和 GSR；带通、FD 定义及阈值；质控排除规则与实际保留帧数；相关估计器；网络选边方法/实际密度或超图尺度。实际记录是方法部分的依据，不能把本页默认值直接当作自己的运行参数。</p>
+<h3 id="_7">已验证范围与未实现部分</h3>
+<p><a href="validation-v0.5.0.html">原始 fMRI 验证记录</a>包含已知信号层间校正、几何与刚体配准测试、转换对照，以及一例成人静息态原始数据完整运行。该例为 150 帧、TR 2 s、81 层，丢弃 5 帧、Schaefer100、0.01–0.1 Hz、无空间平滑/FD 删帧，得到 100×100 FC 和 145 个保留点；这些数字是验证实例，不是各数据集推荐参数。仓库 <code>rest01</code> 是已有处理的公开衍生样例，不能将打开它等同于重新执行原始影像预处理。</p>
+<p>当前没有场图/反向相位编码畸变校正、多回波合并、变 TR/稀疏采样、儿童专用模板流程、皮层表面重建、任务 GLM 或 DWI/DTI。没有 MATLAB/SPM/DPABI 逐值等价验证，也没有据此获得多中心、全厂商或临床有效性结论。原始路线通过 Python 包调用 ANTs 编译内核，不等于所有算法以纯 Python 编写。</p>
 <p>DICOM 元数据只输出处理需要的字段，但结构影像仍包含可识别解剖形态，处理输出也会记录本机输入路径。<strong>转换和预处理不等于脱敏</strong>；原始影像与此类结果应留在本地，不属于包内公开样例。</p>
-<h2 id="_5">实现依据</h2>
+<h2 id="11">11. 实现依据与源码</h2>
+<p>本页描述本库实际行为；上游文档解释所调用算法，不代表其全部功能均已在 BrainFC 暴露。</p>
 <ul>
-<li><a href="https://antspyx.readthedocs.io/en/stable/registration.html">ANTsPy 配准与变换接口</a></li>
+<li><a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/raw/pipeline.py">原始空间流水线</a> · <a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/raw/temporal.py">层间时间实现</a></li>
+<li><a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/imaging.py">ROI 提取</a> · <a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/pipeline.py">时序与 FC 核心</a></li>
+<li>
+<p><a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/network/graph.py">普通图</a> · <a href="https://github.com/hanxiangmin/brainfc/blob/main/src/brainfc/network/hypergraph.py">原生超图</a></p>
+</li>
+<li>
+<p><a href="https://antspyx.readthedocs.io/en/stable/registration.html">ANTsPy 配准与变换接口</a></p>
+</li>
 <li><a href="https://antspyx.readthedocs.io/en/latest/utils.html">ANTsPy N4</a></li>
 <li><a href="https://antspyx.readthedocs.io/en/latest/segmentation.html">ANTsPy Atropos</a></li>
 <li><a href="https://icometrix.github.io/dicom2nifti/">dicom2nifti</a></li>
